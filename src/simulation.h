@@ -24,14 +24,25 @@
 #define SIMULATION_H
 
 #include "framework/application.h"
+#include "robot.h"
 
 class Simulation : public Application
 {
 public:
     Simulation();
 
-    static Simulation* Create();
+    ~Simulation() override;
 
+    void Step(Settings &settings) override;
+
+    void Keyboard(int key) override;
+
+    void KeyboardUp(int key) override;
+
+    static Simulation *Create();
+
+private:
+    Robot robot;
 };
 
 #endif

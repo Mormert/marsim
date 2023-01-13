@@ -20,30 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "framework/application.h"
 #include "simulation.h"
+#include "framework/application.h"
+#include "robot.h"
 
-Simulation::Simulation() {
+Simulation::Simulation() : robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 60.f, 15.f}
+{
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
-    {
-        b2CircleShape shape;
-        shape.m_p.SetZero();
-        shape.m_radius = 0.1f;
+    auto wheels =
+        std::vector<Wheel>{{m_world, &robot, -1.5f, 0.0f, 0.4f, 0.8f}, {m_world, &robot, 1.5f, 0.0f, 0.4f, 0.8f}};
 
-        float minX = -600.0f;
-        float maxX = 600.0f;
-        float minY = 400.0f;
-        float maxY = 600.0f;
+    robot.attachWheels(wheels);
 
-        for (int32 i = 0; i < 4000; ++i) {
-            b2BodyDef bd;
-            bd.type = b2_staticBody;
-            bd.position = b2Vec2(RandomFloat(minX, maxX), RandomFloat(minY, maxY));
-            b2Body *body = m_world->CreateBody(&bd);
-            body->CreateFixture(&shape, 0.01f);
-        }
+    b2CircleShape shape;
+    shape.m_p.SetZero();
+    shape.m_radius = 0.1f;
+
+    float minX = -600.0f;
+    float maxX = 600.0f;
+    float minY = 400.0f;
+    float maxY = 600.0f;
+
+    for (int32 i = 0; i < 4000; ++i) {
+        b2BodyDef bd;
+        bd.type = b2_staticBody;
+        bd.position = b2Vec2(RandomFloat(minX, maxX), RandomFloat(minY, maxY));
+        b2Body *body = m_world->CreateBody(&bd);
+        body->CreateFixture(&shape, 0.01f);
     }
 
     {
@@ -57,7 +62,6 @@ Simulation::Simulation() {
         body->CreateFixture(&shape, 1.0f);
         body->SetLinearVelocity(b2Vec2(10.0f, 0.0f));
     }
-
 
     {
         b2CircleShape shape;
@@ -80,6 +84,47 @@ Simulation::Simulation() {
     }
 }
 
-Simulation *Simulation::Create() {
+Simulation *
+Simulation::Create()
+{
     return new Simulation;
+}
+
+Simulation::~Simulation() = default;
+
+void
+Simulation::Step(Settings &settings)
+{
+
+    robot.update();
+
+    Application::Step(settings);
+}
+
+void
+Simulation::Keyboard(int key)
+{
+
+    if (key == GLFW_KEY_W) {
+        robot.leftAccelerate = 1.f;
+    } else if (key == GLFW_KEY_S) {
+        robot.leftAccelerate = -1.f;
+    }
+
+    if (key == GLFW_KEY_E) {
+        robot.rightAccelerate = 1.f;
+    } else if (key == GLFW_KEY_D) {
+        robot.rightAccelerate = -1.f;
+    }
+}
+void
+Simulation::KeyboardUp(int key)
+{
+    if (key == GLFW_KEY_W || key == GLFW_KEY_S) {
+        robot.leftAccelerate = 0.f;
+    }
+
+    if (key == GLFW_KEY_E || key == GLFW_KEY_D) {
+        robot.rightAccelerate = 0.f;
+    }
 }
