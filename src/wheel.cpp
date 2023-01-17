@@ -40,7 +40,7 @@ Wheel::Wheel(b2World *world, Robot *robot, float x, float y, float width, float 
 
     { // Wheel shape
         b2FixtureDef fixdef;
-        fixdef.density = 1.f;
+        fixdef.density = 100.f;
         fixdef.isSensor = true;
         b2PolygonShape shape;
         shape.SetAsBox(width / 2.f, height / 2.f);

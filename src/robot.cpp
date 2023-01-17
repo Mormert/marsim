@@ -40,7 +40,7 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     this->body = world->CreateBody(&def);
 
     b2FixtureDef fixdef;
-    fixdef.density = 3.0;
+    fixdef.density = 1.0;
     fixdef.friction = 0.3;
     fixdef.restitution = 0.4;
     b2PolygonShape shape;

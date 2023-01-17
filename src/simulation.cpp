@@ -24,13 +24,13 @@
 #include "framework/application.h"
 #include "robot.h"
 
-Simulation::Simulation() : robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 60.f, 15.f}
+Simulation::Simulation() : robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480.f, 150.f}
 {
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
     auto wheels =
-        std::vector<Wheel>{{m_world, &robot, -1.5f, 0.0f, 0.4f, 0.8f}, {m_world, &robot, 1.5f, 0.0f, 0.4f, 0.8f}};
+        std::vector<Wheel>{{m_world, &robot, -1.5f, 0.0f, 0.5f, 0.5f}, {m_world, &robot, 1.5f, 0.0f, 0.5f, 0.5f}};
 
     robot.attachWheels(wheels);
 
