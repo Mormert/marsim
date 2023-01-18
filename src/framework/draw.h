@@ -33,6 +33,7 @@ struct b2AABB;
 struct GLRenderPoints;
 struct GLRenderLines;
 struct GLRenderTriangles;
+struct GLRenderImage;
 struct GLFWwindow;
 
 //
@@ -82,12 +83,15 @@ public:
 
 	void DrawAABB(b2AABB* aabb, const b2Color& color);
 
+        void DrawImageTexture(unsigned int textureID, b2Vec2 pos, b2Vec2 scale);
+
 	void Flush();
 
 	bool m_showUI;
 	GLRenderPoints* m_points;
 	GLRenderLines* m_lines;
 	GLRenderTriangles* m_triangles;
+	GLRenderImage* m_images;
 };
 
 extern DebugDraw g_debugDraw;

@@ -23,8 +23,10 @@
 #include "simulation.h"
 #include "framework/application.h"
 #include "robot.h"
+#include <iostream>
 
-Simulation::Simulation() : robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480.f, 150.f}
+Simulation::Simulation()
+    : robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480.f, 150.f}, terrain{"data/lunar_gaussian.png"}
 {
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
@@ -37,19 +39,6 @@ Simulation::Simulation() : robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480
     b2CircleShape shape;
     shape.m_p.SetZero();
     shape.m_radius = 0.1f;
-
-    float minX = -600.0f;
-    float maxX = 600.0f;
-    float minY = 400.0f;
-    float maxY = 600.0f;
-
-    for (int32 i = 0; i < 4000; ++i) {
-        b2BodyDef bd;
-        bd.type = b2_staticBody;
-        bd.position = b2Vec2(RandomFloat(minX, maxX), RandomFloat(minY, maxY));
-        b2Body *body = m_world->CreateBody(&bd);
-        body->CreateFixture(&shape, 0.01f);
-    }
 
     {
         b2PolygonShape shape;
@@ -93,10 +82,46 @@ Simulation::Create()
 Simulation::~Simulation() = default;
 
 void
+Simulation::ApplySlopeForce()
+{
+    auto robotPos = robot.getPosition();
+    b2Vec2 terrainPixelPos = {robotPos.x + terrain.getTextureWidth() / 2.f,
+                              terrain.getTextureHeight() / 2.f - robotPos.y};
+
+    float x = terrainPixelPos.x;
+    float y = terrainPixelPos.y;
+    auto width = (float)terrain.getTextureWidth();
+    auto height = (float)terrain.getTextureHeight();
+
+    float slopeX = terrain.getHeight(x < width - 1.f ? x + 1.f : x, y) - terrain.getHeight(x > 0.f ? x - 1.f : x, y);
+    float slopeZ = terrain.getHeight(x, y < height - 1.f ? y + 1.f : y) - terrain.getHeight(x, y > 0.f ? y - 1.f : y);
+
+    if (x == 0 || x == width - 1) {
+        slopeX *= 2;
+    }
+
+    if (y == 0 || y == height - 1) {
+        slopeZ *= 2;
+    }
+
+    glm::vec3 slopeDir = {-slopeX * (width - 1), (width - 1), slopeZ * (height - 1)};
+
+    if (glm::abs(slopeDir.x) > 0.1f || glm::abs(slopeDir.z) > 0.1f) {
+        slopeDir *= 0.2f; // constant that seems to work
+        robot.addForce(b2Vec2{slopeDir.x, slopeDir.z});
+    }
+}
+
+void
 Simulation::Step(Settings &settings)
 {
 
     robot.update();
+
+    g_debugDraw.DrawImageTexture(
+        terrain.getTextureID(), {0.f, 0.f}, {(float)terrain.getTextureWidth(), (float)terrain.getTextureHeight()});
+
+    ApplySlopeForce();
 
     Application::Step(settings);
 }

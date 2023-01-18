@@ -38,10 +38,12 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     def.bullet = true;
     def.angularDamping = 0.8;
     this->body = world->CreateBody(&def);
+    body->SetLinearDamping(12.5f);
+    body->SetAngularDamping(25.f);
 
     b2FixtureDef fixdef;
     fixdef.density = 1.0;
-    fixdef.friction = 0.3;
+    fixdef.friction = 0.5;
     fixdef.restitution = 0.4;
     b2PolygonShape shape;
     shape.SetAsBox(width / 2, length / 2);
@@ -100,4 +102,14 @@ Robot::update()
     if (getSpeedKMH() < 0.2f && leftAccelerate == 0.f && rightAccelerate == 0.f && body->GetAngularVelocity() < 0.1f) {
         completeStopVelocity();
     }
+}
+b2Vec2
+Robot::getPosition()
+{
+    return body->GetPosition();
+}
+void
+Robot::addForce(b2Vec2 force)
+{
+    body->ApplyForceToCenter(force, true);
 }

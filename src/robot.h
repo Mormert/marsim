@@ -46,20 +46,11 @@ public:
 
     float getSpeedKMH();
 
-    /* // Setting the speed should only be used in special cases, such as when the robot is stopped!
-     void setSpeedKMH(float speed) {
-
-
-         return;
-
-         const auto velocity = body->GetLinearVelocity();
-         const auto normalizedVelocityGLM = glm::normalize(glm::vec2{velocity.x, velocity.y});
-
-         body->SetLinearVelocity(b2Vec2{normalizedVelocityGLM.x * ((speed * 1000.f) / 3600.f),
-                                        normalizedVelocityGLM.y * ((speed * 1000.f) / 3600.f)});
-     }*/
+    b2Vec2 getPosition();
 
     void completeStopVelocity();
+
+    void addForce(b2Vec2 force);
 
     void update();
 

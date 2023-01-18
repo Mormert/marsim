@@ -21,9 +21,14 @@
 // SOFTWARE.
 
 #include "draw.h"
-#include <stdio.h>
+#include <queue>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "imgui/imgui.h"
 
@@ -202,6 +207,153 @@ static GLuint sCreateShaderProgram(const char* vs, const char* fs)
 
 	return programId;
 }
+
+//
+struct GLRenderImage{
+        void Create(){
+
+            const char* vs = \
+                "#version 330\n"
+                "uniform mat4 projectionMatrix;\n"
+                "uniform mat4 modelMatrix;\n"
+                "layout(location = 0) in vec2 v_position;\n"
+                "layout(location = 1) in vec2 v_uv;\n"
+                "out vec2 f_uvs;\n"
+                "void main(void)\n"
+                "{\n"
+                "	f_uvs = vec2(v_uv.x, v_uv.y);\n"
+                "	gl_Position = projectionMatrix * modelMatrix * vec4(v_position, 0.0f, 1.0f);\n"
+                "}\n";
+
+            const char* fs = \
+                "#version 330\n"
+                "in vec2 f_uvs;\n"
+                "uniform sampler2D texture1;\n"
+                "out vec4 color;\n"
+                "void main(void)\n"
+                "{\n"
+                "	color = texture(texture1, f_uvs);\n"
+                "}\n";
+
+            m_programId = sCreateShaderProgram(vs, fs);
+            m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
+            m_modelMatrixUniform = glGetUniformLocation(m_programId, "modelMatrix");
+            m_vertexAttribute = 0;
+            m_uvAttribute = 1;
+
+            float vertices[] = {
+                // positions                              // texture coords
+                0.5f,  0.5f, 0.0f,      1.0f, 1.0f, // top right
+                0.5f, -0.5f, 0.0f,      1.0f, 0.0f, // bottom right
+                -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, // bottom left
+                -0.5f,  0.5f, 0.0f,     0.0f, 1.0f  // top left
+            };
+            unsigned int indices[] = {
+                0, 1, 3, // first triangle
+                1, 2, 3  // second triangle
+            };
+
+            // Generate
+            glGenVertexArrays(1, &m_vaoId);
+            glGenBuffers(1, &m_vboId);
+            glGenBuffers(1, &m_eboId);
+
+            glBindVertexArray(m_vaoId);
+            glEnableVertexAttribArray(m_vertexAttribute);
+            glEnableVertexAttribArray(m_uvAttribute);
+
+            glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_eboId);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+            // position attribute
+            glVertexAttribPointer(m_vertexAttribute, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(m_vertexAttribute);
+            // color attribute
+            glVertexAttribPointer(m_uvAttribute, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(m_uvAttribute);
+
+            sCheckGLError();
+
+            // Cleanup
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
+
+        }
+
+        void Destroy(){
+            if (m_vaoId)
+            {
+                glDeleteVertexArrays(1, &m_vaoId);
+                glDeleteBuffers(1, &m_vboId);
+                m_vaoId = 0;
+            }
+
+            if (m_programId)
+            {
+                glDeleteProgram(m_programId);
+                m_programId = 0;
+            }
+        }
+
+        void Flush()
+        {
+            if(m_queue.empty())
+            {
+                return;
+            }
+
+            float proj[16] = { 0.0f };
+            g_camera.BuildProjectionMatrix(proj, 0.1f);
+
+            glUseProgram(m_programId);
+
+            glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
+
+            glBindVertexArray(m_vaoId);
+
+            while(!m_queue.empty())
+            {
+                auto&& tq = m_queue.front();
+
+                glBindTexture(GL_TEXTURE_2D, tq.textureID);
+
+                glm::mat4 model{1.f};
+                model = glm::translate(model, glm::vec3{tq.position.x, tq.position.y, 0.f});
+                model = glm::scale(model, glm::vec3{tq.scale.x, tq.scale.y, 0.f});
+
+                glUniformMatrix4fv(m_modelMatrixUniform, 1, GL_FALSE, &model[0][0]);
+
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+                m_queue.pop();
+            }
+        }
+
+        struct TextureQueue{
+            unsigned int textureID;
+            b2Vec2 position;
+            b2Vec2 scale;
+        };
+
+        void Texture(unsigned int textureID, b2Vec2 pos, b2Vec2 scale)
+        {
+            m_queue.push({textureID, pos, scale});
+        }
+
+        std::queue<TextureQueue> m_queue;
+
+        GLuint m_vaoId;
+        GLuint m_vboId;
+        GLuint m_eboId;
+        GLuint m_programId;
+        GLint m_projectionUniform;
+        GLint m_modelMatrixUniform;
+        GLint m_vertexAttribute;
+        GLint m_uvAttribute;
+};
 
 //
 struct GLRenderPoints
@@ -632,6 +784,8 @@ void DebugDraw::Create()
 	m_lines->Create();
 	m_triangles = new GLRenderTriangles;
 	m_triangles->Create();
+        m_images = new GLRenderImage;
+        m_images->Create();
 }
 
 //
@@ -835,10 +989,17 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 	m_lines->Vertex(p1, c);
 }
 
+void DebugDraw::DrawImageTexture(unsigned int textureID, b2Vec2 pos, b2Vec2 scale)
+{
+    m_images->Texture(textureID, pos, scale);
+}
+
 //
 void DebugDraw::Flush()
 {
+        m_images->Flush();
 	m_triangles->Flush();
 	m_lines->Flush();
 	m_points->Flush();
 }
+

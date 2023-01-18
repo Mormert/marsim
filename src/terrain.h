@@ -20,33 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#ifndef MARSIM_TERRAIN_H
+#define MARSIM_TERRAIN_H
 
-#include "framework/application.h"
-#include "robot.h"
-#include "terrain.h"
+#include <vector>
+#include <string>
 
-class Simulation : public Application
+class Terrain
 {
+
 public:
-    Simulation();
 
-    ~Simulation() override;
+    explicit Terrain(const std::string& gaussianImagePath);
 
-    void ApplySlopeForce();
+    ~Terrain();
 
-    void Step(Settings &settings) override;
+    unsigned char getHeight(int x, int y);
 
-    void Keyboard(int key) override;
+    unsigned int getTextureID();
 
-    void KeyboardUp(int key) override;
+    int getTextureWidth();
 
-    static Simulation *Create();
+    int getTextureHeight();
 
 private:
-    Robot robot;
-    Terrain terrain;
+
+    unsigned int terrainTextureID{};
+    void generateTexture(const std::string &gaussianImagePath);
+
+    int width{}, height{};
+    std::vector<unsigned char> map{};
 };
 
-#endif
+#endif // MARSIM_TERRAIN_H

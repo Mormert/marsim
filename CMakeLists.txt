@@ -22,10 +22,12 @@ set (MARSIM_SOURCE_FILES
 		src/main.cpp
 		src/simulation.cpp
 		src/wheel.cpp
-		src/robot.cpp)
+		src/robot.cpp
+		3rdparty/stb_image.cpp
+		src/terrain.cpp)
 
 add_executable(marsim ${MARSIM_SOURCE_FILES})
-target_include_directories(marsim PRIVATE src math)
+target_include_directories(marsim PRIVATE src math 3rdparty)
 target_link_libraries(marsim PUBLIC box2d glfw imgui sajson glad)
 
 FILE(COPY src/data DESTINATION ${PROJECT_BINARY_DIR})
