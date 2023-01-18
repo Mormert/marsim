@@ -53,11 +53,11 @@ Terrain::Terrain(const std::string &gaussianImagePath)
 unsigned char
 Terrain::getHeight(int x, int y)
 {
-    if (x < 0 || x > width) {
+    if (x < 0 || x >= width) {
         return 0;
     }
 
-    if (y < 0 || y > height) {
+    if (y < 0 || y >= height) {
         return 0;
     }
 

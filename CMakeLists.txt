@@ -24,7 +24,10 @@ set (MARSIM_SOURCE_FILES
 		src/wheel.cpp
 		src/robot.cpp
 		3rdparty/stb_image.cpp
-		src/terrain.cpp)
+		src/terrain.cpp
+		src/object.cpp
+		src/stone.cpp
+		src/proximity_sensor.cpp)
 
 add_executable(marsim ${MARSIM_SOURCE_FILES})
 target_include_directories(marsim PRIVATE src math 3rdparty)

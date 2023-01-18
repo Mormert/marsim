@@ -31,6 +31,7 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     this->power = power;
 
     b2BodyDef def;
+    def.userData.pointer = reinterpret_cast<uintptr_t>(this);
     def.type = b2_dynamicBody;
     def.position = position;
     def.angle = glm::radians(angle);
@@ -45,6 +46,7 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     fixdef.density = 1.0;
     fixdef.friction = 0.5;
     fixdef.restitution = 0.4;
+    fixdef.userData.pointer = reinterpret_cast<uintptr_t>(this);
     b2PolygonShape shape;
     shape.SetAsBox(width / 2, length / 2);
     fixdef.shape = &shape;
@@ -55,26 +57,6 @@ void
 Robot::attachWheels(std::vector<Wheel> &wheels)
 {
     this->wheels = wheels;
-}
-
-b2Vec2
-Robot::getLocalVelocity()
-{
-    return body->GetLocalVector(body->GetLinearVelocityFromLocalPoint(b2Vec2(0, 0)));
-}
-
-float
-Robot::getSpeedKMH()
-{
-    const auto vel = body->GetLinearVelocity();
-    return (vel.Length() / 1000.f) * 3600.f;
-}
-
-void
-Robot::completeStopVelocity()
-{
-    body->SetLinearVelocity(b2Vec2{0.f, 0.f});
-    body->SetAngularVelocity(0.f);
 }
 
 void
@@ -102,14 +84,4 @@ Robot::update()
     if (getSpeedKMH() < 0.2f && leftAccelerate == 0.f && rightAccelerate == 0.f && body->GetAngularVelocity() < 0.1f) {
         completeStopVelocity();
     }
-}
-b2Vec2
-Robot::getPosition()
-{
-    return body->GetPosition();
-}
-void
-Robot::addForce(b2Vec2 force)
-{
-    body->ApplyForceToCenter(force, true);
 }

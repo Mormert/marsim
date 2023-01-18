@@ -20,37 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_WHEEL_H
-#define MARSIM_WHEEL_H
+#ifndef MARSIM_PROXIMITY_SENSOR_H
+#define MARSIM_PROXIMITY_SENSOR_H
 
-#include "box2d/box2d.h"
+#include "object.h"
+#include <vector>
 
-class Robot;
-
-class Wheel
+class ProximitySensor : public Object
 {
-
 public:
-    Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
+    ProximitySensor(b2World *world, b2Vec2 pos, float radius);
 
-    // Get local wheel velocity
-    b2Vec2 getLocalVelocity();
+    void ObjectEnter(Object* other);
 
-    // The direction which the wheel points
-    b2Vec2 getDirectionVector();
+    void ObjectLeave(Object* other);
 
-    // Returns a vector which removes sideways velocity and keeps the forward vector velocity
-    b2Vec2 getKillVelocityVector();
-
-    // Remove sideways velocity from the wheel
-    void killSidewaysVelocity();
-
-    friend class Robot;
+    void update() override;
 
 private:
-    b2Vec2 position;
-    b2Body *body;
-    Robot *robot;
+    std::vector<Object*> objects_inside;
 };
 
-#endif // MARSIM_WHEEL_H
+#endif // MARSIM_PROXIMITY_SENSOR_H

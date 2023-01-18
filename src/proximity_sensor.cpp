@@ -20,37 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_WHEEL_H
-#define MARSIM_WHEEL_H
-
-#include "box2d/box2d.h"
-
-class Robot;
-
-class Wheel
+#include "proximity_sensor.h"
+ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius)
 {
+    moveable = false;
 
-public:
-    Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
+    b2BodyDef def;
+    def.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    def.type = b2_staticBody;
+    def.position = pos;
+    def.bullet = false;
+    this->body = world->CreateBody(&def);
 
-    // Get local wheel velocity
-    b2Vec2 getLocalVelocity();
+    b2CircleShape shape;
+    shape.m_radius = radius;
 
-    // The direction which the wheel points
-    b2Vec2 getDirectionVector();
+    b2FixtureDef fd;
+    fd.shape = &shape;
+    fd.isSensor = true;
+    fd.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    body->CreateFixture(&fd);
+}
 
-    // Returns a vector which removes sideways velocity and keeps the forward vector velocity
-    b2Vec2 getKillVelocityVector();
+void
+ProximitySensor::update()
+{
+}
 
-    // Remove sideways velocity from the wheel
-    void killSidewaysVelocity();
+void
+ProximitySensor::ObjectEnter(Object *other)
+{
+    objects_inside.push_back(other);
+}
 
-    friend class Robot;
-
-private:
-    b2Vec2 position;
-    b2Body *body;
-    Robot *robot;
-};
-
-#endif // MARSIM_WHEEL_H
+void
+ProximitySensor::ObjectLeave(Object *other)
+{
+    auto it = std::find(objects_inside.begin(), objects_inside.end(), other);
+    if (it != objects_inside.end()) {
+        objects_inside.erase(it);
+    }
+}

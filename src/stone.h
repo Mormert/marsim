@@ -20,37 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_WHEEL_H
-#define MARSIM_WHEEL_H
+#ifndef MARSIM_STONE_H
+#define MARSIM_STONE_H
 
-#include "box2d/box2d.h"
+#include "object.h"
 
-class Robot;
-
-class Wheel
+class Stone : public Object
 {
-
 public:
-    Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
+    Stone(b2World *world, b2Vec2 pos, float radius);
 
-    // Get local wheel velocity
-    b2Vec2 getLocalVelocity();
+    void update() override;
 
-    // The direction which the wheel points
-    b2Vec2 getDirectionVector();
-
-    // Returns a vector which removes sideways velocity and keeps the forward vector velocity
-    b2Vec2 getKillVelocityVector();
-
-    // Remove sideways velocity from the wheel
-    void killSidewaysVelocity();
-
-    friend class Robot;
-
-private:
-    b2Vec2 position;
-    b2Body *body;
-    Robot *robot;
 };
 
-#endif // MARSIM_WHEEL_H
+#endif // MARSIM_STONE_H

@@ -20,37 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_WHEEL_H
-#define MARSIM_WHEEL_H
-
-#include "box2d/box2d.h"
-
-class Robot;
-
-class Wheel
+#include "object.h"
+b2Vec2
+Object::getLocalVelocity()
 {
+    return body->GetLocalVector(body->GetLinearVelocityFromLocalPoint(b2Vec2(0, 0)));
+}
 
-public:
-    Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
+float
+Object::getSpeedKMH()
+{
+    const auto vel = body->GetLinearVelocity();
+    return (vel.Length() / 1000.f) * 3600.f;
+}
 
-    // Get local wheel velocity
-    b2Vec2 getLocalVelocity();
+b2Vec2
+Object::getPosition()
+{
+    return body->GetPosition();
+}
 
-    // The direction which the wheel points
-    b2Vec2 getDirectionVector();
+void
+Object::completeStopVelocity()
+{
+    body->SetLinearVelocity(b2Vec2{0.f, 0.f});
+    body->SetAngularVelocity(0.f);
+}
 
-    // Returns a vector which removes sideways velocity and keeps the forward vector velocity
-    b2Vec2 getKillVelocityVector();
-
-    // Remove sideways velocity from the wheel
-    void killSidewaysVelocity();
-
-    friend class Robot;
-
-private:
-    b2Vec2 position;
-    b2Body *body;
-    Robot *robot;
-};
-
-#endif // MARSIM_WHEEL_H
+void
+Object::addForce(b2Vec2 force)
+{
+    body->ApplyForceToCenter(force, true);
+}

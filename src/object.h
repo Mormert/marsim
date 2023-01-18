@@ -20,37 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_WHEEL_H
-#define MARSIM_WHEEL_H
+#ifndef MARSIM_OBJECT_H
+#define MARSIM_OBJECT_H
 
 #include "box2d/box2d.h"
 
-class Robot;
-
-class Wheel
+class Object
 {
 
 public:
-    Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
+    Object() = default;
+    virtual ~Object() = default;
 
-    // Get local wheel velocity
     b2Vec2 getLocalVelocity();
 
-    // The direction which the wheel points
-    b2Vec2 getDirectionVector();
+    float getSpeedKMH();
 
-    // Returns a vector which removes sideways velocity and keeps the forward vector velocity
-    b2Vec2 getKillVelocityVector();
+    b2Vec2 getPosition();
 
-    // Remove sideways velocity from the wheel
-    void killSidewaysVelocity();
+    void completeStopVelocity();
 
-    friend class Robot;
+    void addForce(b2Vec2 force);
 
-private:
-    b2Vec2 position;
-    b2Body *body;
-    Robot *robot;
+    virtual void update() = 0;
+
+    b2Body* body;
+
+    bool updateable = true;
+    bool moveable = true;
 };
 
-#endif // MARSIM_WHEEL_H
+#endif // MARSIM_OBJECT_H

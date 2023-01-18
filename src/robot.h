@@ -23,12 +23,13 @@
 #ifndef MARSIM_ROBOT_H
 #define MARSIM_ROBOT_H
 
+#include "object.h"
 #include "wheel.h"
 
 #include <glm/glm.hpp>
 #include <vector>
 
-class Robot
+class Robot : public Object
 {
 public:
     std::vector<Wheel> wheels;
@@ -42,19 +43,8 @@ public:
 
     void attachWheels(std::vector<Wheel> &wheels);
 
-    b2Vec2 getLocalVelocity();
+    void update() override;
 
-    float getSpeedKMH();
-
-    b2Vec2 getPosition();
-
-    void completeStopVelocity();
-
-    void addForce(b2Vec2 force);
-
-    void update();
-
-    b2Body *body;
 };
 
 #endif // MARSIM_ROBOT_H

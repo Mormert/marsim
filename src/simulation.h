@@ -24,8 +24,10 @@
 #define SIMULATION_H
 
 #include "framework/application.h"
-#include "robot.h"
 #include "terrain.h"
+
+class Object;
+class Robot;
 
 class Simulation : public Application
 {
@@ -33,6 +35,8 @@ public:
     Simulation();
 
     ~Simulation() override;
+
+    void UpdateObjects();
 
     void ApplySlopeForce();
 
@@ -42,11 +46,20 @@ public:
 
     void KeyboardUp(int key) override;
 
+    void SimulateObject(Object *object);
+
+    void DestroyObject(Object *object);
+
     static Simulation *Create();
 
+    void BeginContact(b2Contact *contact) override;
+
+    void EndContact(b2Contact *contact) override;
+
 private:
-    Robot robot;
+    Robot* robot;
     Terrain terrain;
+    std::vector<Object *> objects;
 };
 
 #endif

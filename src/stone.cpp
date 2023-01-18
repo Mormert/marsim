@@ -20,37 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_WHEEL_H
-#define MARSIM_WHEEL_H
+#include "stone.h"
 
-#include "box2d/box2d.h"
+Stone::Stone(b2World *world, b2Vec2 pos, float radius) {
+    updateable = false;
 
-class Robot;
+    b2BodyDef def;
+    def.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    def.type = b2_dynamicBody;
+    def.position = pos;
+    def.angle = 0.f;
+    def.linearDamping = 0.5;
+    def.bullet = false;
+    def.angularDamping = 0.8;
+    this->body = world->CreateBody(&def);
+    body->SetLinearDamping(12.5f);
+    body->SetAngularDamping(25.f);
 
-class Wheel
+    b2FixtureDef fixdef;
+    fixdef.density = 1.0;
+    fixdef.friction = 0.5;
+    fixdef.restitution = 0.4;
+    fixdef.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    b2CircleShape shape;
+    shape.m_radius = radius;
+    fixdef.shape = &shape;
+    body->CreateFixture(&fixdef);
+}
+
+void
+Stone::update()
 {
-
-public:
-    Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
-
-    // Get local wheel velocity
-    b2Vec2 getLocalVelocity();
-
-    // The direction which the wheel points
-    b2Vec2 getDirectionVector();
-
-    // Returns a vector which removes sideways velocity and keeps the forward vector velocity
-    b2Vec2 getKillVelocityVector();
-
-    // Remove sideways velocity from the wheel
-    void killSidewaysVelocity();
-
-    friend class Robot;
-
-private:
-    b2Vec2 position;
-    b2Body *body;
-    Robot *robot;
-};
-
-#endif // MARSIM_WHEEL_H
+    // nothing
+}
