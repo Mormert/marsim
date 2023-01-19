@@ -29,6 +29,7 @@
 #include "framework/draw.h"
 #include "framework/settings.h"
 #include "simulation.h"
+#include "mqtt.h"
 
 #include <algorithm>
 #include <stdio.h>
@@ -406,7 +407,38 @@ static void UpdateUI()
 
 		if (ImGui::BeginTabBar("ControlTabs", ImGuiTabBarFlags_None))
 		{
-			if (ImGui::BeginTabItem("Controls"))
+
+                        if (ImGui::BeginTabItem("MQTT"))
+                        {
+                                static char mqttConnectString[256]{"bd86ad7d91574abab844ada07ad73b31.s1.eu.hivemq.cloud"};
+                                static int mqttConnectPort{8883};
+
+                                ImVec2 button_sz = ImVec2(-1, 0);
+
+                                if(Mqtt::getInstance().isConnected())
+                                {
+                                    std::string connectedTo{mqttConnectString};
+                                    ImGui::TextWrapped("%s", std::string{"You are connected to: " + std::string{mqttConnectString}}.c_str());
+
+                                    if(ImGui::Button("Disconnect", button_sz))
+                                    {
+                                        Mqtt::getInstance().disconnectMqtt();
+                                    }
+                                }else
+                                {
+                                    ImGui::InputText("Address", mqttConnectString, sizeof(mqttConnectString), ImGuiInputTextFlags_AutoSelectAll);
+
+                                    ImGui::InputInt("Port", &mqttConnectPort, 0);
+
+                                    if(ImGui::Button("Connect", button_sz))
+                                    {
+                                        std::string address{mqttConnectString};
+                                        Mqtt::getInstance().connectMqtt(address, mqttConnectPort);
+                                    }
+                                }
+                                ImGui::EndTabItem();
+                        }
+			if (ImGui::BeginTabItem("Physics"))
 			{
 				ImGui::SliderInt("Vel Iters", &s_settings.m_velocityIterations, 0, 50);
 				ImGui::SliderInt("Pos Iters", &s_settings.m_positionIterations, 0, 50);
@@ -584,6 +616,8 @@ int main(int, char**)
 		}
 
 		s_application->Step(s_settings);
+
+                Mqtt::getInstance().processMqtt();
 
 		UpdateUI();
 
