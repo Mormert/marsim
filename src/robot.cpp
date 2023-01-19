@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 #include "robot.h"
+#include "pickup_sensor.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float angle, float power, float maxSpeed)
 {
@@ -51,10 +53,14 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     shape.SetAsBox(width / 2, length / 2);
     fixdef.shape = &shape;
     body->CreateFixture(&fixdef);
+
+    pickup_sensor = new PickupSensor{world, this, {0.f, 5.f}, 0.5};
+
+    name = "Robot";
 }
 
 void
-Robot::attachWheels(std::vector<Wheel> &wheels)
+Robot::attachWheels(std::vector<Wheel *> &wheels)
 {
     this->wheels = wheels;
 }
@@ -65,23 +71,37 @@ Robot::update()
 
     // Eliminate sideways velocity
     for (auto &&wheel : wheels) {
-        wheel.killSidewaysVelocity();
+        wheel->killSidewaysVelocity();
     }
 
     if (leftAccelerate != 0.f && getSpeedKMH() < maxSpeed) {
-        auto pos = this->wheels[0].body->GetWorldCenter();
+        auto pos = this->wheels[0]->body->GetWorldCenter();
         b2Vec2 force = {0.f, this->power * leftAccelerate};
-        this->wheels[0].body->ApplyForce(wheels[0].body->GetWorldVector(force), pos, true);
+        this->wheels[0]->body->ApplyForce(wheels[0]->body->GetWorldVector(force), pos, true);
     }
 
     if (rightAccelerate != 0.f && getSpeedKMH() < maxSpeed) {
-        auto pos = this->wheels[1].body->GetWorldCenter();
+        auto pos = this->wheels[1]->body->GetWorldCenter();
         b2Vec2 force = {0.f, this->power * rightAccelerate};
-        this->wheels[1].body->ApplyForce(wheels[1].body->GetWorldVector(force), pos, true);
+        this->wheels[1]->body->ApplyForce(wheels[1]->body->GetWorldVector(force), pos, true);
     }
 
     // If going very slowly, stop the car completely.
     if (getSpeedKMH() < 0.2f && leftAccelerate == 0.f && rightAccelerate == 0.f && body->GetAngularVelocity() < 0.1f) {
         completeStopVelocity();
+    }
+
+    // Set position for pickup sensor
+    auto angle = body->GetAngle();
+    auto forward = glm::rotate(glm::vec2{cos(angle), sin(angle)}, glm::radians(90.f));
+    forward *= 3.f;
+    pickup_sensor->setPosition(getPosition() + b2Vec2{forward.x, forward.y}, angle);
+    pickup_sensor->body->SetAwake(true); // Since we manually move the sensor, we need to wake it up all the time.
+}
+
+Robot::~Robot()
+{
+    for (auto &&wheel : wheels) {
+        delete wheel;
     }
 }

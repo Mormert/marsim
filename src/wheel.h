@@ -23,18 +23,18 @@
 #ifndef MARSIM_WHEEL_H
 #define MARSIM_WHEEL_H
 
-#include "box2d/box2d.h"
+#include "object.h"
 
 class Robot;
 
-class Wheel
+class Wheel : public Object
 {
 
 public:
     Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
 
     // Get local wheel velocity
-    b2Vec2 getLocalVelocity();
+    b2Vec2 getLocalVelocity() override;
 
     // The direction which the wheel points
     b2Vec2 getDirectionVector();
@@ -44,6 +44,8 @@ public:
 
     // Remove sideways velocity from the wheel
     void killSidewaysVelocity();
+
+    void update() override;
 
     friend class Robot;
 

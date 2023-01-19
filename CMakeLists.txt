@@ -27,7 +27,8 @@ set (MARSIM_SOURCE_FILES
 		src/terrain.cpp
 		src/object.cpp
 		src/stone.cpp
-		src/proximity_sensor.cpp)
+		src/proximity_sensor.cpp
+		src/pickup_sensor.cpp)
 
 add_executable(marsim ${MARSIM_SOURCE_FILES})
 target_include_directories(marsim PRIVATE src math 3rdparty)

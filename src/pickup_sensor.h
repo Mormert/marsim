@@ -20,37 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_ROBOT_H
-#define MARSIM_ROBOT_H
+#ifndef MARSIM_PICKUP_SENSOR_H
+#define MARSIM_PICKUP_SENSOR_H
 
-#include "object.h"
-#include "wheel.h"
+#include "proximity_sensor.h"
 
-#include <glm/glm.hpp>
-#include <vector>
+class Robot;
 
-class PickupSensor;
-
-class Robot : public Object
+class PickupSensor : public ProximitySensor
 {
 public:
-    std::vector<Wheel*> wheels;
-    float leftAccelerate;
-    float rightAccelerate;
-
-    float maxSpeed;
-    float power;
-
-    Robot(b2World *world, float width, float length, b2Vec2 position, float angle, float power, float max_speed);
-
-    ~Robot() override;
-
-    void attachWheels(std::vector<Wheel*> &wheels);
-
-    void update() override;
-
-    PickupSensor* pickup_sensor;
-
+    PickupSensor(b2World *world, Robot *robot, b2Vec2 pos, float radius);
 };
 
-#endif // MARSIM_ROBOT_H
+#endif // MARSIM_PICKUP_SENSOR_H

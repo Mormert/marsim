@@ -35,11 +35,13 @@ Wheel::Wheel(b2World *world, Robot *robot, float x, float y, float width, float 
         def.type = b2_dynamicBody;
         def.position = robot->body->GetWorldPoint(position);
         def.angle = robot->body->GetAngle();
+        def.userData.pointer = reinterpret_cast<uintptr_t>(this);
         body = world->CreateBody(&def);
     }
 
     { // Wheel shape
         b2FixtureDef fixdef;
+        fixdef.userData.pointer = reinterpret_cast<uintptr_t>(this);
         fixdef.density = 100.f;
         fixdef.isSensor = true;
         b2PolygonShape shape;
@@ -48,7 +50,7 @@ Wheel::Wheel(b2World *world, Robot *robot, float x, float y, float width, float 
         body->CreateFixture(&fixdef);
     }
 
-    { // Connect wheel body to car body with joints
+    { // Connect wheel body to robot body with joints
         b2PrismaticJointDef jointDef;
         jointDef.Initialize(robot->body, body, body->GetWorldCenter(), b2Vec2{1.f, 0.f});
         jointDef.enableLimit = true;
@@ -57,6 +59,12 @@ Wheel::Wheel(b2World *world, Robot *robot, float x, float y, float width, float 
 
         world->CreateJoint(&jointDef);
     }
+
+    name = "Robot Wheel";
+    updateable = false;
+
+    // Movable false because robot is movable instead
+    terrain_movable = false;
 }
 
 b2Vec2
@@ -91,4 +99,9 @@ void
 Wheel::killSidewaysVelocity()
 {
     body->SetLinearVelocity(getKillVelocityVector());
+}
+
+void
+Wheel::update()
+{
 }

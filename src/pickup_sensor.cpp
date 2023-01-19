@@ -20,37 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_ROBOT_H
-#define MARSIM_ROBOT_H
+#include "pickup_sensor.h"
 
-#include "object.h"
-#include "wheel.h"
+#include "robot.h"
 
-#include <glm/glm.hpp>
-#include <vector>
-
-class PickupSensor;
-
-class Robot : public Object
+PickupSensor::PickupSensor(b2World *world, Robot *robot, b2Vec2 pos, float radius)
 {
-public:
-    std::vector<Wheel*> wheels;
-    float leftAccelerate;
-    float rightAccelerate;
+    updateable = false;
+    terrain_movable = false;
 
-    float maxSpeed;
-    float power;
+    b2BodyDef def;
+    def.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    def.type = b2_kinematicBody;
+    def.position = robot->body->GetWorldPoint(pos);
+    def.angle = robot->body->GetAngle();
+    body = world->CreateBody(&def);
 
-    Robot(b2World *world, float width, float length, b2Vec2 position, float angle, float power, float max_speed);
+    // Triangle
+    b2Vec2 vertices[3];
+    vertices[0].Set(0, -1);
+    vertices[1].Set(-1.5,1);
+    vertices[2].Set(1.5,1);
 
-    ~Robot() override;
+    b2PolygonShape shape;
+    shape.Set(vertices, 3);
 
-    void attachWheels(std::vector<Wheel*> &wheels);
+    b2FixtureDef fixdef;
+    fixdef.isSensor = true;
+    fixdef.shape = &shape;
+    fixdef.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    body->CreateFixture(&fixdef);
 
-    void update() override;
-
-    PickupSensor* pickup_sensor;
-
-};
-
-#endif // MARSIM_ROBOT_H
+    name = "Pickup Sensor";
+}

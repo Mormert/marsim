@@ -29,6 +29,7 @@
 class ProximitySensor : public Object
 {
 public:
+    
     ProximitySensor(b2World *world, b2Vec2 pos, float radius);
 
     void ObjectEnter(Object* other);
@@ -37,7 +38,9 @@ public:
 
     void update() override;
 
-private:
+protected:
+    ProximitySensor() = default;
+
     std::vector<Object*> objects_inside;
 };
 

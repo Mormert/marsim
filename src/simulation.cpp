@@ -34,8 +34,9 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
     robot = new Robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480.f, 150.f};
-    auto wheels =
-        std::vector<Wheel>{{m_world, robot, -1.5f, 0.0f, 0.5f, 0.5f}, {m_world, robot, 1.5f, 0.0f, 0.5f, 0.5f}};
+    auto wheels = std::vector<Wheel *>{new Wheel{m_world, robot, -1.5f, 0.0f, 0.5f, 0.5f},
+                                       new Wheel{m_world, robot, 1.5f, 0.0f, 0.5f, 0.5f}};
+
     robot->attachWheels(wheels);
     SimulateObject(robot);
 
@@ -74,7 +75,7 @@ void
 Simulation::ApplySlopeForce()
 {
     for (auto &&object : objects) {
-        if (!object->moveable) {
+        if (!object->terrain_movable) {
             continue;
         }
 
@@ -171,21 +172,19 @@ void
 Simulation::BeginContact(b2Contact *contact)
 {
 
-    b2Fixture* fixtureA = contact->GetFixtureA();
-    b2Fixture* fixtureB = contact->GetFixtureB();
+    b2Fixture *fixtureA = contact->GetFixtureA();
+    b2Fixture *fixtureB = contact->GetFixtureB();
 
-    auto* a = reinterpret_cast<Object*>(fixtureA->GetUserData().pointer);
-    auto* b = reinterpret_cast<Object*>(fixtureB->GetUserData().pointer);
+    auto *a = reinterpret_cast<Object *>(fixtureA->GetUserData().pointer);
+    auto *b = reinterpret_cast<Object *>(fixtureB->GetUserData().pointer);
 
-    if(auto sensor = dynamic_cast<ProximitySensor*>(a))
-    {
-        std::cout << "COLLIDE WITH SENSOR A " << std::endl;
+    if (auto sensor = dynamic_cast<ProximitySensor *>(a)) {
+        std::cout << "COLLIDE WITH SENSOR A " << b->name << std::endl;
         sensor->ObjectEnter(b);
     }
 
-    if(auto sensor = dynamic_cast<ProximitySensor*>(b))
-    {
-        std::cout << "COLLIDE WITH SENSOR B " << std::endl;
+    if (auto sensor = dynamic_cast<ProximitySensor *>(b)) {
+        std::cout << "COLLIDE WITH SENSOR B " << a->name << std::endl;
         sensor->ObjectEnter(a);
     }
 }
@@ -193,21 +192,19 @@ Simulation::BeginContact(b2Contact *contact)
 void
 Simulation::EndContact(b2Contact *contact)
 {
-    b2Fixture* fixtureA = contact->GetFixtureA();
-    b2Fixture* fixtureB = contact->GetFixtureB();
+    b2Fixture *fixtureA = contact->GetFixtureA();
+    b2Fixture *fixtureB = contact->GetFixtureB();
 
-    auto* a = reinterpret_cast<Object*>(fixtureA->GetUserData().pointer);
-    auto* b = reinterpret_cast<Object*>(fixtureB->GetUserData().pointer);
+    auto *a = reinterpret_cast<Object *>(fixtureA->GetUserData().pointer);
+    auto *b = reinterpret_cast<Object *>(fixtureB->GetUserData().pointer);
 
-    if(auto sensor = dynamic_cast<ProximitySensor*>(a))
-    {
-        std::cout << "LEAVE SENSOR A " << std::endl;
+    if (auto sensor = dynamic_cast<ProximitySensor *>(a)) {
+        std::cout << "LEAVE SENSOR A " << b->name << std::endl;
         sensor->ObjectLeave(b);
     }
 
-    if(auto sensor = dynamic_cast<ProximitySensor*>(b))
-    {
-        std::cout << "LEAVE SENSOR B " << std::endl;
+    if (auto sensor = dynamic_cast<ProximitySensor *>(b)) {
+        std::cout << "LEAVE SENSOR B " << a->name << std::endl;
         sensor->ObjectLeave(a);
     }
 }

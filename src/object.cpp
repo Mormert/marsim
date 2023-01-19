@@ -52,3 +52,8 @@ Object::addForce(b2Vec2 force)
 {
     body->ApplyForceToCenter(force, true);
 }
+void
+Object::setPosition(b2Vec2 pos, float angle)
+{
+    body->SetTransform(pos, angle);
+}

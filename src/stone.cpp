@@ -46,6 +46,8 @@ Stone::Stone(b2World *world, b2Vec2 pos, float radius) {
     shape.m_radius = radius;
     fixdef.shape = &shape;
     body->CreateFixture(&fixdef);
+
+    name = "Stone";
 }
 
 void

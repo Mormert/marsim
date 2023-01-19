@@ -23,7 +23,7 @@
 #include "proximity_sensor.h"
 ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius)
 {
-    moveable = false;
+    terrain_movable = false;
 
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);
@@ -40,6 +40,8 @@ ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius)
     fd.isSensor = true;
     fd.userData.pointer = reinterpret_cast<uintptr_t>(this);
     body->CreateFixture(&fd);
+
+    name = "Proximity Sensor";
 }
 
 void
