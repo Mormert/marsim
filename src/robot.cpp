@@ -21,8 +21,12 @@
 // SOFTWARE.
 
 #include "robot.h"
+#include "mqtt.h"
 #include "pickup_sensor.h"
+
 #include <glm/gtx/rotate_vector.hpp>
+#include <iostream>
+#include <json.hpp>
 
 Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float angle, float power, float maxSpeed)
 {
@@ -55,6 +59,8 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     body->CreateFixture(&fixdef);
 
     pickup_sensor = new PickupSensor{world, this, {0.f, 5.f}, 0.5};
+
+    proximity_sensor = new ProximitySensor{world, position, 30.f, true};
 
     name = "Robot";
 }
@@ -97,6 +103,25 @@ Robot::update()
     forward *= 3.f;
     pickup_sensor->setPosition(getPosition() + b2Vec2{forward.x, forward.y}, angle);
     pickup_sensor->body->SetAwake(true); // Since we manually move the sensor, we need to wake it up all the time.
+    pickup_sensor->update();
+
+    // Set position for proximity sensor
+    proximity_sensor->setPosition(getPosition(), 0.f);
+    proximity_sensor->body->SetAwake(true); // Since we manually move the sensor, we need to wake it up all the time.
+    proximity_sensor->update();
+
+    if (updateCounter % 3 == 0) {
+        nlohmann::json j;
+
+        auto pos = getPosition();
+        j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
+        j["battery"] = 100;                                   // Placeholder
+        j["storage"] = {"small_stone", "banana", "big_rock"}; // Placeholders
+
+        Mqtt::getInstance().send("simulator", "robot", j.dump());
+    }
+
+    updateCounter++;
 }
 
 Robot::~Robot()
@@ -104,4 +129,7 @@ Robot::~Robot()
     for (auto &&wheel : wheels) {
         delete wheel;
     }
+
+    delete pickup_sensor;
+    delete proximity_sensor;
 }

@@ -30,7 +30,7 @@ class ProximitySensor : public Object
 {
 public:
     
-    ProximitySensor(b2World *world, b2Vec2 pos, float radius);
+    ProximitySensor(b2World *world, b2Vec2 pos, float radius, bool isDynamic = false);
 
     void ObjectEnter(Object* other);
 
@@ -42,6 +42,10 @@ protected:
     ProximitySensor() = default;
 
     std::vector<Object*> objects_inside;
+
+    float radius;
+
+    unsigned int updateCounter{0};
 };
 
 #endif // MARSIM_PROXIMITY_SENSOR_H

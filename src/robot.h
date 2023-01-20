@@ -30,6 +30,7 @@
 #include <vector>
 
 class PickupSensor;
+class ProximitySensor;
 
 class Robot : public Object
 {
@@ -49,7 +50,11 @@ public:
 
     void update() override;
 
-    PickupSensor* pickup_sensor;
+    PickupSensor* pickup_sensor{};
+    ProximitySensor* proximity_sensor{};
+
+private:
+    unsigned int updateCounter{0};
 
 };
 

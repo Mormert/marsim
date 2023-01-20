@@ -992,12 +992,13 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 void DebugDraw::DrawImageTexture(unsigned int textureID, b2Vec2 pos, b2Vec2 scale)
 {
     m_images->Texture(textureID, pos, scale);
+    m_images->Flush();
 }
 
 //
 void DebugDraw::Flush()
 {
-        m_images->Flush();
+        //m_images->Flush();
 	m_triangles->Flush();
 	m_lines->Flush();
 	m_points->Flush();

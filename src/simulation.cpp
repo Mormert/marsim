@@ -26,6 +26,7 @@
 #include "robot.h"
 #include "stone.h"
 #include <iostream>
+#include <random>
 #include <vector>
 
 Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
@@ -40,11 +41,22 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
     robot->attachWheels(wheels);
     SimulateObject(robot);
 
-    auto *stone = new Stone{m_world, {15, 15.f}, 1.f};
-    SimulateObject(stone);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrX(-389, 389);
+    std::uniform_int_distribution<> distrY(-220, 220);
+    std::uniform_int_distribution<> distrR(1, 3);
+    for (int i = 0; i < 2000; i++) {
+        auto *stone = new Stone{m_world, {(float)distrX(gen), (float)distrY(gen)}, (float)distrR(gen)};
+        SimulateObject(stone);
+    }
 
-    auto proximity_sensor = new ProximitySensor{m_world, {40.f, 40.f}, 3.f};
-    SimulateObject(proximity_sensor);
+    std::uniform_int_distribution<> distSensorRadius(12, 24);
+    for(int i = 0; i < 20; i++)
+    {
+        auto proximity_sensor = new ProximitySensor{m_world, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen)};
+        SimulateObject(proximity_sensor);
+    }
 }
 
 Simulation *
@@ -113,12 +125,12 @@ Simulation::ApplySlopeForce()
 void
 Simulation::Step(Settings &settings)
 {
+    g_debugDraw.DrawImageTexture(
+        terrain.getTextureID(), {0.f, 0.f}, {(float)terrain.getTextureWidth(), (float)terrain.getTextureHeight()});
+
     UpdateObjects();
 
     ApplySlopeForce();
-
-    g_debugDraw.DrawImageTexture(
-        terrain.getTextureID(), {0.f, 0.f}, {(float)terrain.getTextureWidth(), (float)terrain.getTextureHeight()});
 
     Application::Step(settings);
 }

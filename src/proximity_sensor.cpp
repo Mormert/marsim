@@ -21,13 +21,26 @@
 // SOFTWARE.
 
 #include "proximity_sensor.h"
-ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius)
+#include <iostream>
+
+#include "json.hpp"
+#include "mqtt.h"
+
+ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius, bool isDynamic)
 {
     terrain_movable = false;
 
+    this->radius = radius;
+
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);
-    def.type = b2_staticBody;
+    if(isDynamic)
+    {
+        def.type = b2_kinematicBody;
+    }else
+    {
+        def.type = b2_staticBody;
+    }
     def.position = pos;
     def.bullet = false;
     this->body = world->CreateBody(&def);
@@ -47,6 +60,31 @@ ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius)
 void
 ProximitySensor::update()
 {
+    if (updateCounter % 60 == 0) {
+
+        nlohmann::json j;
+
+        auto pos = getPosition();
+        j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
+        j["radius"] = radius;
+
+        nlohmann::json objects;
+        for (auto &&object : objects_inside) {
+            nlohmann::json objectJson;
+
+            auto pos = object->getPosition();
+            objectJson["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", object->body->GetAngle()}};
+            objectJson["name"] = object->name;
+
+            objects.push_back(objectJson);
+        }
+
+        j["sensed_objs"] = objects;
+
+        Mqtt::getInstance().send("simulator", name, j.dump());
+    }
+
+    updateCounter++;
 }
 
 void

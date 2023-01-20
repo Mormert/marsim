@@ -51,7 +51,6 @@ public:
 
 private:
     b2Vec2 position;
-    b2Body *body;
     Robot *robot;
 };
 

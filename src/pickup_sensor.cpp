@@ -26,8 +26,9 @@
 
 PickupSensor::PickupSensor(b2World *world, Robot *robot, b2Vec2 pos, float radius)
 {
-    updateable = false;
     terrain_movable = false;
+
+    this->radius = radius;
 
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);
