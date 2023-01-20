@@ -4,9 +4,9 @@ project(marsim)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_subdirectory(box2d)
+add_subdirectory(3rdparty/box2d)
 
-add_subdirectory(mosquitto)
+add_subdirectory(3rdparty/mosquitto)
 
 option(BOX2D_BUILD_UNIT_TESTS OFF)
 option(BOX2D_BUILD_TESTBED OFF)
@@ -34,7 +34,7 @@ set (MARSIM_SOURCE_FILES
 		src/mqtt.cpp)
 
 add_executable(marsim ${MARSIM_SOURCE_FILES})
-target_include_directories(marsim PRIVATE src math 3rdparty mosquitto/include)
+target_include_directories(marsim PRIVATE src 3rdparty 3rdparty/mosquitto/include)
 target_link_libraries(marsim PUBLIC box2d glfw imgui sajson glad libmosquitto_static)
 
 FILE(COPY src/data DESTINATION ${PROJECT_BINARY_DIR})
