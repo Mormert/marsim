@@ -25,6 +25,8 @@
 Stone::Stone(b2World *world, b2Vec2 pos, float radius) {
     updateable = false;
 
+    this->world = world;
+
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);
     def.type = b2_dynamicBody;

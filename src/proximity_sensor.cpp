@@ -30,6 +30,8 @@ ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius, bool 
 {
     terrain_movable = false;
 
+    this->world = world;
+
     this->radius = radius;
 
     b2BodyDef def;
@@ -100,4 +102,10 @@ ProximitySensor::ObjectLeave(Object *other)
     if (it != objects_inside.end()) {
         objects_inside.erase(it);
     }
+}
+
+std::vector<Object *>
+ProximitySensor::getObjectsInside()
+{
+    return objects_inside;
 }

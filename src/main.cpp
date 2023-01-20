@@ -30,6 +30,7 @@
 #include "framework/settings.h"
 #include "simulation.h"
 #include "mqtt.h"
+#include "robot.h"
 
 #include <algorithm>
 #include <stdio.h>
@@ -436,6 +437,70 @@ static void UpdateUI()
                                         Mqtt::getInstance().connectMqtt(address, mqttConnectPort);
                                     }
                                 }
+                                ImGui::EndTabItem();
+                        }
+                        if (ImGui::BeginTabItem("Robot"))
+                        {
+
+                                auto sim = dynamic_cast<Simulation*>(s_application);
+                                auto robot = sim->GetRobot();
+                                ImVec2 button_sz = ImVec2(-1, 0);
+
+
+                                ImGui::Text("Close objects");
+
+                                for(auto&& item : robot->getClosebyObjects())
+                                {
+                                    ImGui::Separator();
+
+                                    auto pos = item->getPosition();
+                                    std::string objectText = item->name + "[" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + "]";
+
+                                    ImGui::BulletText("%s", objectText.c_str());
+
+                                    ImGui::Separator();
+                                }
+
+                                ImGui::Text("Items in storage:");
+
+                                int i = 0;
+                                for(auto&& item : robot->getStorage())
+                                {
+
+                                    ImGui::PushID(++i);
+
+                                    ImGui::Separator();
+
+                                    auto windowWidth = ImGui::GetWindowSize().x;
+                                    auto textWidth   = ImGui::CalcTextSize(item.c_str()).x;
+
+                                    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+                                    ImGui::Text("%s", item.c_str());
+                                    if(ImGui::Button("Drop", button_sz))
+                                    {
+                                        robot->drop(item);
+                                    }
+
+                                    ImGui::Separator();
+
+                                    ImGui::PopID();
+                                }
+
+                                ImGui::Text("Items for pickup:");
+
+                                for(auto&& item : robot->getItemsForPickup())
+                                {
+                                    ImGui::BulletText("%s", item->name.c_str());
+                                }
+
+
+                                ImGui::Separator();
+
+                                if(ImGui::Button("Pickup", button_sz))
+                                {
+                                    robot->pickup();
+                                }
+
                                 ImGui::EndTabItem();
                         }
 			if (ImGui::BeginTabItem("Physics"))

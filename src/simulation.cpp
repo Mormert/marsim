@@ -39,6 +39,7 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
     auto wheels = std::vector<Wheel *>{new Wheel{m_world, robot, -1.5f, 0.0f, 0.5f, 0.5f},
                                        new Wheel{m_world, robot, 1.5f, 0.0f, 0.5f, 0.5f}};
 
+    robot->simulation = this;
     robot->attachWheels(wheels);
     SimulateObject(robot);
 
@@ -178,6 +179,8 @@ Simulation::DestroyObject(Object *object)
         objects.erase(it);
     }
 
+    m_world->DestroyBody(object->body);
+
     delete object;
 }
 
@@ -220,4 +223,9 @@ Simulation::EndContact(b2Contact *contact)
         std::cout << "LEAVE SENSOR B " << a->name << std::endl;
         sensor->ObjectLeave(a);
     }
+}
+Robot *
+Simulation::GetRobot()
+{
+    return robot;
 }

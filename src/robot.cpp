@@ -23,6 +23,8 @@
 #include "robot.h"
 #include "mqtt.h"
 #include "pickup_sensor.h"
+#include "simulation.h"
+#include "stone.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <iostream>
@@ -35,6 +37,8 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
 
     this->maxSpeed = maxSpeed;
     this->power = power;
+
+    this->world = world;
 
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);
@@ -116,7 +120,7 @@ Robot::update()
         auto pos = getPosition();
         j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
         j["battery"] = 100;                                   // Placeholder
-        j["storage"] = {"small_stone", "banana", "big_rock"}; // Placeholders
+        j["storage"] = storage;
 
         Mqtt::getInstance().send("simulator", "robot", j.dump());
     }
@@ -132,4 +136,52 @@ Robot::~Robot()
 
     delete pickup_sensor;
     delete proximity_sensor;
+}
+
+void
+Robot::pickup()
+{
+    auto items = getItemsForPickup();
+    if (items.empty()) {
+        return;
+    }
+
+    auto item = items[0];
+
+    storage.push_back(item->name);
+
+    simulation->DestroyObject(item);
+}
+
+void
+Robot::drop(const std::string &item)
+{
+    auto it = std::find(storage.begin(), storage.end(), item);
+
+    if(it != storage.end())
+    {
+        auto pos = pickup_sensor->getPosition();
+        auto *stone = new Stone{world, {pos.x, pos.y}, 1.f};
+        simulation->SimulateObject(stone);
+
+        storage.erase(it);
+    }
+}
+
+std::vector<std::string>
+Robot::getStorage()
+{
+    return storage;
+}
+
+std::vector<Object *>
+Robot::getItemsForPickup()
+{
+    return pickup_sensor->getObjectsInside();
+}
+
+std::vector<Object *>
+Robot::getClosebyObjects()
+{
+    return proximity_sensor->getObjectsInside();
 }

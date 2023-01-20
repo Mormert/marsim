@@ -38,6 +38,8 @@ public:
 
     void update() override;
 
+    std::vector<Object*> getObjectsInside();
+
 protected:
     ProximitySensor() = default;
 

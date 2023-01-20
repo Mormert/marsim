@@ -31,6 +31,7 @@
 
 class PickupSensor;
 class ProximitySensor;
+class Simulation;
 
 class Robot : public Object
 {
@@ -50,11 +51,27 @@ public:
 
     void update() override;
 
-    PickupSensor* pickup_sensor{};
-    ProximitySensor* proximity_sensor{};
+    void pickup();
+
+    void drop(const std::string& item);
+
+    std::vector<std::string> getStorage();
+
+    std::vector<Object*> getItemsForPickup();
+
+    std::vector<Object*> getClosebyObjects();
 
 private:
     unsigned int updateCounter{0};
+
+    PickupSensor* pickup_sensor{};
+    ProximitySensor* proximity_sensor{};
+
+    Simulation* simulation;
+
+    std::vector<std::string> storage;
+
+    friend class Simulation;
 
 };
 

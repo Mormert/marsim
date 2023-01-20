@@ -56,6 +56,8 @@ public:
 
     void EndContact(b2Contact *contact) override;
 
+    Robot* GetRobot();
+
 private:
     Robot* robot;
     Terrain terrain;

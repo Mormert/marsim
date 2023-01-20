@@ -54,6 +54,9 @@ public:
     bool terrain_movable = true;
 
     std::string name{"Unknown Object"};
+
+protected:
+    b2World* world;
 };
 
 #endif // MARSIM_OBJECT_H

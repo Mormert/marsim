@@ -28,6 +28,8 @@ PickupSensor::PickupSensor(b2World *world, Robot *robot, b2Vec2 pos, float radiu
 {
     terrain_movable = false;
 
+    this->world = world;
+
     this->radius = radius;
 
     b2BodyDef def;

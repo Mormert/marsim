@@ -30,6 +30,8 @@ Wheel::Wheel(b2World *world, Robot *robot, float x, float y, float width, float 
     position = {x, y};
     this->robot = robot;
 
+    this->world = world;
+
     { // Wheel body
         b2BodyDef def;
         def.type = b2_dynamicBody;
