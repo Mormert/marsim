@@ -54,4 +54,5 @@ jobs:
           build/**/marsim
           build/**/marsim.exe
           build/**/data
+          !build/**/3rdparty
           
