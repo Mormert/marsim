@@ -26,6 +26,7 @@
 #include "robot.h"
 #include "stone.h"
 #include <iostream>
+#include <algorithm>
 #include <random>
 #include <vector>
 

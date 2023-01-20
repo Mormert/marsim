@@ -23,7 +23,10 @@
 #ifndef MARSIM_MQTT_H
 #define MARSIM_MQTT_H
 
+#include "devel/mosquitto.h"
 #include <string>
+#include <iostream>
+#include <cstdlib>
 
 class Mqtt
 {
@@ -58,6 +61,8 @@ private:
     void cleanup();
 
     bool is_connected = false;
+
+    mosquitto *mqtt;
 };
 
 #endif // MARSIM_MQTT_H
