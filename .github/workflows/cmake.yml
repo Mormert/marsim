@@ -38,7 +38,7 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: ${{matrix.build_type}}
+        name: Windows
         path: |
           build/**/*.exe
           build/**/data
