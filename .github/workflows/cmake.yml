@@ -39,14 +39,13 @@ jobs:
     - if: runner.os == 'Linux' || runner.os == 'Windows'
       run: |
         cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-        
-    - if: runner.os == 'Windows'
-      run: |
-        move ${{github.workspace}}\build\Release\marsim.exe ${{github.workspace}}\build
-        rmdir ${{github.workspace}}\build\Release
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - if: runner.os == 'Windows'
+      run: |
+        move ${{github.workspace}}\build\Release\marsim.exe ${{github.workspace}}\build
 
     - uses: actions/upload-artifact@v2
       with:
