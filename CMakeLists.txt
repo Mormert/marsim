@@ -1,10 +1,18 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.21)
 
 project(marsim)
 
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(3rdparty/box2d)
+
+if(APPLE)
+	if(NOT DEFINED OPENSSL_ROOT_DIR)
+		set(OPENSSL_ROOT_DIR /opt/homebrew/Cellar/openssl@1.1/1.1.1s)
+		# If this does not work, then set the path by providing:
+		# -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@1.1)
+	endif()
+endif()
 
 add_subdirectory(3rdparty/mosquitto)
 
