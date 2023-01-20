@@ -41,7 +41,7 @@ jobs:
       with:
         name: ${{matrix.platform}}
         path: |
-          build/**/*.exe
           build/**/data
+          build/**/Release
           !build/**/CMakeFiles
           !build/3rdparty
