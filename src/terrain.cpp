@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Terrain.h"
+#include "terrain.h"
 #include "glad/gl.h"
 
 #include <stb_image.h>
