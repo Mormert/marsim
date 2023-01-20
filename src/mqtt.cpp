@@ -67,7 +67,7 @@ Mqtt::connectMqtt(const std::string &address, int port)
 {
     // TODO: Connect to MQTT Broker
     // Set isConnected bool to true IF we connected successfully
-    if(mosquitto_connect(mqtt, "1ff81cc2442744f2bc08512cc6aa87d4.s1.eu.hivemq.cloud", port, 60)){
+    if(mosquitto_connect(mqtt, address.c_str(), port, 60)){
         is_connected = false;
         std::cout << "could not connect!" << std::endl;
     }else{
@@ -131,6 +131,7 @@ void
 Mqtt::sendMqtt(const std::string &topic, const std::string &data)
 {
     // TODO: Send message with MQTT.
+
     mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 1, false);}
 
 void
