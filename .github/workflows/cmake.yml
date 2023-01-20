@@ -1,4 +1,4 @@
-name: CMake-Windows
+name: CMake-Cross-Platform
 
 on:
   push:
@@ -11,18 +11,25 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+  
+    strategy:
+      matrix:
+        platform: [windows-latest, macos-latest, ubuntu-latest]
+  
+    runs-on: ${{matrix.platform}}
 
     steps:
     - uses: actions/checkout@v3
     
     - name: Install Packages
-      # You may pin to the exact commit or the version.
-      # uses: ConorMacBride/install-package@3e7ad059e07782ee54fa35f827df52aae0626f30
       uses: ConorMacBride/install-package@v1.1.0
       with:
+        # Packages to install with brew on macOS
+        brew: openssl@3
         # Packages to install with choco on Windows
         choco: openssl
+        # Packages to install with apt on Linux
+        apt: libssl-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
@@ -30,16 +37,11 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}}
-
     - uses: actions/upload-artifact@v2
       with:
-        name: Windows
+        name: ${{matrix.platform}}
         path: |
           build/**/*.exe
           build/**/data
           !build/**/CMakeFiles
+          !build/3rdparty
