@@ -27,15 +27,19 @@
 
 #include <zlc/zlibcomplete.hpp>
 
-void on_PNGmessage(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message){
+void on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message){
     printf("Image File Received. \n");
     if(message->payloadlen){
-        //if(message->topic == "map/lunar/sr_to_sim")
-        //{
-        std::ofstream image_file("data/lunar_received.png", std::ios::binary);
-        image_file.write(reinterpret_cast<const char*>(message->payload), message->payloadlen);
-        image_file.close();
-        std::cout << "Image received and saved as lunar_image.png" << std::endl;
+        if(strcmp(message->topic, "map/lunar/sr_to_sim") == 0) {
+            std::ofstream image_file("data/lunar_received.png", std::ios::binary);
+            image_file.write(reinterpret_cast<const char*>(message->payload), message->payloadlen);
+            image_file.close();
+            std::cout << "Image received and saved as lunar_image.png" << std::endl;
+        }else{
+            //the message is not the image on the image channel, therefore...
+            printf("%s %s\n", message->topic, message->payload);
+        }
+
         //}
         //printf("%s %s\n", message->topic, message->payload);
     }else{
@@ -46,7 +50,7 @@ void on_PNGmessage(struct mosquitto *mosq, void *userdata, const struct mosquitt
 
 // called on received message
 void
-on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
+on_message_(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
 {
     printf("MESSAGE RECEIVED!!!!!!!!!!!!!!!!!! \n");
     if (message->payloadlen) {
