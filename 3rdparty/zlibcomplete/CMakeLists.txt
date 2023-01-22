@@ -93,7 +93,7 @@ endif()
 
 # Examples
 
-option(ZLIBCOMPLETE_EXAMPLES "Build examples" ON)
+option(ZLIBCOMPLETE_EXAMPLES "Build examples" OFF)
 
 if(ZLIBCOMPLETE_EXAMPLES)
     file(GLOB EXAMPLES
