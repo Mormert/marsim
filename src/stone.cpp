@@ -22,10 +22,9 @@
 
 #include "stone.h"
 
-Stone::Stone(b2World *world, b2Vec2 pos, float radius) {
+Stone::Stone(Simulation* simulation, b2Vec2 pos, float radius) : Object(simulation) {
     updateable = false;
 
-    this->world = world;
 
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);

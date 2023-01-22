@@ -21,12 +21,13 @@
 // SOFTWARE.
 
 #include "simulation.h"
+#include "alien.h"
 #include "framework/application.h"
 #include "proximity_sensor.h"
 #include "robot.h"
 #include "stone.h"
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -35,9 +36,9 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
-    robot = new Robot{m_world, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480.f, 150.f};
-    auto wheels = std::vector<Wheel *>{new Wheel{m_world, robot, -1.5f, 0.0f, 0.5f, 0.5f},
-                                       new Wheel{m_world, robot, 1.5f, 0.0f, 0.5f, 0.5f}};
+    robot = new Robot{this, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480.f, 150.f};
+    auto wheels = std::vector<Wheel *>{new Wheel{this, robot, -1.5f, 0.0f, 0.5f, 0.5f},
+                                       new Wheel{this, robot, 1.5f, 0.0f, 0.5f, 0.5f}};
 
     robot->simulation = this;
     robot->attachWheels(wheels);
@@ -49,14 +50,19 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
     std::uniform_int_distribution<> distrY(-220, 220);
     std::uniform_int_distribution<> distrR(1, 3);
     for (int i = 0; i < 2000; i++) {
-        auto *stone = new Stone{m_world, {(float)distrX(gen), (float)distrY(gen)}, (float)distrR(gen)};
+        auto *stone = new Stone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distrR(gen)};
         SimulateObject(stone);
     }
 
+    for (int i = 0; i < 20; i++) {
+        auto alien = new Alien{this, &terrain, {(float)distrX(gen), (float)distrY(gen)}, (float)distrY(gen)};
+        SimulateObject(alien);
+    }
+
     std::uniform_int_distribution<> distSensorRadius(12, 24);
-    for(int i = 0; i < 20; i++)
-    {
-        auto proximity_sensor = new ProximitySensor{m_world, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen)};
+    for (int i = 0; i < 20; i++) {
+        auto proximity_sensor =
+            new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen)};
         SimulateObject(proximity_sensor);
     }
 }
@@ -179,6 +185,17 @@ Simulation::DestroyObject(Object *object)
         objects.erase(it);
     }
 
+    for(auto&& attachedObject : object->getAttachedObjects())
+    {
+        auto it2 = std::find(objects.begin(), objects.end(), attachedObject);
+        if (it2 != objects.end()) {
+            objects.erase(it2);
+        }
+
+        m_world->DestroyBody(attachedObject->body);
+        delete attachedObject;
+    }
+
     m_world->DestroyBody(object->body);
 
     delete object;
@@ -228,4 +245,10 @@ Robot *
 Simulation::GetRobot()
 {
     return robot;
+}
+
+b2World *
+Simulation::GetWorld()
+{
+    return m_world;
 }

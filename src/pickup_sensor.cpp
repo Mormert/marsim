@@ -24,11 +24,10 @@
 
 #include "robot.h"
 
-PickupSensor::PickupSensor(b2World *world, Robot *robot, b2Vec2 pos, float radius)
+PickupSensor::PickupSensor(Simulation* simulation, Robot *robot, b2Vec2 pos, float radius) : ProximitySensor(simulation)
 {
     terrain_movable = false;
 
-    this->world = world;
 
     this->radius = radius;
 

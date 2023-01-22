@@ -20,17 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_PICKUP_SENSOR_H
-#define MARSIM_PICKUP_SENSOR_H
+#ifndef MARSIM_ALIEN_H
+#define MARSIM_ALIEN_H
 
-#include "proximity_sensor.h"
+#include "object.h"
+#include "terrain.h"
+#include <box2d/box2d.h>
 
-class Robot;
+class ProximitySensor;
 
-class PickupSensor : public ProximitySensor
+class Alien : public Object
 {
+    enum class AlienState { IDLE, CHASE };
+
 public:
-    PickupSensor(Simulation *simulation, Robot *robot, b2Vec2 pos, float radius);
+    Alien(Simulation *simulation, Terrain *terrain, b2Vec2 pos, float rotation);
+
+    std::vector<Object *> getAttachedObjects() override;
+
+    void update() override;
+
+private:
+    Terrain *terrain;
+
+    ProximitySensor *sights_sensor;
+    float sight_distance{15.f};
+    AlienState state{AlienState::IDLE};
 };
 
-#endif // MARSIM_PICKUP_SENSOR_H
+#endif // MARSIM_ALIEN_H

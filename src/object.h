@@ -26,12 +26,15 @@
 #include "box2d/box2d.h"
 
 #include <string>
+#include <vector>
+
+class Simulation;
 
 class Object
 {
 
 public:
-    Object() = default;
+    Object(Simulation *simulation);
     virtual ~Object() = default;
 
     virtual b2Vec2 getLocalVelocity();
@@ -46,9 +49,11 @@ public:
 
     void setPosition(b2Vec2 pos, float angle);
 
+    virtual std::vector<Object *> getAttachedObjects();
+
     virtual void update() = 0;
 
-    b2Body* body{};
+    b2Body *body{};
 
     bool updateable = true;
     bool terrain_movable = true;
@@ -56,7 +61,8 @@ public:
     std::string name{"Unknown Object"};
 
 protected:
-    b2World* world;
+    b2World *world;
+    Simulation *simulation;
 };
 
 #endif // MARSIM_OBJECT_H

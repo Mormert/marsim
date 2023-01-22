@@ -30,22 +30,24 @@ class ProximitySensor : public Object
 {
 public:
     
-    ProximitySensor(b2World *world, b2Vec2 pos, float radius, bool isDynamic = false);
+    ProximitySensor(Simulation* simulation, b2Vec2 pos, float radius, bool isDynamic = false, bool updatedBySim = true);
 
     void ObjectEnter(Object* other);
 
     void ObjectLeave(Object* other);
+
+    void setRadius(float r);
 
     void update() override;
 
     std::vector<Object*> getObjectsInside();
 
 protected:
-    ProximitySensor() = default;
+    explicit ProximitySensor(Simulation* simulation);
 
     std::vector<Object*> objects_inside;
 
-    float radius;
+    float radius{15.f};
 
     unsigned int updateCounter{0};
 };

@@ -31,7 +31,7 @@ class Wheel : public Object
 {
 
 public:
-    Wheel(b2World *world, Robot *robot, float x, float y, float width, float height);
+    Wheel(Simulation* simulation, Robot *robot, float x, float y, float width, float height);
 
     // Get local wheel velocity
     b2Vec2 getLocalVelocity() override;

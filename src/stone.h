@@ -28,7 +28,7 @@
 class Stone : public Object
 {
 public:
-    Stone(b2World *world, b2Vec2 pos, float radius);
+    Stone(Simulation* simulation, b2Vec2 pos, float radius);
 
     void update() override;
 

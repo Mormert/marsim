@@ -44,7 +44,7 @@ public:
     float maxSpeed;
     float power;
 
-    Robot(b2World *world, float width, float length, b2Vec2 position, float angle, float power, float max_speed);
+    Robot(Simulation* simulation, float width, float length, b2Vec2 position, float angle, float power, float max_speed);
 
     ~Robot() override;
 

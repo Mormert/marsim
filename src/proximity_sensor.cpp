@@ -26,11 +26,11 @@
 #include "json.hpp"
 #include "mqtt.h"
 
-ProximitySensor::ProximitySensor(b2World *world, b2Vec2 pos, float radius, bool isDynamic)
+ProximitySensor::ProximitySensor(Simulation* simulation, b2Vec2 pos, float radius, bool isDynamic, bool updatedBySim) : Object(simulation)
 {
     terrain_movable = false;
 
-    this->world = world;
+    updateable = updatedBySim;
 
     this->radius = radius;
 
@@ -104,8 +104,25 @@ ProximitySensor::ObjectLeave(Object *other)
     }
 }
 
+void
+ProximitySensor::setRadius(float r)
+{
+    this->radius = r;
+    body->DestroyFixture(body->GetFixtureList());
+
+    b2CircleShape shape;
+    shape.m_radius = r;
+
+    b2FixtureDef fd;
+    fd.shape = &shape;
+    fd.isSensor = true;
+    fd.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    body->CreateFixture(&fd);
+}
+
 std::vector<Object *>
 ProximitySensor::getObjectsInside()
 {
     return objects_inside;
 }
+ProximitySensor::ProximitySensor(Simulation *simulation) : Object(simulation) {}

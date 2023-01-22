@@ -50,6 +50,8 @@ public:
 
     void DestroyObject(Object *object);
 
+    b2World* GetWorld();
+
     static Simulation *Create();
 
     void BeginContact(b2Contact *contact) override;

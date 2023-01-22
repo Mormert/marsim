@@ -25,12 +25,10 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-Wheel::Wheel(b2World *world, Robot *robot, float x, float y, float width, float height)
+Wheel::Wheel(Simulation* simulation, Robot *robot, float x, float y, float width, float height) : Object(simulation)
 {
     position = {x, y};
     this->robot = robot;
-
-    this->world = world;
 
     { // Wheel body
         b2BodyDef def;

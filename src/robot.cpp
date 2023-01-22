@@ -31,7 +31,7 @@
 #include <iostream>
 #include <json.hpp>
 
-Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float angle, float power, float maxSpeed)
+Robot::Robot(Simulation* simulation, float width, float length, b2Vec2 position, float angle, float power, float maxSpeed) : Object(simulation)
 {
     this->leftAccelerate = 0.f;
     this->rightAccelerate = 0.f;
@@ -63,9 +63,9 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     fixdef.shape = &shape;
     body->CreateFixture(&fixdef);
 
-    pickup_sensor = new PickupSensor{world, this, {0.f, 5.f}, 0.5};
+    pickup_sensor = new PickupSensor{simulation, this, {0.f, 5.f}, 0.5};
 
-    proximity_sensor = new ProximitySensor{world, position, 30.f, true};
+    proximity_sensor = new ProximitySensor{simulation, position, 30.f, true};
 
     laser = new Laser{world, 45.f};
     laser->setPosition(position);
@@ -175,7 +175,7 @@ Robot::drop(const std::string &item)
 
     if (it != storage.end()) {
         auto pos = pickup_sensor->getPosition();
-        auto *stone = new Stone{world, {pos.x, pos.y}, 1.f};
+        auto *stone = new Stone{simulation, {pos.x, pos.y}, 1.f};
         simulation->SimulateObject(stone);
 
         storage.erase(it);

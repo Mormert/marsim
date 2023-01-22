@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 #include "object.h"
+#include "simulation.h"
+
 b2Vec2
 Object::getLocalVelocity()
 {
@@ -56,4 +58,16 @@ void
 Object::setPosition(b2Vec2 pos, float angle)
 {
     body->SetTransform(pos, angle);
+}
+
+Object::Object(Simulation *simulation)
+{
+    this->simulation = simulation;
+    this->world = simulation->GetWorld();
+}
+
+std::vector<Object *>
+Object::getAttachedObjects()
+{
+    return {};
 }
