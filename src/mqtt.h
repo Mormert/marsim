@@ -25,8 +25,10 @@
 
 #include <mosquitto.h>
 #include <string>
+#include <fstream>
 #include <iostream>
 #include <cstdlib>
+
 
 class Mqtt
 {

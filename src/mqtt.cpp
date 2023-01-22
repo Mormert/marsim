@@ -26,7 +26,26 @@
 
 #include <json.hpp>
 
-//called on received message
+
+void on_PNGmessage(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message){
+    printf("Image File Received. \n");
+    if(message->payloadlen){
+        //if(message->topic == "map/lunar/sr_to_sim")
+        //{
+        std::ofstream image_file("data/received_img.png", std::ios::binary);
+        image_file.write(reinterpret_cast<const char*>(message->payload), message->payloadlen);
+        image_file.close();
+        std::cout << "Image received and saved as received_img.png" << std::endl;
+        //}
+        //printf("%s %s\n", message->topic, message->payload);
+    }else{
+        printf("%s (null)\n", message->topic);
+    }
+    fflush(stdout);
+}
+
+
+//called on received message for commands
 void on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
 {
     printf("MESSAGE RECEIVED!!!!!!!!!!!!!!!!!! \n");
@@ -131,8 +150,9 @@ void
 Mqtt::sendMqtt(const std::string &topic, const std::string &data)
 {
     // TODO: Send message with MQTT.
-
-    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 1, false);}
+    //mosquitto_subscribe(mqtt, NULL, "map/lunar/sr_to_sim", 1);
+    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 1, false);//}
+}
 
 void
 Mqtt::init()
