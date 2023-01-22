@@ -501,6 +501,14 @@ static void UpdateUI()
                                     robot->pickup();
                                 }
 
+                                ImGui::Separator();
+
+                                ImGui::SliderFloat("Laser Angle", robot->LaserAngleDegreesPtr(), 0.f, 360.f);
+                                if(ImGui::Button("Shoot Laser", button_sz))
+                                {
+                                    robot->shootLaser();
+                                }
+
                                 ImGui::EndTabItem();
                         }
 			if (ImGui::BeginTabItem("Physics"))

@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "robot.h"
+#include "laser.h"
 #include "mqtt.h"
 #include "pickup_sensor.h"
 #include "simulation.h"
@@ -65,6 +66,9 @@ Robot::Robot(b2World *world, float width, float length, b2Vec2 position, float a
     pickup_sensor = new PickupSensor{world, this, {0.f, 5.f}, 0.5};
 
     proximity_sensor = new ProximitySensor{world, position, 30.f, true};
+
+    laser = new Laser{world, 45.f};
+    laser->setPosition(position);
 
     name = "Robot";
 }
@@ -114,12 +118,22 @@ Robot::update()
     proximity_sensor->body->SetAwake(true); // Since we manually move the sensor, we need to wake it up all the time.
     proximity_sensor->update();
 
+    laser->setPosition(getPosition());
+    laser->setAngle(glm::degrees(body->GetAngle()) + laserAngleDegrees);
+    auto laserHit = laser->castRay();
+    if (laserHit && shootNextUpdate) {
+        simulation->DestroyObject(laserHit);
+    }
+    if (shootNextUpdate) {
+        shootNextUpdate = false;
+    }
+
     if (updateCounter % 3 == 0) {
         nlohmann::json j;
 
         auto pos = getPosition();
         j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
-        j["battery"] = 100;                                   // Placeholder
+        j["battery"] = 100; // Placeholder
         j["storage"] = storage;
 
         Mqtt::getInstance().send("simulator", "robot", j.dump());
@@ -136,6 +150,7 @@ Robot::~Robot()
 
     delete pickup_sensor;
     delete proximity_sensor;
+    delete laser;
 }
 
 void
@@ -158,8 +173,7 @@ Robot::drop(const std::string &item)
 {
     auto it = std::find(storage.begin(), storage.end(), item);
 
-    if(it != storage.end())
-    {
+    if (it != storage.end()) {
         auto pos = pickup_sensor->getPosition();
         auto *stone = new Stone{world, {pos.x, pos.y}, 1.f};
         simulation->SimulateObject(stone);
@@ -184,4 +198,15 @@ std::vector<Object *>
 Robot::getClosebyObjects()
 {
     return proximity_sensor->getObjectsInside();
+}
+
+void
+Robot::shootLaser()
+{
+    shootNextUpdate = true;
+}
+float *
+Robot::LaserAngleDegreesPtr()
+{
+    return &laserAngleDegrees;
 }

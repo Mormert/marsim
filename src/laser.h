@@ -20,68 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_ROBOT_H
-#define MARSIM_ROBOT_H
+#ifndef MARSIM_LASER_H
+#define MARSIM_LASER_H
 
-#include "object.h"
-#include "wheel.h"
+#include "box2d/box2d.h"
 
-#include <glm/glm.hpp>
-#include <vector>
+class Object;
 
-class PickupSensor;
-class ProximitySensor;
-class Simulation;
-class Laser;
-
-class Robot : public Object
+class Laser
 {
 public:
-    std::vector<Wheel*> wheels;
-    float leftAccelerate;
-    float rightAccelerate;
+    explicit Laser(b2World *world, float length);
 
-    float maxSpeed;
-    float power;
+    void setPosition(b2Vec2 pos);
 
-    Robot(b2World *world, float width, float length, b2Vec2 position, float angle, float power, float max_speed);
+    void setAngle(float degrees);
 
-    ~Robot() override;
+    void setLength(float length);
 
-    void attachWheels(std::vector<Wheel*> &wheels);
-
-    void update() override;
-
-    void pickup();
-
-    void drop(const std::string& item);
-
-    void shootLaser();
-
-    float* LaserAngleDegreesPtr();
-
-    std::vector<std::string> getStorage();
-
-    std::vector<Object*> getItemsForPickup();
-
-    std::vector<Object*> getClosebyObjects();
+    Object* castRay();
 
 private:
-    unsigned int updateCounter{0};
-
-    PickupSensor* pickup_sensor{};
-    ProximitySensor* proximity_sensor{};
-
-    Laser* laser{};
-    float laserAngleDegrees{90.f};
-    bool shootNextUpdate{false};
-
-    Simulation* simulation;
-
-    std::vector<std::string> storage;
-
-    friend class Simulation;
-
+    b2Vec2 position;
+    float angle;
+    float length;
+    b2World *world;
 };
 
-#endif // MARSIM_ROBOT_H
+#endif // MARSIM_LASER_H
