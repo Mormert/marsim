@@ -32,10 +32,10 @@ void on_PNGmessage(struct mosquitto *mosq, void *userdata, const struct mosquitt
     if(message->payloadlen){
         //if(message->topic == "map/lunar/sr_to_sim")
         //{
-        std::ofstream image_file("data/received_img.png", std::ios::binary);
+        std::ofstream image_file("data/lunar_received.png", std::ios::binary);
         image_file.write(reinterpret_cast<const char*>(message->payload), message->payloadlen);
         image_file.close();
-        std::cout << "Image received and saved as received_img.png" << std::endl;
+        std::cout << "Image received and saved as lunar_image.png" << std::endl;
         //}
         //printf("%s %s\n", message->topic, message->payload);
     }else{
@@ -168,7 +168,7 @@ Mqtt::init()
     mosquitto_tls_insecure_set(mqtt, true);
     mosquitto_log_callback_set(mqtt, my_log_callback);
     mosquitto_connect_callback_set(mqtt, on_connect);
-    mosquitto_message_callback_set(mqtt, on_message);
+    mosquitto_message_callback_set(mqtt, on_message); //change this to on_PNGmessage when receiving the image from the situation reporting module
 }
 
 void
