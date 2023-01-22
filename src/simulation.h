@@ -58,6 +58,8 @@ public:
 
     void EndContact(b2Contact *contact) override;
 
+    int32 GetStepCount();
+
     Robot* GetRobot();
 
 private:

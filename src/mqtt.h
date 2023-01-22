@@ -25,10 +25,15 @@
 
 #include <mosquitto.h>
 #include <string>
-#include <fstream>
 #include <iostream>
 #include <cstdlib>
+#include <iostream>
+#include <string>
+#include <chrono>
+#include <unordered_map>
 
+#include <mosquitto.h>
+#include <json.hpp>
 
 class Mqtt
 {
@@ -41,9 +46,9 @@ public:
 
     void disconnectMqtt();
 
-    void send(const std::string &topic, const std::string &message_type, const std::string &payload);
+    void send(const std::string &topic, const std::string &message_type, const nlohmann::json &payload);
 
-    void processMqtt();
+    void processMqtt(int32_t step);
 
     static Mqtt &
     getInstance()
@@ -52,17 +57,41 @@ public:
         return instance;
     }
 
-   bool isConnected();
+    bool isConnected();
+
+    bool *useMessagePackBool();
+
+    int* getCompressionInt();
+
+    float getEmissionSpeed();
+
+    unsigned int getSentBytes();
+
+    unsigned int getMessagesSent();
 
 private:
     // Publishes the payload for the given topic
     void sendMqtt(const std::string &topic, const std::string &data);
+
+    void sendQueuedMessages();
+
+    // Topic, Message
+    std::unordered_map<std::string, std::vector<nlohmann::json>> queuedMessages;
 
     void init();
 
     void cleanup();
 
     bool is_connected = false;
+
+
+    unsigned int sentMessages{0};
+    unsigned int sentBytesTotal{0};
+    unsigned int sentBytesSecond{0};
+    unsigned int sentBytesLastSecond{0};
+
+    int compression{0}; // 0 = no, 1 = gzip, 2 = zlib
+    bool use_messagepack{false};
 
     mosquitto *mqtt;
 };

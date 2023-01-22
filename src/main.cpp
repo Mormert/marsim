@@ -437,6 +437,29 @@ static void UpdateUI()
                                         Mqtt::getInstance().connectMqtt(address, mqttConnectPort);
                                     }
                                 }
+
+                                ImGui::Separator();
+
+                                ImGui::TextWrapped("Emit as MessagePack to optimize network communication?\nIn future, this will be the default!");
+                                ImGui::Checkbox("Use MessagePack", Mqtt::getInstance().useMessagePackBool());
+
+                                ImGui::Separator();
+
+                                ImGui::TextWrapped("Emit with compression?");
+
+                                ImGui::RadioButton("None", Mqtt::getInstance().getCompressionInt(), 0); ImGui::SameLine();
+                                ImGui::RadioButton("GZip", Mqtt::getInstance().getCompressionInt(), 1); ImGui::SameLine();
+                                ImGui::RadioButton("ZLib", Mqtt::getInstance().getCompressionInt(), 2); ImGui::SameLine();
+
+                                ImGui::Separator();
+                                ImGui::Separator();
+                                ImGui::Text("Amount of sent kilobytes (total):");
+                                ImGui::Text("%f", (float)Mqtt::getInstance().getSentBytes()/1000.f);
+                                ImGui::Text("Amount of sent messages (total):");
+                                ImGui::Text("%d", Mqtt::getInstance().getMessagesSent());
+                                ImGui::Text("Current emission (kilobytes/sec):");
+                                ImGui::Text("%f", (float)Mqtt::getInstance().getEmissionSpeed()/1000.f);
+
                                 ImGui::EndTabItem();
                         }
                         if (ImGui::BeginTabItem("Robot"))
@@ -690,7 +713,8 @@ int main(int, char**)
 
 		s_application->Step(s_settings);
 
-                Mqtt::getInstance().processMqtt();
+                auto sim = dynamic_cast<Simulation*>(s_application);
+                Mqtt::getInstance().processMqtt(sim->GetStepCount());
 
 		UpdateUI();
 

@@ -212,12 +212,12 @@ Simulation::BeginContact(b2Contact *contact)
     auto *b = reinterpret_cast<Object *>(fixtureB->GetUserData().pointer);
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(a)) {
-        std::cout << "COLLIDE WITH SENSOR A " << b->name << std::endl;
+        //std::cout << "COLLIDE WITH SENSOR A " << b->name << std::endl;
         sensor->ObjectEnter(b);
     }
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(b)) {
-        std::cout << "COLLIDE WITH SENSOR B " << a->name << std::endl;
+        //std::cout << "COLLIDE WITH SENSOR B " << a->name << std::endl;
         sensor->ObjectEnter(a);
     }
 }
@@ -232,12 +232,12 @@ Simulation::EndContact(b2Contact *contact)
     auto *b = reinterpret_cast<Object *>(fixtureB->GetUserData().pointer);
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(a)) {
-        std::cout << "LEAVE SENSOR A " << b->name << std::endl;
+        //std::cout << "LEAVE SENSOR A " << b->name << std::endl;
         sensor->ObjectLeave(b);
     }
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(b)) {
-        std::cout << "LEAVE SENSOR B " << a->name << std::endl;
+        //std::cout << "LEAVE SENSOR B " << a->name << std::endl;
         sensor->ObjectLeave(a);
     }
 }
@@ -251,4 +251,9 @@ b2World *
 Simulation::GetWorld()
 {
     return m_world;
+}
+int32
+Simulation::GetStepCount()
+{
+    return m_stepCount;
 }

@@ -136,7 +136,7 @@ Robot::update()
         j["battery"] = 100; // Placeholder
         j["storage"] = storage;
 
-        Mqtt::getInstance().send("simulator", "robot", j.dump());
+        Mqtt::getInstance().send("simulator", "Robot", j);
     }
 
     updateCounter++;

@@ -62,7 +62,7 @@ ProximitySensor::ProximitySensor(Simulation* simulation, b2Vec2 pos, float radiu
 void
 ProximitySensor::update()
 {
-    if (updateCounter % 60 == 0) {
+    if (updateCounter % 10 == 0) {
 
         nlohmann::json j;
 
@@ -83,7 +83,7 @@ ProximitySensor::update()
 
         j["sensed_objs"] = objects;
 
-        Mqtt::getInstance().send("simulator", name, j.dump());
+        Mqtt::getInstance().send("simulator", name, j);
     }
 
     updateCounter++;
