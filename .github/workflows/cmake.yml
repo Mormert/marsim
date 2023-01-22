@@ -31,19 +31,28 @@ jobs:
         # Packages to install with apt on Linux
         apt: libssl-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
-    - name: Configure CMake
+    - if: runner.os == 'macOS'
       run: |
-        if [ matrix.platform == 'macos-latest]; then
-          brew --prefix openssl@1.1
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@1.1)
-        else
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        brew --prefix openssl@1.1
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DOPENSSL_ROOT_DIR=$(brew --prefix openssl@1.1)
+
+    - if: runner.os == 'Linux' || runner.os == 'Windows'
+      run: |
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - if: runner.os == 'Windows'
+      run: |
+        move ${{github.workspace}}\build\Release\marsim.exe ${{github.workspace}}\build
 
     - uses: actions/upload-artifact@v2
       with:
         name: ${{matrix.platform}}
         path: |
-          build
+          build/**/marsim
+          build/**/marsim.exe
+          build/**/data
+          !build/**/3rdparty
+          
