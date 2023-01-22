@@ -1,0 +1,416 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						9
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.21"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "3rdparty/box2d",
+					"childIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-3rdparty.box2d-Debug-111340eb562a789fcf65.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d"
+				},
+				{
+					"build" : "3rdparty/box2d/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-3rdparty.box2d.src-Debug-6348991b9514b2ad131a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d/src",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "3rdparty/box2d/unit-test",
+					"jsonFile" : "directory-3rdparty.box2d.unit-test-Debug-4f31750955edac67f66a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d/unit-test",
+					"targetIndexes" : 
+					[
+						14
+					]
+				},
+				{
+					"build" : "3rdparty/box2d/extern/glad",
+					"jsonFile" : "directory-3rdparty.box2d.extern.glad-Debug-852d05f678541857bdd9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d/extern/glad",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "3rdparty/box2d/extern/glfw",
+					"jsonFile" : "directory-3rdparty.box2d.extern.glfw-Debug-81e26f395de0c9802eb1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d/extern/glfw",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "3rdparty/box2d/extern/imgui",
+					"jsonFile" : "directory-3rdparty.box2d.extern.imgui-Debug-e274a08057c00b90f922.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d/extern/imgui",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "3rdparty/box2d/extern/sajson",
+					"jsonFile" : "directory-3rdparty.box2d.extern.sajson-Debug-494a62f2dd4a35b880e9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d/extern/sajson",
+					"targetIndexes" : 
+					[
+						12
+					]
+				},
+				{
+					"build" : "3rdparty/box2d/testbed",
+					"jsonFile" : "directory-3rdparty.box2d.testbed-Debug-b665cc41d1187492c946.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "3rdparty/box2d/testbed",
+					"targetIndexes" : 
+					[
+						13
+					]
+				},
+				{
+					"build" : "3rdparty/mosquitto",
+					"childIndexes" : 
+					[
+						10,
+						12
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-3rdparty.mosquitto-Debug-085925c92f53c10be47f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "3rdparty/mosquitto"
+				},
+				{
+					"build" : "3rdparty/mosquitto/lib",
+					"childIndexes" : 
+					[
+						11
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-3rdparty.mosquitto.lib-Debug-eeb8329181a11ede34f5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 2,
+					"source" : "3rdparty/mosquitto/lib",
+					"targetIndexes" : 
+					[
+						4,
+						5
+					]
+				},
+				{
+					"build" : "3rdparty/mosquitto/lib/cpp",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-3rdparty.mosquitto.lib.cpp-Debug-4230b34afa27302c936c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 2,
+					"source" : "3rdparty/mosquitto/lib/cpp",
+					"targetIndexes" : 
+					[
+						10,
+						11
+					]
+				},
+				{
+					"build" : "3rdparty/mosquitto/client",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-3rdparty.mosquitto.client-Debug-e5ee4cd6eeafde80ba2c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 2,
+					"source" : "3rdparty/mosquitto/client",
+					"targetIndexes" : 
+					[
+						7,
+						8,
+						9
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "marsim",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8
+					],
+					"name" : "box2d",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						12,
+						13,
+						14
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9,
+						10,
+						11,
+						12
+					],
+					"name" : "mosquitto",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						5,
+						7,
+						8,
+						9,
+						10,
+						11
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "box2d::@ffe6bf426969b2f2c9ed",
+					"jsonFile" : "target-box2d-Debug-b1872bcb8bdde34fa964.json",
+					"name" : "box2d",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "glad::@b33981749e6354c1576d",
+					"jsonFile" : "target-glad-Debug-f4dd5e39ac2a5a8229c1.json",
+					"name" : "glad",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "glfw::@5e3988038df342ac92a8",
+					"jsonFile" : "target-glfw-Debug-2c05c7be2a907de6502a.json",
+					"name" : "glfw",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "imgui::@0c87c46ccccd0749a78f",
+					"jsonFile" : "target-imgui-Debug-a8a0c34b47173a0555d8.json",
+					"name" : "imgui",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "libmosquitto::@d33d3e22c3b38dc8603f",
+					"jsonFile" : "target-libmosquitto-Debug-521411f9bb5e20a2276b.json",
+					"name" : "libmosquitto",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "libmosquitto_static::@d33d3e22c3b38dc8603f",
+					"jsonFile" : "target-libmosquitto_static-Debug-b97bee4c1bdcdf7b7e97.json",
+					"name" : "libmosquitto_static",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "marsim::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-marsim-Debug-607cfa3c80bb59f964e4.json",
+					"name" : "marsim",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "mosquitto_pub::@170ee8da191f9f94d7f1",
+					"jsonFile" : "target-mosquitto_pub-Debug-4ff7027a9c02054fe4b5.json",
+					"name" : "mosquitto_pub",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "mosquitto_rr::@170ee8da191f9f94d7f1",
+					"jsonFile" : "target-mosquitto_rr-Debug-dda2a6c0307c45633ecc.json",
+					"name" : "mosquitto_rr",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "mosquitto_sub::@170ee8da191f9f94d7f1",
+					"jsonFile" : "target-mosquitto_sub-Debug-3ba3865a4007c8fe045b.json",
+					"name" : "mosquitto_sub",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "mosquittopp::@ecbae1102ed02e4e81a9",
+					"jsonFile" : "target-mosquittopp-Debug-4b89d703e6c8520bb79a.json",
+					"name" : "mosquittopp",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "mosquittopp_static::@ecbae1102ed02e4e81a9",
+					"jsonFile" : "target-mosquittopp_static-Debug-dacab4ea518965b6e647.json",
+					"name" : "mosquittopp_static",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "sajson::@fca51fa3c20c9b05e478",
+					"jsonFile" : "target-sajson-Debug-8ac2a07f567a9de03c96.json",
+					"name" : "sajson",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "testbed::@fc3c78b5e62754510660",
+					"jsonFile" : "target-testbed-Debug-a5eda23d27ec05487f4e.json",
+					"name" : "testbed",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "unit_test::@765cdeeb6d3fe6a87299",
+					"jsonFile" : "target-unit_test-Debug-298e19fc711b5f83af31.json",
+					"name" : "unit_test",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/ermia/OneDrive/Desktop/IPW/marsim/build",
+		"source" : "C:/Users/ermia/OneDrive/Desktop/IPW/marsim"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

@@ -1,0 +1,92 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"3rdparty/mosquitto/lib/cpp/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 41,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 44,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"3rdparty/mosquitto/lib/cpp/libmosquittopp.dll.a"
+			],
+			"targetId" : "mosquittopp::@ecbae1102ed02e4e81a9",
+			"targetIndex" : 10,
+			"targetIsImportLibrary" : true,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "bin",
+			"paths" : 
+			[
+				"3rdparty/mosquitto/lib/cpp/libmosquittopp.dll"
+			],
+			"targetId" : "mosquittopp::@ecbae1102ed02e4e81a9",
+			"targetIndex" : 10,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"3rdparty/mosquitto/lib/cpp/libmosquittopp_static.a"
+			],
+			"targetId" : "mosquittopp_static::@ecbae1102ed02e4e81a9",
+			"targetIndex" : 11,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "include",
+			"paths" : 
+			[
+				"3rdparty/mosquitto/lib/cpp/mosquittopp.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "3rdparty/mosquitto/lib/cpp",
+		"source" : "3rdparty/mosquitto/lib/cpp"
+	}
+}
