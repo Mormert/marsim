@@ -30,6 +30,9 @@ Wheel::Wheel(Simulation* simulation, Robot *robot, float x, float y, float width
     position = {x, y};
     this->robot = robot;
 
+    angularDamping = 0.f;
+    linearDamping = 0.f;
+
     { // Wheel body
         b2BodyDef def;
         def.type = b2_dynamicBody;

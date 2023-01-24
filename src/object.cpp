@@ -71,3 +71,13 @@ Object::getAttachedObjects()
 {
     return {};
 }
+float
+Object::GetAngularDamping()
+{
+    return angularDamping;
+}
+float
+Object::GetLinearDamping()
+{
+    return linearDamping;
+}

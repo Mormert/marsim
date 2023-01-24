@@ -25,7 +25,6 @@
 Stone::Stone(Simulation* simulation, b2Vec2 pos, float radius) : Object(simulation) {
     updateable = false;
 
-
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);
     def.type = b2_dynamicBody;
@@ -35,8 +34,8 @@ Stone::Stone(Simulation* simulation, b2Vec2 pos, float radius) : Object(simulati
     def.bullet = false;
     def.angularDamping = 0.8;
     this->body = world->CreateBody(&def);
-    body->SetLinearDamping(12.5f);
-    body->SetAngularDamping(25.f);
+    body->SetLinearDamping(linearDamping);
+    body->SetAngularDamping(angularDamping);
 
     b2FixtureDef fixdef;
     fixdef.density = 1.0;

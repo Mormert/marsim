@@ -42,8 +42,8 @@ Alien::Alien(Simulation *simulation, Terrain *terrain, b2Vec2 pos, float rotatio
     def.bullet = false;
     def.angularDamping = 0.8;
     this->body = world->CreateBody(&def);
-    body->SetLinearDamping(12.5f);
-    body->SetAngularDamping(25.f);
+    body->SetLinearDamping(linearDamping);
+    body->SetAngularDamping(angularDamping);
 
     b2FixtureDef fixdef;
     fixdef.density = 1.0;

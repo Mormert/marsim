@@ -20,39 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_PROXIMITY_SENSOR_H
-#define MARSIM_PROXIMITY_SENSOR_H
+#ifndef MARSIM_FRICTION_ZONE_H
+#define MARSIM_FRICTION_ZONE_H
 
-#include "object.h"
-#include <vector>
+#include "proximity_sensor.h"
 
-class ProximitySensor : public Object
+
+class Simulation;
+
+class FrictionZone : public ProximitySensor
 {
 public:
-    
-    ProximitySensor(Simulation* simulation, b2Vec2 pos, float radius, bool isDynamic = false, bool updatedBySim = true);
+    FrictionZone(Simulation *simulation, b2Vec2 pos, float radius, float dampingLinear, float dampingAngular);
 
-    void ObjectEnter(Object* other);
+    void OnObjectEnter(Object *o) override;
 
-    void ObjectLeave(Object* other);
-
-    void setRadius(float r);
+    void OnObjectLeave(Object *o) override;
 
     void update() override;
 
-    std::vector<Object*> getObjectsInside();
 
-protected:
-    explicit ProximitySensor(Simulation* simulation);
-
-    virtual void OnObjectEnter(Object * o){};
-    virtual void OnObjectLeave(Object * o){};
-
-    std::vector<Object*> objects_inside;
-
-    float radius{15.f};
-
-    unsigned int updateCounter{0};
+private:
+    float dampingLinear, dampingAngular;
 };
 
-#endif // MARSIM_PROXIMITY_SENSOR_H
+#endif // MARSIM_FRICTION_ZONE_H

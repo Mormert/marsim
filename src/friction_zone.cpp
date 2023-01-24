@@ -20,39 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_PROXIMITY_SENSOR_H
-#define MARSIM_PROXIMITY_SENSOR_H
-
-#include "object.h"
-#include <vector>
-
-class ProximitySensor : public Object
+#include "friction_zone.h"
+#include "framework/draw.h"
+FrictionZone::FrictionZone(Simulation *simulation, b2Vec2 pos, float radius, float dampingLinear, float dampingAngular)
+    : ProximitySensor(simulation, pos, radius, false, true)
 {
-public:
-    
-    ProximitySensor(Simulation* simulation, b2Vec2 pos, float radius, bool isDynamic = false, bool updatedBySim = true);
+    this->dampingAngular = dampingAngular;
+    this->dampingLinear = dampingLinear;
+}
 
-    void ObjectEnter(Object* other);
+void
+FrictionZone::update()
+{
+    g_debugDraw.DrawSolidCircle(getPosition(), radius, {}, b2Color{0.f, 0.0f, 1.f, 1.f});
 
-    void ObjectLeave(Object* other);
+}
 
-    void setRadius(float r);
+void
+FrictionZone::OnObjectEnter(Object *o)
+{
+    if (o->GetLinearDamping() != 0.f) {
+        body->SetLinearDamping(o->GetLinearDamping()*12.3f);
+    }
+    if (o->GetAngularDamping() != 0.f){
+        body->SetAngularDamping(o->GetAngularDamping()*12.3f);
+    }
+}
 
-    void update() override;
-
-    std::vector<Object*> getObjectsInside();
-
-protected:
-    explicit ProximitySensor(Simulation* simulation);
-
-    virtual void OnObjectEnter(Object * o){};
-    virtual void OnObjectLeave(Object * o){};
-
-    std::vector<Object*> objects_inside;
-
-    float radius{15.f};
-
-    unsigned int updateCounter{0};
-};
-
-#endif // MARSIM_PROXIMITY_SENSOR_H
+void
+FrictionZone::OnObjectLeave(Object *o)
+{
+    if (o->GetLinearDamping() != 0.f) {
+        body->SetLinearDamping(o->GetLinearDamping());
+    }
+    if (o->GetAngularDamping() != 0.f){
+        body->SetAngularDamping(o->GetAngularDamping());
+    }
+}

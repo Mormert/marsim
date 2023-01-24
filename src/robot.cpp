@@ -50,8 +50,8 @@ Robot::Robot(Simulation* simulation, float width, float length, b2Vec2 position,
     def.bullet = true;
     def.angularDamping = 0.8;
     this->body = world->CreateBody(&def);
-    body->SetLinearDamping(12.5f);
-    body->SetAngularDamping(25.f);
+    body->SetLinearDamping(linearDamping);
+    body->SetAngularDamping(angularDamping);
 
     b2FixtureDef fixdef;
     fixdef.density = 1.0;

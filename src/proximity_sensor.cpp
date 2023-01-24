@@ -93,6 +93,7 @@ void
 ProximitySensor::ObjectEnter(Object *other)
 {
     objects_inside.push_back(other);
+    OnObjectEnter(other);
 }
 
 void
@@ -102,6 +103,7 @@ ProximitySensor::ObjectLeave(Object *other)
     if (it != objects_inside.end()) {
         objects_inside.erase(it);
     }
+    OnObjectLeave(other);
 }
 
 void

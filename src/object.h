@@ -49,6 +49,10 @@ public:
 
     void setPosition(b2Vec2 pos, float angle);
 
+    float GetAngularDamping();
+
+    float GetLinearDamping();
+
     virtual std::vector<Object *> getAttachedObjects();
 
     virtual void update() = 0;
@@ -61,6 +65,9 @@ public:
     std::string name{"Unknown Object"};
 
 protected:
+
+    float angularDamping{25.f}, linearDamping{12.5f};
+
     b2World *world;
     Simulation *simulation;
 };

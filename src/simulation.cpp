@@ -24,6 +24,7 @@
 #include "alien.h"
 #include "framework/application.h"
 #include "proximity_sensor.h"
+#include "friction_zone.h"
 #include "robot.h"
 #include "stone.h"
 #include <algorithm>
@@ -64,6 +65,12 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
         auto proximity_sensor =
             new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen)};
         SimulateObject(proximity_sensor);
+    }
+
+    for (int i = 0; i < 20; i++) {
+        auto frictionZone =
+            new FrictionZone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen), 22.5f, 40.f};
+        SimulateObject(frictionZone);
     }
 }
 
