@@ -87,18 +87,6 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
     fflush(stdout);
 }
 
-// called on received message
-void
-on_message_(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
-{
-    printf("MESSAGE RECEIVED!!!!!!!!!!!!!!!!!! \n");
-    if (message->payloadlen) {
-        printf("%s %s\n", message->topic, message->payload);
-    } else {
-        printf("%s (null)\n", message->topic);
-    }
-    fflush(stdout);
-}
 // shows if connected correctly
 void
 on_connect(struct mosquitto *mosq, void *userdata, int result)
@@ -306,6 +294,8 @@ Mqtt::receiveMsgMotors(const nlohmann::json &data)
     try {
         float left = data["left"];
         float right = data["right"];
+        left = glm::clamp(left, -1.f, 1.f);
+        right = glm::clamp(right, -1.f, 1.f);
 
         Mqtt::getInstance().simulation->GetRobot()->leftAccelerate = left;
         Mqtt::getInstance().simulation->GetRobot()->rightAccelerate = right;
