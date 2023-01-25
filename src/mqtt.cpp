@@ -209,7 +209,7 @@ Mqtt::sendQueuedMessages()
 
         std::string jsonString;
 
-        std::cout << j.dump(4) << std::endl;
+        //std::cout << j.dump(4) << std::endl;
 
         if (use_messagepack) {
             auto msgPack = nlohmann::json::to_msgpack(j);
@@ -248,7 +248,7 @@ Mqtt::sendMqtt(const std::string &topic, const std::string &data)
     sentBytesSecond += data.length();
     sentMessages++;
 
-    std::cout << "SENT MSG WITH SIZE: " << data.length() << std::endl;
+    //std::cout << "SENT MSG WITH SIZE: " << data.length() << std::endl;
 }
 
 void
@@ -264,8 +264,8 @@ Mqtt::init()
     }
     mosquitto_tls_opts_set(mqtt, 1, "tlsv1.2", NULL);
     mosquitto_tls_insecure_set(mqtt, true);
-    mosquitto_log_callback_set(mqtt, my_log_callback);
-    mosquitto_connect_callback_set(mqtt, on_connect);
+    //mosquitto_log_callback_set(mqtt, my_log_callback);
+    //mosquitto_connect_callback_set(mqtt, on_connect);
     mosquitto_message_callback_set(mqtt, on_message); //change this to on_PNGmessage when receiving the image from the situation reporting module
 }
 
