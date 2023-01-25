@@ -81,6 +81,11 @@ public:
 
     static void receiveMsgRequestImage(const nlohmann::json & data);
 
+    unsigned int receivedMessages{0};
+    unsigned int receivedBytesTotal{0};
+    unsigned int receivedBytesSecond{0};
+    unsigned int receivedBytesLastSecond{0};
+
 private:
     // Publishes the payload for the given topic
     void sendMqtt(const std::string &topic, const std::string &data);
@@ -102,6 +107,8 @@ private:
     unsigned int sentBytesTotal{0};
     unsigned int sentBytesSecond{0};
     unsigned int sentBytesLastSecond{0};
+
+
 
     int compression{0}; // 0 = no, 1 = gzip, 2 = zlib
     bool use_messagepack{false};

@@ -460,6 +460,13 @@ static void UpdateUI()
                                 ImGui::Text("%d", Mqtt::getInstance().getMessagesSent());
                                 ImGui::Text("Current emission (kilobytes/sec):");
                                 ImGui::Text("%f", (float)Mqtt::getInstance().getEmissionSpeed()/1000.f);
+                                ImGui::Separator();
+                                ImGui::Text("Amount of received kilobytes (total):");
+                                ImGui::Text("%f", (float)Mqtt::getInstance().receivedBytesTotal/1000.f);
+                                ImGui::Text("Amount of received messages (total):");
+                                ImGui::Text("%d", Mqtt::getInstance().receivedMessages);
+                                ImGui::Text("Current emission (kilobytes/sec):");
+                                ImGui::Text("%f", (float)Mqtt::getInstance().receivedBytesLastSecond/1000.f);
 
                                 ImGui::EndTabItem();
                         }

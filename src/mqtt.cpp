@@ -22,52 +22,51 @@
 
 #include "mqtt.h"
 
+#include "robot.h"
+#include "simulation.h"
+#include "wheel.h"
 #include <chrono>
 #include <fstream>
 #include <sstream>
-#include "simulation.h"
-#include "robot.h"
-#include "wheel.h"
 
-#include <zlc/zlibcomplete.hpp>
 #include <json.hpp>
+#include <zlc/zlibcomplete.hpp>
 
-void on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message){
-    printf("Image File Received. \n");
-    if(message->payloadlen){
-        if(strcmp(message->topic, "sim/in/image") == 0) {
+void
+on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
+{
+    Mqtt::getInstance().receivedMessages++;
+    Mqtt::getInstance().receivedBytesTotal += message->payloadlen;
+    Mqtt::getInstance().receivedBytesSecond += message->payloadlen;
+    if (message->payloadlen) {
+        if (strcmp(message->topic, "sim/in/image") == 0) {
             std::ofstream image_file("data/lunar_received.png", std::ios::binary);
-            image_file.write(reinterpret_cast<const char*>(message->payload), message->payloadlen);
+            image_file.write(reinterpret_cast<const char *>(message->payload), message->payloadlen);
             image_file.close();
-            //call function for update of image here
+            // call function for update of image here
             std::cout << "Image received and saved as lunar_image.png" << std::endl;
-        }if(strcmp(message->topic, "sim/control") == 0){
-            //TO DO: receive commands through this
+        }
+        if (strcmp(message->topic, "sim/control") == 0) {
+            // TO DO: receive commands through this
 
-            std::string payloadStr((char*)message->payload, message->payloadlen);
+            std::string payloadStr((char *)message->payload, message->payloadlen);
 
             try {
                 nlohmann::json j = nlohmann::json::parse(payloadStr);
                 std::string type = j["type"];
                 nlohmann::json jsonPayload = j["data"];
 
-                if(type == "motors")
-                {
+                if (type == "motors") {
                     Mqtt::receiveMsgMotors(jsonPayload);
-                }else if (type == "pickup")
-                {
+                } else if (type == "pickup") {
                     Mqtt::receiveMsgPickup(jsonPayload);
-                }else if(type == "drop")
-                {
+                } else if (type == "drop") {
                     Mqtt::receiveMsgDrop(jsonPayload);
-                }else if(type == "shoot_laser")
-                {
+                } else if (type == "shoot_laser") {
                     Mqtt::receiveMsgLaserShoot(jsonPayload);
-                }else if(type == "laser_angle")
-                {
+                } else if (type == "laser_angle") {
                     Mqtt::receiveMsgLaserAngle(jsonPayload);
-                }else if(type == "request_satellite_image")
-                {
+                } else if (type == "request_satellite_image") {
                     Mqtt::receiveMsgRequestImage(jsonPayload);
                 }
 
@@ -75,15 +74,14 @@ void on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_m
                 std::cout << "Something went wrong trying to interpret message: " << e.what() << std::endl;
             }
 
-
-        }else{
-            //the message is not the image on the image channel, therefore...
+        } else {
+            // the message is not the image on the image channel, therefore...
             printf("%s %s\n", message->topic, message->payload);
         }
 
         //}
-        //printf("%s %s\n", message->topic, message->payload);
-    }else{
+        // printf("%s %s\n", message->topic, message->payload);
+    } else {
         printf("%s (null)\n", message->topic);
     }
     fflush(stdout);
@@ -112,7 +110,6 @@ on_connect(struct mosquitto *mosq, void *userdata, int result)
 
     } else {
         /* Connect failed. */
-
     }
 }
 // log to debug in case of error during connect/pub/sub
@@ -136,12 +133,10 @@ Mqtt::connectMqtt(const std::string &address, int port)
         std::cout << "could not connect!" << std::endl;
     } else {
         is_connected = true;
-        if(mosquitto_subscribe(mqtt, NULL, "sim/control", 1) != MOSQ_ERR_SUCCESS)
-        {
+        if (mosquitto_subscribe(mqtt, NULL, "sim/control", 1) != MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
-        if(mosquitto_subscribe(mqtt, NULL, "sim/image", 1) != MOSQ_ERR_SUCCESS)
-        {
+        if (mosquitto_subscribe(mqtt, NULL, "sim/image", 1) != MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
     }
@@ -156,8 +151,6 @@ Mqtt::disconnectMqtt()
     } else {
         std::cout << "Failed to disconnect! try again..." << std::endl;
     }
-
-
 }
 
 void
@@ -185,6 +178,8 @@ Mqtt::processMqtt(int32_t step)
     if (step % 60 == 0) {
         sentBytesLastSecond = sentBytesSecond;
         sentBytesSecond = 0;
+        receivedBytesLastSecond = receivedBytesSecond;
+        receivedBytesSecond = 0;
     }
 
     if (step % 3 == 0) {
@@ -266,7 +261,8 @@ Mqtt::init()
     mosquitto_tls_insecure_set(mqtt, true);
     mosquitto_log_callback_set(mqtt, my_log_callback);
     mosquitto_connect_callback_set(mqtt, on_connect);
-    mosquitto_message_callback_set(mqtt, on_message); //change this to on_PNGmessage when receiving the image from the situation reporting module
+    mosquitto_message_callback_set(
+        mqtt, on_message); // change this to on_PNGmessage when receiving the image from the situation reporting module
 }
 
 void
@@ -303,60 +299,62 @@ Mqtt::getMessagesSent()
 }
 
 void
-Mqtt::receiveMsgPickup(const nlohmann::json &data){
+Mqtt::receiveMsgPickup(const nlohmann::json &data)
+{
     Mqtt::getInstance().simulation->GetRobot()->pickup();
 }
 
 void
 Mqtt::receiveMsgMotors(const nlohmann::json &data)
 {
-    try{
+    try {
         float left = data["left"];
         float right = data["right"];
 
         Mqtt::getInstance().simulation->GetRobot()->leftAccelerate = left;
         Mqtt::getInstance().simulation->GetRobot()->rightAccelerate = right;
-    }catch(std::exception& e)
-    {
-        std::cerr << "Failed to set motor speed from mqtt: " << e.what() << std::endl;
+    } catch (std::exception &e) {
+        std::cerr << "Failed to set motor speed: " << e.what() << std::endl;
     }
 }
 
 void
 Mqtt::receiveMsgDrop(const nlohmann::json &data)
 {
-    try{
+    try {
         std::string item = data["item"];
 
-        if(!Mqtt::getInstance().simulation->GetRobot()->drop(item))
-        {
+        if (!Mqtt::getInstance().simulation->GetRobot()->drop(item)) {
             std::cerr << "Failed to drop item: " << item << ", it does not exist in storage." << std::endl;
         }
-    }catch(std::exception& e)
-    {
+    } catch (std::exception &e) {
         std::cerr << "Failed to drop item: " << e.what() << std::endl;
     }
 }
-void
-Mqtt::receiveMsgLaserAngle(const nlohmann::json &data){
 
-    try{
+void
+Mqtt::receiveMsgLaserAngle(const nlohmann::json &data)
+{
+    try {
         float deg = data["angle"];
         Mqtt::getInstance().simulation->GetRobot()->setLaserAngleDegrees(deg);
-    }catch(std::exception& e)
-    {
-        std::cerr << "Failed to drop item: " << e.what() << std::endl;
+    } catch (std::exception &e) {
+        std::cerr << "Failed to set laser angle: " << e.what() << std::endl;
     }
 }
 
 void
 Mqtt::receiveMsgLaserShoot(const nlohmann::json &data)
 {
+    Mqtt::getInstance().simulation->GetRobot()->shootLaser();
+    std::cout << "Firing laser..." << std::endl;
 }
+
 void
 Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
 {
     std::ifstream image_file("data/lunar_image.png", std::ios::binary);
-    std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)), std::istreambuf_iterator<char>());
+    std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)),
+                                          std::istreambuf_iterator<char>());
     mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, false);
 }
