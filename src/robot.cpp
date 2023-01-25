@@ -31,7 +31,9 @@
 #include <iostream>
 #include <json.hpp>
 
-Robot::Robot(Simulation* simulation, float width, float length, b2Vec2 position, float angle, float power, float maxSpeed) : Object(simulation)
+Robot::Robot(
+    Simulation *simulation, float width, float length, b2Vec2 position, float angle, float power, float maxSpeed)
+    : Object(simulation)
 {
     this->leftAccelerate = 0.f;
     this->rightAccelerate = 0.f;
@@ -135,9 +137,12 @@ Robot::update()
         j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
         j["battery"] = 100; // Placeholder
         j["storage"] = storage;
+        j["in_shadow"] = isInShadow();
 
         Mqtt::getInstance().send("simulator", "Robot", j);
     }
+
+    shadow_zone.draw();
 
     updateCounter++;
 }
@@ -180,8 +185,7 @@ Robot::drop(const std::string &item)
 
         storage.erase(it);
         return true;
-    }else
-    {
+    } else {
         return false;
     }
 }
@@ -213,4 +217,9 @@ float *
 Robot::LaserAngleDegreesPtr()
 {
     return &laserAngleDegrees;
+}
+bool
+Robot::isInShadow()
+{
+    return shadow_zone.inShadowTest(getPosition());
 }

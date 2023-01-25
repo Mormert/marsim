@@ -29,6 +29,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "shadow_zone.h"
+
 class PickupSensor;
 class ProximitySensor;
 class Simulation;
@@ -56,6 +58,8 @@ public:
 
     bool drop(const std::string& item);
 
+    bool isInShadow();
+
     void shootLaser();
 
     void setLaserAngleDegrees(float deg){ laserAngleDegrees = deg; };
@@ -81,6 +85,8 @@ private:
     Simulation* simulation;
 
     std::vector<std::string> storage;
+
+    ShadowZone shadow_zone{b2Vec2{250.f, 0.f}, 45.f};
 
     friend class Simulation;
 
