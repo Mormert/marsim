@@ -32,18 +32,17 @@ FrictionZone::FrictionZone(Simulation *simulation, b2Vec2 pos, float radius, flo
 void
 FrictionZone::update()
 {
-    g_debugDraw.DrawSolidCircle(getPosition(), radius, {}, b2Color{0.f, 0.0f, 1.f, 1.f});
-
+    g_debugDraw.DrawSolidCircle(getPosition(), radius, {}, b2Color{1.f, 0.0f, 1.f, 1.f});
 }
 
 void
 FrictionZone::OnObjectEnter(Object *o)
 {
     if (o->GetLinearDamping() != 0.f) {
-        body->SetLinearDamping(o->GetLinearDamping()*12.3f);
+        o->body->SetLinearDamping(o->GetLinearDamping() * 100.f);
     }
-    if (o->GetAngularDamping() != 0.f){
-        body->SetAngularDamping(o->GetAngularDamping()*12.3f);
+    if (o->GetAngularDamping() != 0.f) {
+        o->body->SetAngularDamping(o->GetAngularDamping() * 100.f);
     }
 }
 
@@ -51,9 +50,9 @@ void
 FrictionZone::OnObjectLeave(Object *o)
 {
     if (o->GetLinearDamping() != 0.f) {
-        body->SetLinearDamping(o->GetLinearDamping());
+        o->body->SetLinearDamping(o->GetLinearDamping());
     }
-    if (o->GetAngularDamping() != 0.f){
-        body->SetAngularDamping(o->GetAngularDamping());
+    if (o->GetAngularDamping() != 0.f) {
+        o->body->SetAngularDamping(o->GetAngularDamping());
     }
 }
