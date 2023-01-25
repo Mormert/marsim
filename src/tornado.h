@@ -20,62 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#ifndef MARSIM_TORNADO_H
+#define MARSIM_TORNADO_H
 
-#include "earthquake.h"
-#include "framework/application.h"
-#include "terrain.h"
+#include "proximity_sensor.h"
 
-class Object;
-class Robot;
-class Volcano;
-
-class Simulation : public Application
+class Tornado : public ProximitySensor
 {
 public:
-    Simulation();
+    Tornado(Simulation *simulation, b2Vec2 pos, float radius, float magnitude);
 
-    ~Simulation() override;
-
-    void UpdateObjects();
-
-    void WakeAllObjects();
-
-    void ApplySlopeForce();
-
-    void Step(Settings &settings) override;
-
-    void Keyboard(int key) override;
-
-    void KeyboardUp(int key) override;
-
-    void SimulateObject(Object *object);
-
-    void DestroyObject(Object *object);
-
-    b2World* GetWorld();
-
-    Terrain* GetTerrain();
-
-    static Simulation *Create();
-
-    void BeginContact(b2Contact *contact) override;
-
-    void EndContact(b2Contact *contact) override;
-
-    int32 GetStepCount();
-
-    Robot* GetRobot();
-
-    Earthquake earthquake;
-
-    Volcano* volcano;
+    void update() override;
 
 private:
-    Robot* robot;
-    Terrain terrain;
-    std::vector<Object *> objects;
+    float radius{}, magnitude{};
 };
 
-#endif
+#endif // MARSIM_TORNADO_H

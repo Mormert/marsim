@@ -23,10 +23,12 @@
 #include "simulation.h"
 #include "alien.h"
 #include "framework/application.h"
-#include "proximity_sensor.h"
 #include "friction_zone.h"
+#include "proximity_sensor.h"
 #include "robot.h"
 #include "stone.h"
+#include "tornado.h"
+#include "volcano.h"
 #include <algorithm>
 #include <iostream>
 #include <random>
@@ -72,6 +74,15 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}, earthquake{m_worl
             new FrictionZone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen), 22.5f, 40.f};
         SimulateObject(frictionZone);
     }
+
+    for (int i = 0; i < 5; i++) {
+        auto tornado =
+            new Tornado{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen), 1000.f};
+        SimulateObject(tornado);
+    }
+
+    volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
+    SimulateObject(volcano);
 }
 
 Simulation *
@@ -182,6 +193,10 @@ Simulation::KeyboardUp(int key)
     if (key == GLFW_KEY_F) {
         earthquake.trigger(350.f, 500);
     }
+
+    if (key == GLFW_KEY_V) {
+        volcano->trigger(3500.f, 500);
+    }
 }
 void
 
@@ -198,8 +213,7 @@ Simulation::DestroyObject(Object *object)
         objects.erase(it);
     }
 
-    for(auto&& attachedObject : object->getAttachedObjects())
-    {
+    for (auto &&attachedObject : object->getAttachedObjects()) {
         auto it2 = std::find(objects.begin(), objects.end(), attachedObject);
         if (it2 != objects.end()) {
             objects.erase(it2);
@@ -225,12 +239,12 @@ Simulation::BeginContact(b2Contact *contact)
     auto *b = reinterpret_cast<Object *>(fixtureB->GetUserData().pointer);
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(a)) {
-        //std::cout << "COLLIDE WITH SENSOR A " << b->name << std::endl;
+        // std::cout << "COLLIDE WITH SENSOR A " << b->name << std::endl;
         sensor->ObjectEnter(b);
     }
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(b)) {
-        //std::cout << "COLLIDE WITH SENSOR B " << a->name << std::endl;
+        // std::cout << "COLLIDE WITH SENSOR B " << a->name << std::endl;
         sensor->ObjectEnter(a);
     }
 }
@@ -245,12 +259,12 @@ Simulation::EndContact(b2Contact *contact)
     auto *b = reinterpret_cast<Object *>(fixtureB->GetUserData().pointer);
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(a)) {
-        //std::cout << "LEAVE SENSOR A " << b->name << std::endl;
+        // std::cout << "LEAVE SENSOR A " << b->name << std::endl;
         sensor->ObjectLeave(b);
     }
 
     if (auto sensor = dynamic_cast<ProximitySensor *>(b)) {
-        //std::cout << "LEAVE SENSOR B " << a->name << std::endl;
+        // std::cout << "LEAVE SENSOR B " << a->name << std::endl;
         sensor->ObjectLeave(a);
     }
 }
@@ -273,8 +287,7 @@ Simulation::GetStepCount()
 void
 Simulation::WakeAllObjects()
 {
-    for(auto&& object : objects)
-    {
+    for (auto &&object : objects) {
         object->body->SetAwake(true);
     }
 }

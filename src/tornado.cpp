@@ -20,62 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#include "tornado.h"
+#include "framework/draw.h"
 
-#include "earthquake.h"
-#include "framework/application.h"
-#include "terrain.h"
-
-class Object;
-class Robot;
-class Volcano;
-
-class Simulation : public Application
+Tornado::Tornado(Simulation *simulation, b2Vec2 pos, float radius, float magnitude)
+    : ProximitySensor(simulation, pos, radius, false, true)
 {
-public:
-    Simulation();
+    this->radius = radius;
+    this->magnitude = magnitude;
+}
+void
+Tornado::update()
+{
+    g_debugDraw.DrawSolidCircle(getPosition(), radius, {}, b2Color{1.f, 0.0f, 0.f, 1.f});
+    g_debugDraw.DrawCircle(getPosition(), radius + 0.2f, b2Color{1.f, 0.0f, 0.f, 1.f});
+    g_debugDraw.DrawCircle(getPosition(), radius + 0.4f, b2Color{1.f, 1.0f, 0.f, 1.f});
 
-    ~Simulation() override;
-
-    void UpdateObjects();
-
-    void WakeAllObjects();
-
-    void ApplySlopeForce();
-
-    void Step(Settings &settings) override;
-
-    void Keyboard(int key) override;
-
-    void KeyboardUp(int key) override;
-
-    void SimulateObject(Object *object);
-
-    void DestroyObject(Object *object);
-
-    b2World* GetWorld();
-
-    Terrain* GetTerrain();
-
-    static Simulation *Create();
-
-    void BeginContact(b2Contact *contact) override;
-
-    void EndContact(b2Contact *contact) override;
-
-    int32 GetStepCount();
-
-    Robot* GetRobot();
-
-    Earthquake earthquake;
-
-    Volcano* volcano;
-
-private:
-    Robot* robot;
-    Terrain terrain;
-    std::vector<Object *> objects;
-};
-
-#endif
+    for (auto &&object : objects_inside) {
+        b2Vec2 force = getPosition() - object->getPosition();
+        object->addForce(b2Vec2{force.x * magnitude, force.y * magnitude});
+    }
+}

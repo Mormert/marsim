@@ -20,62 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#ifndef MARSIM_VOLCANO_H
+#define MARSIM_VOLCANO_H
 
-#include "earthquake.h"
-#include "framework/application.h"
-#include "terrain.h"
+#include "proximity_sensor.h"
 
-class Object;
-class Robot;
-class Volcano;
-
-class Simulation : public Application
+class Volcano : public ProximitySensor
 {
 public:
-    Simulation();
+    Volcano(Simulation *simulation, b2Vec2 pos, float radius);
 
-    ~Simulation() override;
+    void update() override;
 
-    void UpdateObjects();
-
-    void WakeAllObjects();
-
-    void ApplySlopeForce();
-
-    void Step(Settings &settings) override;
-
-    void Keyboard(int key) override;
-
-    void KeyboardUp(int key) override;
-
-    void SimulateObject(Object *object);
-
-    void DestroyObject(Object *object);
-
-    b2World* GetWorld();
-
-    Terrain* GetTerrain();
-
-    static Simulation *Create();
-
-    void BeginContact(b2Contact *contact) override;
-
-    void EndContact(b2Contact *contact) override;
-
-    int32 GetStepCount();
-
-    Robot* GetRobot();
-
-    Earthquake earthquake;
-
-    Volcano* volcano;
+    void trigger(float magnitude, int steps);
 
 private:
-    Robot* robot;
-    Terrain terrain;
-    std::vector<Object *> objects;
+    float radius{}, magnitude{0.f};
+    int stepCounter{0};
+    int continueUntil{0};
 };
 
-#endif
+#endif // MARSIM_VOLCANO_H

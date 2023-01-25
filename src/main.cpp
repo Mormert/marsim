@@ -31,6 +31,7 @@
 #include "simulation.h"
 #include "mqtt.h"
 #include "robot.h"
+#include "volcano.h"
 
 #include <algorithm>
 #include <stdio.h>
@@ -562,6 +563,36 @@ static void UpdateUI()
 
                                 ImGui::EndTabItem();
                         }
+                        if (ImGui::BeginTabItem("Sim"))
+                        {
+                                ImVec2 button_sz = ImVec2(-1, 0);
+
+                                if (ImGui::Button("Restart Simulation (R)", button_sz))
+                                {
+                                    RestartSimulation();
+                                }
+
+                                if (ImGui::Button("Trigger Immediate Earthquake (F)", button_sz))
+                                {
+                                    auto sim = dynamic_cast<Simulation*>(s_application);
+                                    sim->earthquake.trigger(350.f, 500);
+                                }
+
+                                if (ImGui::Button("Trigger Immediate Volcano (V)", button_sz))
+                                {
+                                    auto sim = dynamic_cast<Simulation*>(s_application);
+                                    sim->volcano->trigger(3500.f, 500);
+                                }
+
+                                if (ImGui::Button("Quit", button_sz))
+                                {
+                                    glfwSetWindowShouldClose(g_mainWindow, GL_TRUE);
+                                }
+
+                                ImGui::EndTabItem();
+                        }
+
+
 			if (ImGui::BeginTabItem("Physics"))
 			{
 				ImGui::SliderInt("Vel Iters", &s_settings.m_velocityIterations, 0, 50);
@@ -589,7 +620,7 @@ static void UpdateUI()
 				ImGui::Checkbox("Profile", &s_settings.m_drawProfile);
 
 				ImVec2 button_sz = ImVec2(-1, 0);
-				if (ImGui::Button("Pause Simulation (P)", button_sz))
+				if (ImGui::Button("Pause Physics (P)", button_sz))
 				{
 					s_settings.m_pause = !s_settings.m_pause;
 				}
@@ -597,22 +628,6 @@ static void UpdateUI()
 				if (ImGui::Button("Single Step (O)", button_sz))
 				{
 					s_settings.m_singleStep = !s_settings.m_singleStep;
-				}
-
-				if (ImGui::Button("Restart Simulation (R)", button_sz))
-				{
-					RestartSimulation();
-				}
-
-                                if (ImGui::Button("Trigger Immediate Earthquake (F)", button_sz))
-                                {
-                                        auto sim = dynamic_cast<Simulation*>(s_application);
-                                        sim->earthquake.trigger(350.f, 500);
-                                }
-
-				if (ImGui::Button("Quit", button_sz))
-				{
-					glfwSetWindowShouldClose(g_mainWindow, GL_TRUE);
 				}
 
 				ImGui::EndTabItem();
