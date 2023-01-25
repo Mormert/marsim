@@ -241,7 +241,7 @@ Mqtt::isConnected()
 void
 Mqtt::sendMqtt(const std::string &topic, const std::string &data)
 {
-    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 1, false);
+    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, false);
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
     sentMessages++;
@@ -260,6 +260,7 @@ Mqtt::init()
     }
     mosquitto_tls_opts_set(mqtt, 1, "tlsv1.2", NULL);
     mosquitto_tls_insecure_set(mqtt, true);
+
     // mosquitto_log_callback_set(mqtt, my_log_callback);
     mosquitto_connect_callback_set(mqtt, on_connect);
     mosquitto_message_callback_set(
