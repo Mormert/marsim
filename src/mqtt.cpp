@@ -192,11 +192,6 @@ Mqtt::sendQueuedMessages()
 
         std::string jsonString;
 
-<<<<<<< HEAD
-//        std::cout << j.dump(4) << std::endl;
-
-=======
->>>>>>> main
         if (use_messagepack) {
             auto msgPack = nlohmann::json::to_msgpack(j);
             jsonString = std::string(msgPack.begin(), msgPack.end());
@@ -248,13 +243,9 @@ Mqtt::init()
     }
     mosquitto_tls_opts_set(mqtt, 1, "tlsv1.2", NULL);
     mosquitto_tls_insecure_set(mqtt, true);
-<<<<<<< HEAD
-    //mosquitto_log_callback_set(mqtt, my_log_callback);
-    //mosquitto_connect_callback_set(mqtt, on_connect);
-=======
+
     // mosquitto_log_callback_set(mqtt, my_log_callback);
     mosquitto_connect_callback_set(mqtt, on_connect);
->>>>>>> main
     mosquitto_message_callback_set(
         mqtt, on_message); // change this to on_PNGmessage when receiving the image from the situation reporting module
 }
