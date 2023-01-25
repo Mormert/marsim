@@ -87,29 +87,17 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
     fflush(stdout);
 }
 
-// called on received message
-void
-on_message_(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
-{
-    printf("MESSAGE RECEIVED!!!!!!!!!!!!!!!!!! \n");
-    if (message->payloadlen) {
-        printf("%s %s\n", message->topic, message->payload);
-    } else {
-        printf("%s (null)\n", message->topic);
-    }
-    fflush(stdout);
-}
 // shows if connected correctly
 void
 on_connect(struct mosquitto *mosq, void *userdata, int result)
 {
-    printf("connecting...\n");
+    printf("Connecting...\n");
     if (!result) {
-        printf("connected successfully");
+        std::cout << "Connection succeeded!" << std::endl;
         /* Connected successfully. */
 
     } else {
-        /* Connect failed. */
+        std::cerr << "CONNECTION FAILED!" << std::endl;
     }
 }
 // log to debug in case of error during connect/pub/sub
@@ -204,8 +192,11 @@ Mqtt::sendQueuedMessages()
 
         std::string jsonString;
 
+<<<<<<< HEAD
 //        std::cout << j.dump(4) << std::endl;
 
+=======
+>>>>>>> main
         if (use_messagepack) {
             auto msgPack = nlohmann::json::to_msgpack(j);
             jsonString = std::string(msgPack.begin(), msgPack.end());
@@ -242,8 +233,6 @@ Mqtt::sendMqtt(const std::string &topic, const std::string &data)
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
     sentMessages++;
-
-    std::cout << "SENT MSG WITH SIZE: " << data.length() << std::endl;
 }
 
 void
@@ -259,8 +248,13 @@ Mqtt::init()
     }
     mosquitto_tls_opts_set(mqtt, 1, "tlsv1.2", NULL);
     mosquitto_tls_insecure_set(mqtt, true);
+<<<<<<< HEAD
     //mosquitto_log_callback_set(mqtt, my_log_callback);
     //mosquitto_connect_callback_set(mqtt, on_connect);
+=======
+    // mosquitto_log_callback_set(mqtt, my_log_callback);
+    mosquitto_connect_callback_set(mqtt, on_connect);
+>>>>>>> main
     mosquitto_message_callback_set(
         mqtt, on_message); // change this to on_PNGmessage when receiving the image from the situation reporting module
 }
@@ -310,6 +304,8 @@ Mqtt::receiveMsgMotors(const nlohmann::json &data)
     try {
         float left = data["left"];
         float right = data["right"];
+        left = glm::clamp(left, -1.f, 1.f);
+        right = glm::clamp(right, -1.f, 1.f);
 
         Mqtt::getInstance().simulation->GetRobot()->leftAccelerate = left;
         Mqtt::getInstance().simulation->GetRobot()->rightAccelerate = right;

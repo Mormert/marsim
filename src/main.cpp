@@ -465,7 +465,7 @@ static void UpdateUI()
                                 ImGui::Text("%f", (float)Mqtt::getInstance().receivedBytesTotal/1000.f);
                                 ImGui::Text("Amount of received messages (total):");
                                 ImGui::Text("%d", Mqtt::getInstance().receivedMessages);
-                                ImGui::Text("Current emission (kilobytes/sec):");
+                                ImGui::Text("Currently receiving (kilobytes/sec):");
                                 ImGui::Text("%f", (float)Mqtt::getInstance().receivedBytesLastSecond/1000.f);
 
                                 ImGui::EndTabItem();
