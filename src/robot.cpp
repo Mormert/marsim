@@ -168,7 +168,7 @@ Robot::pickup()
     simulation->DestroyObject(item);
 }
 
-void
+bool
 Robot::drop(const std::string &item)
 {
     auto it = std::find(storage.begin(), storage.end(), item);
@@ -179,6 +179,10 @@ Robot::drop(const std::string &item)
         simulation->SimulateObject(stone);
 
         storage.erase(it);
+        return true;
+    }else
+    {
+        return false;
     }
 }
 

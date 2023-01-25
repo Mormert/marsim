@@ -35,6 +35,8 @@
 #include <mosquitto.h>
 #include <json.hpp>
 
+class Simulation;
+
 class Mqtt
 {
 public:
@@ -49,6 +51,8 @@ public:
     void send(const std::string &topic, const std::string &message_type, const nlohmann::json &payload);
 
     void processMqtt(int32_t step);
+
+    void setSimulationPtr(Simulation* sim){this->simulation = sim;}
 
     static Mqtt &
     getInstance()
@@ -69,6 +73,14 @@ public:
 
     unsigned int getMessagesSent();
 
+    static void receiveMsgMotors(const nlohmann::json & data);
+    static void receiveMsgPickup(const nlohmann::json & data);
+    static void receiveMsgDrop(const nlohmann::json & data);
+    static void receiveMsgLaserAngle(const nlohmann::json & data);
+    static void receiveMsgLaserShoot(const nlohmann::json & data);
+
+    static void receiveMsgRequestImage(const nlohmann::json & data);
+
 private:
     // Publishes the payload for the given topic
     void sendMqtt(const std::string &topic, const std::string &data);
@@ -85,6 +97,7 @@ private:
     bool is_connected = false;
 
 
+
     unsigned int sentMessages{0};
     unsigned int sentBytesTotal{0};
     unsigned int sentBytesSecond{0};
@@ -94,6 +107,7 @@ private:
     bool use_messagepack{false};
 
     mosquitto *mqtt;
+    Simulation* simulation;
 };
 
 #endif // MARSIM_MQTT_H

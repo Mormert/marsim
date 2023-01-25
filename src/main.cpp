@@ -58,6 +58,7 @@ static void RestartSimulation()
 {
 	delete s_application;
     s_application = Simulation::Create();
+    Mqtt::getInstance().setSimulationPtr(dynamic_cast<Simulation *>(s_application));
 }
 
 void SetupImGuiStyle()
@@ -674,6 +675,8 @@ int main(int, char**)
 	CreateUI(g_mainWindow, glslVersion);
 
     s_application = Simulation::Create();
+    Mqtt::getInstance().setSimulationPtr(dynamic_cast<Simulation *>(s_application));
+
 
 	// Control the frame rate. One draw per monitor refresh.
 	//glfwSwapInterval(1);

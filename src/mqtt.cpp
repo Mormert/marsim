@@ -24,17 +24,58 @@
 
 #include <chrono>
 #include <fstream>
+#include <sstream>
+#include "simulation.h"
+#include "robot.h"
+#include "wheel.h"
 
 #include <zlc/zlibcomplete.hpp>
+#include <json.hpp>
 
 void on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message){
     printf("Image File Received. \n");
     if(message->payloadlen){
-        if(strcmp(message->topic, "map/lunar/sr_to_sim") == 0) {
+        if(strcmp(message->topic, "sim/in/image") == 0) {
             std::ofstream image_file("data/lunar_received.png", std::ios::binary);
             image_file.write(reinterpret_cast<const char*>(message->payload), message->payloadlen);
             image_file.close();
+            //call function for update of image here
             std::cout << "Image received and saved as lunar_image.png" << std::endl;
+        }if(strcmp(message->topic, "sim/control") == 0){
+            //TO DO: receive commands through this
+
+            std::string payloadStr((char*)message->payload, message->payloadlen);
+
+            try {
+                nlohmann::json j = nlohmann::json::parse(payloadStr);
+                std::string type = j["type"];
+                nlohmann::json jsonPayload = j["data"];
+
+                if(type == "motors")
+                {
+                    Mqtt::receiveMsgMotors(jsonPayload);
+                }else if (type == "pickup")
+                {
+                    Mqtt::receiveMsgPickup(jsonPayload);
+                }else if(type == "drop")
+                {
+                    Mqtt::receiveMsgDrop(jsonPayload);
+                }else if(type == "shoot_laser")
+                {
+                    Mqtt::receiveMsgLaserShoot(jsonPayload);
+                }else if(type == "laser_angle")
+                {
+                    Mqtt::receiveMsgLaserAngle(jsonPayload);
+                }else if(type == "request_satellite_image")
+                {
+                    Mqtt::receiveMsgRequestImage(jsonPayload);
+                }
+
+            } catch (std::exception e) {
+                std::cout << "Something went wrong trying to interpret message: " << e.what() << std::endl;
+            }
+
+
         }else{
             //the message is not the image on the image channel, therefore...
             printf("%s %s\n", message->topic, message->payload);
@@ -95,6 +136,14 @@ Mqtt::connectMqtt(const std::string &address, int port)
         std::cout << "could not connect!" << std::endl;
     } else {
         is_connected = true;
+        if(mosquitto_subscribe(mqtt, NULL, "sim/control", 1) != MOSQ_ERR_SUCCESS)
+        {
+            std::cerr << "Failed to subscribe!" << std::endl;
+        }
+        if(mosquitto_subscribe(mqtt, NULL, "sim/image", 1) != MOSQ_ERR_SUCCESS)
+        {
+            std::cerr << "Failed to subscribe!" << std::endl;
+        }
     }
 }
 
@@ -251,4 +300,63 @@ unsigned int
 Mqtt::getMessagesSent()
 {
     return sentMessages;
+}
+
+void
+Mqtt::receiveMsgPickup(const nlohmann::json &data){
+    Mqtt::getInstance().simulation->GetRobot()->pickup();
+}
+
+void
+Mqtt::receiveMsgMotors(const nlohmann::json &data)
+{
+    try{
+        float left = data["left"];
+        float right = data["right"];
+
+        Mqtt::getInstance().simulation->GetRobot()->leftAccelerate = left;
+        Mqtt::getInstance().simulation->GetRobot()->rightAccelerate = right;
+    }catch(std::exception& e)
+    {
+        std::cerr << "Failed to set motor speed from mqtt: " << e.what() << std::endl;
+    }
+}
+
+void
+Mqtt::receiveMsgDrop(const nlohmann::json &data)
+{
+    try{
+        std::string item = data["item"];
+
+        if(!Mqtt::getInstance().simulation->GetRobot()->drop(item))
+        {
+            std::cerr << "Failed to drop item: " << item << ", it does not exist in storage." << std::endl;
+        }
+    }catch(std::exception& e)
+    {
+        std::cerr << "Failed to drop item: " << e.what() << std::endl;
+    }
+}
+void
+Mqtt::receiveMsgLaserAngle(const nlohmann::json &data){
+
+    try{
+        float deg = data["angle"];
+        Mqtt::getInstance().simulation->GetRobot()->setLaserAngleDegrees(deg);
+    }catch(std::exception& e)
+    {
+        std::cerr << "Failed to drop item: " << e.what() << std::endl;
+    }
+}
+
+void
+Mqtt::receiveMsgLaserShoot(const nlohmann::json &data)
+{
+}
+void
+Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
+{
+    std::ifstream image_file("data/lunar_image.png", std::ios::binary);
+    std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)), std::istreambuf_iterator<char>());
+    mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, false);
 }

@@ -54,9 +54,11 @@ public:
 
     void pickup();
 
-    void drop(const std::string& item);
+    bool drop(const std::string& item);
 
     void shootLaser();
+
+    void setLaserAngleDegrees(float deg){ laserAngleDegrees = deg; };
 
     float* LaserAngleDegreesPtr();
 
