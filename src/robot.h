@@ -25,11 +25,13 @@
 
 #include "object.h"
 #include "wheel.h"
+#include "shadow_zone.h"
+
 
 #include <glm/glm.hpp>
+#include <json.hpp>
 #include <vector>
 
-#include "shadow_zone.h"
 
 class PickupSensor;
 class ProximitySensor;
@@ -56,17 +58,21 @@ public:
 
     void pickup();
 
-    bool drop(const std::string& item);
+    bool drop(unsigned int index);
+
+    float getStorageMass();
 
     bool isInShadow();
 
     void shootLaser();
 
+    void recalculateMass();
+
     void setLaserAngleDegrees(float deg){ laserAngleDegrees = deg; };
 
     float* LaserAngleDegreesPtr();
 
-    std::vector<std::string> getStorage();
+    std::vector<nlohmann::json> getStorage();
 
     std::vector<Object*> getItemsForPickup();
 
@@ -84,7 +90,8 @@ private:
 
     Simulation* simulation;
 
-    std::vector<std::string> storage;
+    std::vector<nlohmann::json> storage;
+    float storageMass{0.f};
 
     ShadowZone shadow_zone{b2Vec2{250.f, 0.f}, 45.f};
 

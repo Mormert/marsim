@@ -53,6 +53,8 @@ public:
 
     float GetLinearDamping();
 
+    float GetMass();
+
     virtual std::vector<Object *> getAttachedObjects();
 
     virtual void update() = 0;

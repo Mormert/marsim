@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "robot.h"
+#include "alien.h"
 #include "laser.h"
 #include "mqtt.h"
 #include "pickup_sensor.h"
@@ -168,29 +169,47 @@ Robot::pickup()
 
     auto item = items[0];
 
-    storage.push_back(item->name);
+    nlohmann::json j;
+    j["type"] = item->name;
+    j["radius"] = item->body->GetFixtureList()[0].GetShape()->m_radius;
+    j["mass"] = item->GetMass();
+
+    storage.push_back(j);
 
     simulation->DestroyObject(item);
+
+    recalculateMass();
 }
 
 bool
-Robot::drop(const std::string &item)
+Robot::drop(unsigned int index)
 {
-    auto it = std::find(storage.begin(), storage.end(), item);
 
-    if (it != storage.end()) {
-        auto pos = pickup_sensor->getPosition();
-        auto *stone = new Stone{simulation, {pos.x, pos.y}, 1.f};
-        simulation->SimulateObject(stone);
-
-        storage.erase(it);
-        return true;
-    } else {
+    if (index >= storage.size()) {
         return false;
     }
+
+    auto item = storage[index];
+    std::string itemName = item["type"];
+    float itemRadius = item["radius"];
+
+    auto pos = pickup_sensor->getPosition();
+    if (itemName == "Stone") {
+        auto *stone = new Stone{simulation, {pos.x, pos.y}, itemRadius};
+        simulation->SimulateObject(stone);
+    }
+
+    if (itemName == "Alien") {
+        auto *alien = new Alien{simulation, simulation->GetTerrain(), pos, body->GetAngle()};
+        simulation->SimulateObject(alien);
+    }
+
+    storage.erase(storage.begin() + index);
+
+    recalculateMass();
 }
 
-std::vector<std::string>
+std::vector<nlohmann::json>
 Robot::getStorage()
 {
     return storage;
@@ -222,4 +241,26 @@ bool
 Robot::isInShadow()
 {
     return shadow_zone.inShadowTest(getPosition());
+}
+
+void
+Robot::recalculateMass()
+{
+    storageMass = 0.f;
+    for (auto &&item : storage) {
+        storageMass += (float)item["mass"];
+    }
+
+    body->ResetMassData();
+    auto massData = body->GetMassData();
+    b2MassData newMassData{};
+    newMassData.I = massData.I + storageMass * 0.5f;
+    newMassData.center = massData.center;
+    newMassData.mass = massData.mass + storageMass;
+    body->SetMassData(&newMassData);
+}
+float
+Robot::getStorageMass()
+{
+    return storageMass;
 }

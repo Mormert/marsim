@@ -278,3 +278,8 @@ Simulation::WakeAllObjects()
         object->body->SetAwake(true);
     }
 }
+Terrain *
+Simulation::GetTerrain()
+{
+    return &terrain;
+}

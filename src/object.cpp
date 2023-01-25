@@ -81,3 +81,9 @@ Object::GetLinearDamping()
 {
     return linearDamping;
 }
+
+float
+Object::GetMass()
+{
+    return body->GetMass();
+}

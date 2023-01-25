@@ -510,24 +510,32 @@ static void UpdateUI()
                                 for(auto&& item : robot->getStorage())
                                 {
 
-                                    ImGui::PushID(++i);
+                                    ImGui::PushID(i);
 
                                     ImGui::Separator();
 
-                                    auto windowWidth = ImGui::GetWindowSize().x;
-                                    auto textWidth   = ImGui::CalcTextSize(item.c_str()).x;
+                                    //auto windowWidth = ImGui::GetWindowSize().x;
+                                    //auto textWidth   = ImGui::CalcTextSize(std::string{item["type"]}.c_str()).x;
 
-                                    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-                                    ImGui::Text("%s", item.c_str());
+                                    //ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+                                    ImGui::Text("%s. Mass: %f.", std::string{item["type"]}.c_str(), (float)item["mass"]);
                                     if(ImGui::Button("Drop", button_sz))
                                     {
-                                        robot->drop(item);
+                                        robot->drop(i);
                                     }
+
 
                                     ImGui::Separator();
 
                                     ImGui::PopID();
+                                    i++;
                                 }
+
+                                ImGui::Separator();
+
+                                ImGui::Text("Storage mass (tot): %f", robot->getStorageMass());
+
+                                ImGui::Separator();
 
                                 ImGui::Text("Items for pickup:");
 

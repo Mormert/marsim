@@ -326,13 +326,13 @@ void
 Mqtt::receiveMsgDrop(const nlohmann::json &data)
 {
     try {
-        std::string item = data["item"];
+        unsigned int itemIndex = data["index"];
 
-        if (!Mqtt::getInstance().simulation->GetRobot()->drop(item)) {
-            std::cerr << "Failed to drop item: " << item << ", it does not exist in storage." << std::endl;
+        if (!Mqtt::getInstance().simulation->GetRobot()->drop(itemIndex)) {
+            std::cerr << "Failed to drop item with index " << itemIndex << ", it does not exist in storage." << std::endl;
         }
     } catch (std::exception &e) {
-        std::cerr << "Failed to drop item: " << e.what() << std::endl;
+        std::cerr << "Failed to drop the specified item with an index: " << e.what() << std::endl;
     }
 }
 

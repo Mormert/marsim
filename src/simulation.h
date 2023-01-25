@@ -55,6 +55,8 @@ public:
 
     b2World* GetWorld();
 
+    Terrain* GetTerrain();
+
     static Simulation *Create();
 
     void BeginContact(b2Contact *contact) override;
