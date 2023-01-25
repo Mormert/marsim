@@ -32,7 +32,7 @@
 #include <random>
 #include <vector>
 
-Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
+Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}, earthquake{m_world, this}
 {
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
@@ -47,9 +47,9 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrX(-389, 389);
-    std::uniform_int_distribution<> distrY(-220, 220);
-    std::uniform_int_distribution<> distrR(1, 3);
+    std::uniform_real_distribution<> distrX(-369.f, 369.f);
+    std::uniform_real_distribution<> distrY(-205.f, 205.f);
+    std::uniform_real_distribution<> distrR(1.f, 3.f);
     for (int i = 0; i < 2000; i++) {
         auto *stone = new Stone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distrR(gen)};
         SimulateObject(stone);
@@ -143,6 +143,8 @@ Simulation::Step(Settings &settings)
     g_debugDraw.DrawImageTexture(
         terrain.getTextureID(), {0.f, 0.f}, {(float)terrain.getTextureWidth(), (float)terrain.getTextureHeight()});
 
+    earthquake.update(m_stepCount);
+
     UpdateObjects();
 
     ApplySlopeForce();
@@ -175,6 +177,10 @@ Simulation::KeyboardUp(int key)
 
     if (key == GLFW_KEY_E || key == GLFW_KEY_D) {
         robot->rightAccelerate = 0.f;
+    }
+
+    if (key == GLFW_KEY_F) {
+        earthquake.trigger(350.f, 500);
     }
 }
 void
@@ -263,4 +269,12 @@ int32
 Simulation::GetStepCount()
 {
     return m_stepCount;
+}
+void
+Simulation::WakeAllObjects()
+{
+    for(auto&& object : objects)
+    {
+        object->body->SetAwake(true);
+    }
 }

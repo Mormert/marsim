@@ -596,6 +596,12 @@ static void UpdateUI()
 					RestartSimulation();
 				}
 
+                                if (ImGui::Button("Trigger Immediate Earthquake (F)", button_sz))
+                                {
+                                        auto sim = dynamic_cast<Simulation*>(s_application);
+                                        sim->earthquake.trigger(350.f, 500);
+                                }
+
 				if (ImGui::Button("Quit", button_sz))
 				{
 					glfwSetWindowShouldClose(g_mainWindow, GL_TRUE);

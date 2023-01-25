@@ -20,57 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
-
 #include "earthquake.h"
-#include "framework/application.h"
-#include "terrain.h"
+#include "simulation.h"
 
-class Object;
-class Robot;
+#include <random>
 
-class Simulation : public Application
+Earthquake::Earthquake(b2World *world, Simulation *sim)
 {
-public:
-    Simulation();
+    this->world = world;
+    this->simulation = sim;
+}
 
-    ~Simulation() override;
+void
+Earthquake::trigger(float magnitude, int steps)
+{
+    continueUntil = currentStep + steps;
+    this->magnitude = magnitude;
+    simulation->WakeAllObjects();
+}
 
-    void UpdateObjects();
+void
+Earthquake::update(int step)
+{
+    currentStep = step;
 
-    void WakeAllObjects();
+    if (magnitude == 0.f) {
+        return;
+    }
 
-    void ApplySlopeForce();
+    if (currentStep >= continueUntil) {
+        magnitude = 0.f;
+        world->SetGravity(b2Vec2{0.f, 0.f});
+    }
 
-    void Step(Settings &settings) override;
+    if (step % 10 == 0) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> v(-1.f, 1.f);
 
-    void Keyboard(int key) override;
-
-    void KeyboardUp(int key) override;
-
-    void SimulateObject(Object *object);
-
-    void DestroyObject(Object *object);
-
-    b2World* GetWorld();
-
-    static Simulation *Create();
-
-    void BeginContact(b2Contact *contact) override;
-
-    void EndContact(b2Contact *contact) override;
-
-    int32 GetStepCount();
-
-    Robot* GetRobot();
-
-    Earthquake earthquake;
-
-private:
-    Robot* robot;
-    Terrain terrain;
-    std::vector<Object *> objects;
-};
-
-#endif
+        world->SetGravity(b2Vec2{(float)v(gen) * magnitude, (float)v(gen) * magnitude});
+    }
+}

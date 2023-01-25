@@ -20,57 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#ifndef MARSIM_EARTHQUAKE_H
+#define MARSIM_EARTHQUAKE_H
 
-#include "earthquake.h"
-#include "framework/application.h"
-#include "terrain.h"
+#include <box2d/box2d.h>
 
-class Object;
-class Robot;
+class Simulation;
 
-class Simulation : public Application
+class Earthquake
 {
 public:
-    Simulation();
+    explicit Earthquake(b2World* world, Simulation* sim);
 
-    ~Simulation() override;
+    void trigger(float magnitude, int steps);
 
-    void UpdateObjects();
-
-    void WakeAllObjects();
-
-    void ApplySlopeForce();
-
-    void Step(Settings &settings) override;
-
-    void Keyboard(int key) override;
-
-    void KeyboardUp(int key) override;
-
-    void SimulateObject(Object *object);
-
-    void DestroyObject(Object *object);
-
-    b2World* GetWorld();
-
-    static Simulation *Create();
-
-    void BeginContact(b2Contact *contact) override;
-
-    void EndContact(b2Contact *contact) override;
-
-    int32 GetStepCount();
-
-    Robot* GetRobot();
-
-    Earthquake earthquake;
+    void update(int step);
 
 private:
-    Robot* robot;
-    Terrain terrain;
-    std::vector<Object *> objects;
+    b2World* world;
+    Simulation* simulation;
+    float magnitude{0.f};
+    int continueUntil = 0;
+    int currentStep{};
 };
 
-#endif
+#endif // MARSIM_EARTHQUAKE_H
