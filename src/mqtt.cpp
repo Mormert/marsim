@@ -103,13 +103,13 @@ on_message_(struct mosquitto *mosq, void *userdata, const struct mosquitto_messa
 void
 on_connect(struct mosquitto *mosq, void *userdata, int result)
 {
-    printf("connecting...\n");
+    printf("Connecting...\n");
     if (!result) {
-        printf("connected successfully");
+        std::cout << "Connection succeeded!" << std::endl;
         /* Connected successfully. */
 
     } else {
-        /* Connect failed. */
+        std::cerr << "CONNECTION FAILED!" << std::endl;
     }
 }
 // log to debug in case of error during connect/pub/sub
@@ -204,8 +204,6 @@ Mqtt::sendQueuedMessages()
 
         std::string jsonString;
 
-        std::cout << j.dump(4) << std::endl;
-
         if (use_messagepack) {
             auto msgPack = nlohmann::json::to_msgpack(j);
             jsonString = std::string(msgPack.begin(), msgPack.end());
@@ -242,8 +240,6 @@ Mqtt::sendMqtt(const std::string &topic, const std::string &data)
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
     sentMessages++;
-
-    std::cout << "SENT MSG WITH SIZE: " << data.length() << std::endl;
 }
 
 void
@@ -259,7 +255,7 @@ Mqtt::init()
     }
     mosquitto_tls_opts_set(mqtt, 1, "tlsv1.2", NULL);
     mosquitto_tls_insecure_set(mqtt, true);
-    mosquitto_log_callback_set(mqtt, my_log_callback);
+    // mosquitto_log_callback_set(mqtt, my_log_callback);
     mosquitto_connect_callback_set(mqtt, on_connect);
     mosquitto_message_callback_set(
         mqtt, on_message); // change this to on_PNGmessage when receiving the image from the situation reporting module
