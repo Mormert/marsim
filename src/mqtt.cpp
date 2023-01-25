@@ -47,12 +47,29 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
             std::cout << "Image received and saved as lunar_image.png" << std::endl;
         }
         if (strcmp(message->topic, "sim/control") == 0) {
-            // TO DO: receive commands through this
-
             std::string payloadStr((char *)message->payload, message->payloadlen);
 
+            int receiveCompression = *Mqtt::getInstance().getCompressionReceiveInt();
+
+            // Decompress
+            if (receiveCompression == 1) {
+                zlibcomplete::GZipDecompressor gZipDecompressor;
+                payloadStr = gZipDecompressor.decompress(payloadStr);
+            } else if (receiveCompression == 2) {
+                zlibcomplete::ZLibDecompressor zLibDecompressor{};
+                payloadStr = zLibDecompressor.decompress(payloadStr);
+            }
+
             try {
-                nlohmann::json j = nlohmann::json::parse(payloadStr);
+                bool receiveMsgPack = *Mqtt::getInstance().useMessagePackReceiveBool();
+
+                nlohmann::json j;
+                if (receiveMsgPack) {
+                    j = nlohmann::json::from_msgpack(payloadStr);
+                } else {
+                    j = nlohmann::json::parse(payloadStr);
+                }
+
                 std::string type = j["type"];
                 nlohmann::json jsonPayload = j["data"];
 
@@ -192,18 +209,18 @@ Mqtt::sendQueuedMessages()
 
         std::string jsonString;
 
-        if (use_messagepack) {
+        if (sendWithMessagePack) {
             auto msgPack = nlohmann::json::to_msgpack(j);
             jsonString = std::string(msgPack.begin(), msgPack.end());
         } else {
             jsonString = j.dump();
         }
 
-        if (compression == 1) {
+        if (sendCompression == 1) {
             zlibcomplete::GZipCompressor gZipCompressor(9, zlibcomplete::flush_parameter::auto_flush);
             jsonString = gZipCompressor.compress(jsonString);
             gZipCompressor.finish();
-        } else if (compression == 2) {
+        } else if (sendCompression == 2) {
             zlibcomplete::ZLibCompressor zLibCompressor(9, zlibcomplete::flush_parameter::auto_flush);
             jsonString = zLibCompressor.compress(jsonString);
             zLibCompressor.finish();
@@ -259,7 +276,7 @@ Mqtt::cleanup()
 bool *
 Mqtt::useMessagePackBool()
 {
-    return &use_messagepack;
+    return &sendWithMessagePack;
 }
 unsigned int
 Mqtt::getSentBytes()
@@ -269,7 +286,7 @@ Mqtt::getSentBytes()
 int *
 Mqtt::getCompressionInt()
 {
-    return &compression;
+    return &sendCompression;
 }
 float
 Mqtt::getEmissionSpeed()
@@ -343,4 +360,14 @@ Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
     std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)),
                                           std::istreambuf_iterator<char>());
     mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, false);
+}
+bool *
+Mqtt::useMessagePackReceiveBool()
+{
+    return &receiveWithMessagePack;
+}
+int *
+Mqtt::getCompressionReceiveInt()
+{
+    return &receiveCompression;
 }

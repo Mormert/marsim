@@ -442,11 +442,11 @@ static void UpdateUI()
                                 ImGui::Separator();
 
                                 ImGui::TextWrapped("Emit as MessagePack to optimize network communication?\nIn future, this will be the default!");
-                                ImGui::Checkbox("Use MessagePack", Mqtt::getInstance().useMessagePackBool());
+                                ImGui::Checkbox("Use MessagePack (send)", Mqtt::getInstance().useMessagePackBool());
 
                                 ImGui::Separator();
 
-                                ImGui::TextWrapped("Emit with compression?");
+                                ImGui::TextWrapped("Emit with compression? (send)");
 
                                 ImGui::RadioButton("None", Mqtt::getInstance().getCompressionInt(), 0); ImGui::SameLine();
                                 ImGui::RadioButton("GZip", Mqtt::getInstance().getCompressionInt(), 1); ImGui::SameLine();
@@ -460,6 +460,18 @@ static void UpdateUI()
                                 ImGui::Text("%d", Mqtt::getInstance().getMessagesSent());
                                 ImGui::Text("Current emission (kilobytes/sec):");
                                 ImGui::Text("%f", (float)Mqtt::getInstance().getEmissionSpeed()/1000.f);
+                                ImGui::Separator();
+
+                                ImGui::TextWrapped("Receive as MessagePack to optimize network communication?\nIn future, this will be the default!");
+                                ImGui::Checkbox("Use MessagePack (receive)", Mqtt::getInstance().useMessagePackReceiveBool());
+
+                                ImGui::TextWrapped("Receive with compression? (receive)");
+
+                                ImGui::PushID("ReceiveComp");
+                                ImGui::RadioButton("None", Mqtt::getInstance().getCompressionReceiveInt(), 0); ImGui::SameLine();
+                                ImGui::RadioButton("GZip", Mqtt::getInstance().getCompressionReceiveInt(), 1); ImGui::SameLine();
+                                ImGui::RadioButton("ZLib", Mqtt::getInstance().getCompressionReceiveInt(), 2); ImGui::SameLine();
+                                ImGui::PopID();
                                 ImGui::Separator();
                                 ImGui::Text("Amount of received kilobytes (total):");
                                 ImGui::Text("%f", (float)Mqtt::getInstance().receivedBytesTotal/1000.f);

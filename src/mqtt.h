@@ -67,6 +67,10 @@ public:
 
     int* getCompressionInt();
 
+    bool *useMessagePackReceiveBool();
+
+    int* getCompressionReceiveInt();
+
     float getEmissionSpeed();
 
     unsigned int getSentBytes();
@@ -110,8 +114,11 @@ private:
 
 
 
-    int compression{0}; // 0 = no, 1 = gzip, 2 = zlib
-    bool use_messagepack{false};
+    int sendCompression{0}; // 0 = no, 1 = gzip, 2 = zlib
+    bool sendWithMessagePack{false};
+
+    int receiveCompression{0}; // 0 = no, 1 = gzip, 2 = zlib
+    bool receiveWithMessagePack{false};
 
     mosquitto *mqtt;
     Simulation* simulation;
