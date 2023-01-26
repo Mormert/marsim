@@ -215,7 +215,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 		{
 		case GLFW_KEY_ESCAPE:
 			// Quit
-			glfwSetWindowShouldClose(g_mainWindow, GL_TRUE);
+			// glfwSetWindowShouldClose(g_mainWindow, GL_TRUE);
 			break;
 
 		case GLFW_KEY_LEFT:

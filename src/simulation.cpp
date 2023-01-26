@@ -30,6 +30,7 @@
 #include "tornado.h"
 #include "volcano.h"
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -37,8 +38,7 @@
 Simulation::Simulation() : earthquake{m_world, this}
 {
 
-    Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_hard.png", "data/lunar_blurred.png", 1.2f);
-    terrain = new Terrain{"data/lunar_blurred.png"};
+    GenerateBlurredTerrain();
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
@@ -300,4 +300,24 @@ Terrain *
 Simulation::GetTerrain()
 {
     return terrain;
+}
+void
+Simulation::GenerateBlurredTerrain()
+{
+    if (std::filesystem::exists("data/lunar_received.png")) {
+        // If there is a received lunar image, use this instead
+        std::cout << "Using provided received lunar image." << std::endl;
+        Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_received.png", "data/lunar_blurred.png", 1.2f);
+    } else {
+        // Default to lunar_hard
+        std::cout << "No received lunar image found, using default lunar image." << std::endl;
+        Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_hard.png", "data/lunar_blurred.png", 1.2f);
+    }
+
+    if(terrain)
+    {
+        delete terrain;
+    }
+
+    terrain = new Terrain{"data/lunar_blurred.png"};
 }

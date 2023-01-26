@@ -42,8 +42,9 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
             std::ofstream image_file("data/lunar_received.png", std::ios::binary);
             image_file.write(reinterpret_cast<const char *>(message->payload), message->payloadlen);
             image_file.close();
-            // call function for update of image here
-            std::cout << "Image received and saved as lunar_image.png" << std::endl;
+
+            std::cout << "Image received and saved as data/lunar_received.png\nRegenerating blurred terrain." << std::endl;
+            Mqtt::getInstance().simulation->GenerateBlurredTerrain();
         }
         if (strcmp(message->topic, "sim/control") == 0) {
             std::string payloadStr((char *)message->payload, message->payloadlen);

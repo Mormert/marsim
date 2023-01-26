@@ -90,6 +90,8 @@ public:
     unsigned int receivedBytesSecond{0};
     unsigned int receivedBytesLastSecond{0};
 
+    Simulation* simulation;
+
 private:
     // Publishes the payload for the given topic
     void sendMqtt(const std::string &topic, const std::string &data);
@@ -121,7 +123,6 @@ private:
     bool receiveWithMessagePack{false};
 
     mosquitto *mqtt;
-    Simulation* simulation;
 };
 
 #endif // MARSIM_MQTT_H

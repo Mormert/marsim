@@ -54,6 +54,8 @@ public:
 
     void DestroyObject(Object *object);
 
+    void GenerateBlurredTerrain();
+
     b2World* GetWorld();
 
     Terrain* GetTerrain();
@@ -74,7 +76,7 @@ public:
 
 private:
     Robot* robot;
-    Terrain* terrain;
+    Terrain* terrain{nullptr};
     std::vector<Object *> objects;
 };
 
