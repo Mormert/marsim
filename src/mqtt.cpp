@@ -24,7 +24,6 @@
 
 #include "robot.h"
 #include "simulation.h"
-#include "wheel.h"
 #include <chrono>
 #include <fstream>
 #include <sstream>
@@ -93,7 +92,7 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
 
         } else {
             // the message is not the image on the image channel, therefore...
-            printf("%s %s\n", message->topic, message->payload);
+            printf("%s %s\n", message->topic, (char*)message->payload);
         }
 
         //}

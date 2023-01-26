@@ -207,6 +207,8 @@ Robot::drop(unsigned int index)
     storage.erase(storage.begin() + index);
 
     recalculateMass();
+
+    return true;
 }
 
 std::vector<nlohmann::json>

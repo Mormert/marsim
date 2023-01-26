@@ -74,7 +74,7 @@ public:
 
 private:
     Robot* robot;
-    Terrain terrain;
+    Terrain* terrain;
     std::vector<Object *> objects;
 };
 

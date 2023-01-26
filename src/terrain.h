@@ -23,15 +23,14 @@
 #ifndef MARSIM_TERRAIN_H
 #define MARSIM_TERRAIN_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class Terrain
 {
 
 public:
-
-    explicit Terrain(const std::string& gaussianImagePath);
+    explicit Terrain(const std::string &gaussianImagePath);
 
     ~Terrain();
 
@@ -43,8 +42,11 @@ public:
 
     int getTextureHeight();
 
-private:
+    static void GenerateGaussianImageFromHardEdgeImage(const std::string &hardImagePath,
+                                                       const std::string &gaussianImageOutputPath,
+                                                       float sigma);
 
+private:
     unsigned int terrainTextureID{};
     void generateTexture(const std::string &gaussianImagePath);
 

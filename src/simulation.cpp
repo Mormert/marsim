@@ -34,8 +34,11 @@
 #include <random>
 #include <vector>
 
-Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}, earthquake{m_world, this}
+Simulation::Simulation() : earthquake{m_world, this}
 {
+
+    Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_hard.png", "data/lunar_blurred.png", 1.2f);
+    terrain = new Terrain{"data/lunar_blurred.png"};
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
@@ -58,7 +61,7 @@ Simulation::Simulation() : terrain{"data/lunar_gaussian.png"}, earthquake{m_worl
     }
 
     for (int i = 0; i < 20; i++) {
-        auto alien = new Alien{this, &terrain, {(float)distrX(gen), (float)distrY(gen)}, (float)distrY(gen)};
+        auto alien = new Alien{this, terrain, {(float)distrX(gen), (float)distrY(gen)}, (float)distrY(gen)};
         SimulateObject(alien);
     }
 
@@ -98,6 +101,8 @@ Simulation::~Simulation()
     }
 
     objects = {};
+
+    delete terrain;
 };
 
 void
@@ -118,18 +123,18 @@ Simulation::ApplySlopeForce()
         }
 
         auto robotPos = object->getPosition();
-        b2Vec2 terrainPixelPos = {robotPos.x + terrain.getTextureWidth() / 2.f,
-                                  terrain.getTextureHeight() / 2.f - robotPos.y};
+        b2Vec2 terrainPixelPos = {robotPos.x + terrain->getTextureWidth() / 2.f,
+                                  terrain->getTextureHeight() / 2.f - robotPos.y};
 
         float x = terrainPixelPos.x;
         float y = terrainPixelPos.y;
-        auto width = (float)terrain.getTextureWidth();
-        auto height = (float)terrain.getTextureHeight();
+        auto width = (float)terrain->getTextureWidth();
+        auto height = (float)terrain->getTextureHeight();
 
         float slopeX =
-            terrain.getHeight(x < width - 1.f ? x + 1.f : x, y) - terrain.getHeight(x > 0.f ? x - 1.f : x, y);
+            terrain->getHeight(x < width - 1.f ? x + 1.f : x, y) - terrain->getHeight(x > 0.f ? x - 1.f : x, y);
         float slopeZ =
-            terrain.getHeight(x, y < height - 1.f ? y + 1.f : y) - terrain.getHeight(x, y > 0.f ? y - 1.f : y);
+            terrain->getHeight(x, y < height - 1.f ? y + 1.f : y) - terrain->getHeight(x, y > 0.f ? y - 1.f : y);
 
         if (x == 0 || x == width - 1) {
             slopeX *= 2;
@@ -152,7 +157,7 @@ void
 Simulation::Step(Settings &settings)
 {
     g_debugDraw.DrawImageTexture(
-        terrain.getTextureID(), {0.f, 0.f}, {(float)terrain.getTextureWidth(), (float)terrain.getTextureHeight()});
+        terrain->getTextureID(), {0.f, 0.f}, {(float)terrain->getTextureWidth(), (float)terrain->getTextureHeight()});
 
     earthquake.update(m_stepCount);
 
@@ -294,5 +299,5 @@ Simulation::WakeAllObjects()
 Terrain *
 Simulation::GetTerrain()
 {
-    return &terrain;
+    return terrain;
 }
