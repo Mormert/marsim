@@ -92,6 +92,9 @@ public:
 
     Simulation* simulation;
 
+    bool printSendingMsgs{true};
+    bool printReceivingMsgs{true};
+
 private:
     // Publishes the payload for the given topic
     void sendMqtt(const std::string &topic, const std::string &data);

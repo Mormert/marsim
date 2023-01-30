@@ -481,6 +481,10 @@ static void UpdateUI()
                                 ImGui::Text("Currently receiving (kilobytes/sec):");
                                 ImGui::Text("%f", (float)Mqtt::getInstance().receivedBytesLastSecond/1000.f);
 
+                                ImGui::Separator();
+                                ImGui::Checkbox("Print sending msgs?", &Mqtt::getInstance().printSendingMsgs);
+                                ImGui::Checkbox("Print receiving msgs?", &Mqtt::getInstance().printReceivingMsgs);
+
                                 ImGui::EndTabItem();
                         }
                         if (ImGui::BeginTabItem("Robot"))

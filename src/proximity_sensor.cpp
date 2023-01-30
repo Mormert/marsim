@@ -83,7 +83,7 @@ ProximitySensor::update()
 
         j["sensed_objs"] = objects;
 
-        Mqtt::getInstance().send("simulator", name, j);
+        Mqtt::getInstance().send("sim/out/general", name, j);
     }
 
     updateCounter++;

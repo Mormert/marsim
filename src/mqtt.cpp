@@ -37,16 +37,21 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
     Mqtt::getInstance().receivedMessages++;
     Mqtt::getInstance().receivedBytesTotal += message->payloadlen;
     Mqtt::getInstance().receivedBytesSecond += message->payloadlen;
+
+    if (Mqtt::getInstance().printReceivingMsgs) {
+        printf("Received MQTT message topic(%s): %s\n", message->topic, (char *)message->payload);
+    }
+
     if (message->payloadlen) {
         if (strcmp(message->topic, "sim/in/image") == 0) {
             std::ofstream image_file("data/lunar_received.png", std::ios::binary);
             image_file.write(reinterpret_cast<const char *>(message->payload), message->payloadlen);
             image_file.close();
 
-            std::cout << "Image received and saved as data/lunar_received.png\nRegenerating blurred terrain." << std::endl;
+            std::cout << "Image received and saved as data/lunar_received.png\nRegenerating blurred terrain."
+                      << std::endl;
             Mqtt::getInstance().simulation->GenerateBlurredTerrain();
-        }
-        if (strcmp(message->topic, "sim/control") == 0) {
+        } else if (strcmp(message->topic, "sim/in/control") == 0) {
             std::string payloadStr((char *)message->payload, message->payloadlen);
 
             int receiveCompression = *Mqtt::getInstance().getCompressionReceiveInt();
@@ -88,16 +93,19 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
                 }
 
             } catch (std::exception e) {
-                std::cout << "Something went wrong trying to interpret message: " << e.what() << std::endl;
+                std::cerr << "Something went wrong trying to interpret message: " << e.what() << std::endl;
+                std::cerr << "Refer to the simulation documentation for messages." << std::endl;
+                std::cerr << "Alternatively, look at the source code for simulator receiving messages "
+                             "at:\nhttps://github.com/mormert/marsim/blob/main/src/mqtt.cpp"
+                          << std::endl;
             }
-
         } else {
-            // the message is not the image on the image channel, therefore...
-            printf("%s %s\n", message->topic, (char*)message->payload);
+            std::cerr << "WARNING: something went wrong trying to receive MQTT message" << std::endl;
+            std::cerr << "Refer to the simulation documentation for messages." << std::endl;
+            std::cerr << "Alternatively, look at the source code for simulator receiving messages "
+                         "at:\nhttps://github.com/mormert/marsim/blob/main/src/mqtt.cpp"
+                      << std::endl;
         }
-
-        //}
-        // printf("%s %s\n", message->topic, message->payload);
     } else {
         printf("%s (null)\n", message->topic);
     }
@@ -131,17 +139,16 @@ Mqtt::~Mqtt() { cleanup(); }
 void
 Mqtt::connectMqtt(const std::string &address, int port)
 {
-    // TODO: Connect to MQTT Broker
     // Set isConnected bool to true IF we connected successfully
     if (mosquitto_connect(mqtt, address.c_str(), port, 60)) {
         is_connected = false;
         std::cout << "could not connect!" << std::endl;
     } else {
         is_connected = true;
-        if (mosquitto_subscribe(mqtt, NULL, "sim/control", 1) != MOSQ_ERR_SUCCESS) {
+        if (mosquitto_subscribe(mqtt, NULL, "sim/in/control", 1) != MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
-        if (mosquitto_subscribe(mqtt, NULL, "sim/image", 1) != MOSQ_ERR_SUCCESS) {
+        if (mosquitto_subscribe(mqtt, NULL, "sim/in/image", 1) != MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
     }
@@ -241,6 +248,9 @@ Mqtt::isConnected()
 void
 Mqtt::sendMqtt(const std::string &topic, const std::string &data)
 {
+    if (printSendingMsgs) {
+        std::cout << "Sending topic(" << topic << "): " << data << std::endl;
+    }
     mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, false);
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
@@ -329,7 +339,8 @@ Mqtt::receiveMsgDrop(const nlohmann::json &data)
         unsigned int itemIndex = data["index"];
 
         if (!Mqtt::getInstance().simulation->GetRobot()->drop(itemIndex)) {
-            std::cerr << "Failed to drop item with index " << itemIndex << ", it does not exist in storage." << std::endl;
+            std::cerr << "Failed to drop item with index " << itemIndex << ", it does not exist in storage."
+                      << std::endl;
         }
     } catch (std::exception &e) {
         std::cerr << "Failed to drop the specified item with an index: " << e.what() << std::endl;

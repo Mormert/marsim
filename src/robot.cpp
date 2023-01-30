@@ -140,7 +140,7 @@ Robot::update()
         j["storage"] = storage;
         j["in_shadow"] = isInShadow();
 
-        Mqtt::getInstance().send("simulator", "Robot", j);
+        Mqtt::getInstance().send("sim/out/general", "Robot", j);
     }
 
     shadow_zone.draw();
