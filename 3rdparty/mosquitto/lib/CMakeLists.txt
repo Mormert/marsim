@@ -59,7 +59,7 @@ set(C_SRC
 	util_mosq.c util_topic.c util_mosq.h
 	will_mosq.c will_mosq.h)
 
-set (LIBRARIES ${OPENSSL_LIBRARIES} ${PTHREAD_LIBRARIES})
+set (LIBRARIES OpenSSL::Crypto ${OPENSSL_LIBRARIES} ${PTHREAD_LIBRARIES})
 
 if (UNIX AND NOT APPLE AND NOT ANDROID)
 	find_library(LIBRT rt)
