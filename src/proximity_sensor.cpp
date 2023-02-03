@@ -62,7 +62,7 @@ ProximitySensor::ProximitySensor(Simulation* simulation, b2Vec2 pos, float radiu
 void
 ProximitySensor::update()
 {
-    if (updateCounter % 10 == 0) {
+    if (updateCounter % updateFrequency == 0) {
 
         nlohmann::json j;
 

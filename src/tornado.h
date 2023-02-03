@@ -32,7 +32,6 @@ public:
 
     void update() override;
 
-private:
     float radius{}, magnitude{};
 };
 

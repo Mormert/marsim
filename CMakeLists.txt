@@ -50,7 +50,12 @@ set (MARSIM_SOURCE_FILES
 		src/shadow_zone.cpp
 		src/earthquake.cpp
 		src/tornado.cpp
-		src/volcano.cpp)
+		src/volcano.cpp
+		src/physical_weather_sensor.cpp
+		src/temperature_sensor.cpp
+		src/seismic_sensor.cpp
+		src/wind_sensor.cpp
+		)
 
 add_executable(marsim ${MARSIM_SOURCE_FILES})
 target_include_directories(marsim PRIVATE src 3rdparty 3rdparty/mosquitto/include 3rdparty/zlibcomplete/zlib)

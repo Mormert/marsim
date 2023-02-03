@@ -80,3 +80,13 @@ Volcano::trigger(float magnitude, int steps)
     this->magnitude = magnitude;
     simulation->WakeAllObjects();
 }
+
+bool
+Volcano::isActive() const
+{
+    if(stepCounter < continueUntil)
+    {
+        return true;
+    }
+    return false;
+}

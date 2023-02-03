@@ -61,3 +61,12 @@ Earthquake::update(int step)
         world->SetGravity(b2Vec2{(float)v(gen) * magnitude, (float)v(gen) * magnitude});
     }
 }
+bool
+Earthquake::isActive() const
+{
+    if(currentStep < continueUntil)
+    {
+        return true;
+    }
+    return false;
+}

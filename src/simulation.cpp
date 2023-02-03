@@ -26,9 +26,12 @@
 #include "friction_zone.h"
 #include "proximity_sensor.h"
 #include "robot.h"
+#include "seismic_sensor.h"
 #include "stone.h"
+#include "temperature_sensor.h"
 #include "tornado.h"
 #include "volcano.h"
+#include "wind_sensor.h"
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
@@ -84,6 +87,21 @@ Simulation::Simulation() : earthquake{m_world, this}
         SimulateObject(tornado);
     }
 
+    for (int i = 0; i < 5; i++) {
+        auto windSensor = new WindSensor{this, {(float)distrX(gen), (float)distrY(gen)}};
+        SimulateObject(windSensor);
+    }
+
+    for (int i = 0; i < 5; i++) {
+        auto seismicSensor = new SeismicSensor{this, {(float)distrX(gen), (float)distrY(gen)}};
+        SimulateObject(seismicSensor);
+    }
+
+    for (int i = 0; i < 5; i++) {
+        auto tempSensor = new TemperatureSensor{this, {(float)distrX(gen), (float)distrY(gen)}};
+        SimulateObject(tempSensor);
+    }
+
     volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
     SimulateObject(volcano);
 }
@@ -108,9 +126,17 @@ Simulation::~Simulation()
 void
 Simulation::UpdateObjects()
 {
+
+    volcanoDatas.clear();
+    tornadoDatas.clear();
+
     for (auto &&object : objects) {
-        if (object->updateable)
+        if (object->updateable) {
             object->update();
+        }
+        if (auto tornado = dynamic_cast<Tornado *>(object)) {
+            tornadoDatas.push_back({tornado->getPosition(), tornado->magnitude, tornado->radius});
+        }
     }
 }
 
@@ -314,10 +340,27 @@ Simulation::GenerateBlurredTerrain()
         Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_hard.png", "data/lunar_blurred.png", 1.2f);
     }
 
-    if(terrain)
-    {
+    if (terrain) {
         delete terrain;
     }
 
     terrain = new Terrain{"data/lunar_blurred.png"};
+}
+
+std::vector<TornadoData> &
+Simulation::GetTornados()
+{
+    return tornadoDatas;
+}
+
+std::vector<VolcanoData>
+Simulation::GetVolcanoes() const
+{
+    std::vector<VolcanoData> vds;
+    VolcanoData vd{};
+    vd.magnitude = volcano->magnitude;
+    vd.radius = volcano->radius;
+    vd.pos = volcano->getPosition();
+    vds.push_back(vd);
+    return vds;
 }

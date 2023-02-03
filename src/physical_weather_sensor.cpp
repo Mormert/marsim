@@ -20,27 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_VOLCANO_H
-#define MARSIM_VOLCANO_H
+#include "physical_weather_sensor.h"
 
-#include "proximity_sensor.h"
 
-class Volcano : public ProximitySensor
+PhysicalWeatherSensor::PhysicalWeatherSensor(Simulation* simulation, b2Vec2 pos) : Object(simulation) {
+
+    b2BodyDef def;
+    def.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    def.type = b2_dynamicBody;
+    def.position = pos;
+    def.angle = 0.f;
+    def.linearDamping = 0.5;
+    def.bullet = false;
+    def.angularDamping = 0.8;
+    this->body = world->CreateBody(&def);
+    body->SetLinearDamping(linearDamping);
+    body->SetAngularDamping(angularDamping);
+
+    b2FixtureDef fixdef;
+    fixdef.density = 1.0;
+    fixdef.friction = 0.5;
+    fixdef.restitution = 0.4;
+    fixdef.userData.pointer = reinterpret_cast<uintptr_t>(this);
+    b2PolygonShape shape;
+    shape.SetAsBox(0.5f, 0.5f);
+    fixdef.shape = &shape;
+    body->CreateFixture(&fixdef);
+
+    name = "Weather Sensor";
+}
+
+void
+PhysicalWeatherSensor::update()
 {
-public:
-    Volcano(Simulation *simulation, b2Vec2 pos, float radius);
-
-    void update() override;
-
-    void trigger(float magnitude, int steps);
-
-    [[nodiscard]] bool isActive() const;
-
-    float radius{}, magnitude{0.f};
-private:
-
-    int stepCounter{0};
-    int continueUntil{0};
-};
-
-#endif // MARSIM_VOLCANO_H
+    // nothing
+}

@@ -31,6 +31,18 @@ class Object;
 class Robot;
 class Volcano;
 
+struct TornadoData {
+    b2Vec2 pos;
+    float magnitude;
+    float radius;
+};
+
+struct VolcanoData {
+    b2Vec2 pos;
+    float magnitude;
+    float radius;
+};
+
 class Simulation : public Application
 {
 public:
@@ -56,9 +68,13 @@ public:
 
     void GenerateBlurredTerrain();
 
-    b2World* GetWorld();
+    std::vector<TornadoData> &GetTornados();
 
-    Terrain* GetTerrain();
+    [[nodiscard]] std::vector<VolcanoData> GetVolcanoes() const;
+
+    b2World *GetWorld();
+
+    Terrain *GetTerrain();
 
     static Simulation *Create();
 
@@ -68,15 +84,19 @@ public:
 
     int32 GetStepCount();
 
-    Robot* GetRobot();
+    Robot *GetRobot();
 
     Earthquake earthquake;
 
-    Volcano* volcano;
+    Volcano *volcano;
 
 private:
-    Robot* robot;
-    Terrain* terrain{nullptr};
+
+    std::vector<TornadoData> tornadoDatas;
+    std::vector<VolcanoData> volcanoDatas;
+
+    Robot *robot;
+    Terrain *terrain{nullptr};
     std::vector<Object *> objects;
 };
 

@@ -20,27 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_VOLCANO_H
-#define MARSIM_VOLCANO_H
+#ifndef MARSIM_WIND_SENSOR_H
+#define MARSIM_WIND_SENSOR_H
 
-#include "proximity_sensor.h"
+#include "physical_weather_sensor.h"
 
-class Volcano : public ProximitySensor
+class WindSensor : public PhysicalWeatherSensor
 {
 public:
-    Volcano(Simulation *simulation, b2Vec2 pos, float radius);
+    WindSensor(Simulation* simulation, b2Vec2 pos);
 
     void update() override;
-
-    void trigger(float magnitude, int steps);
-
-    [[nodiscard]] bool isActive() const;
-
-    float radius{}, magnitude{0.f};
-private:
-
-    int stepCounter{0};
-    int continueUntil{0};
 };
 
-#endif // MARSIM_VOLCANO_H
+#endif // MARSIM_WIND_SENSOR_H

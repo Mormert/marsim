@@ -27,7 +27,7 @@
 PickupSensor::PickupSensor(Simulation* simulation, Robot *robot, b2Vec2 pos, float radius) : ProximitySensor(simulation)
 {
     terrain_movable = false;
-
+    updateFrequency = 10;
 
     this->radius = radius;
 

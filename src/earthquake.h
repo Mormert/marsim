@@ -36,6 +36,8 @@ public:
 
     void update(int step);
 
+    [[nodiscard]] bool isActive() const;
+
 private:
     b2World* world;
     Simulation* simulation;

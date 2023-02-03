@@ -53,6 +53,7 @@ protected:
     float radius{15.f};
 
     unsigned int updateCounter{0};
+    int updateFrequency = 20;
 };
 
 #endif // MARSIM_PROXIMITY_SENSOR_H
