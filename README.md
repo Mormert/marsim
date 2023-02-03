@@ -12,6 +12,9 @@ Make sure to be logged-in on GitHub, then download the simulator from this link:
 
 (Intended for fellow MscEng students at Örebro University, taking the 6 month course "Integrated Project Work in Computer Science")
 
+# Interfacing Documentation (MQTT)
+The documentation on how to control the simulation from MQTT can be found [here](https://docs.google.com/document/d/1QhjJ_iIXsIAI4HF25bgt5XnktXVw-pdPO3wBrX61lCM/edit?usp=sharing).
+
 # Visual Debugger
 ![Simulator](media/simulator_top.png)
 ![Simulator Robot](media/simulator_robot.png)
@@ -24,6 +27,7 @@ Make sure to be logged-in on GitHub, then download the simulator from this link:
 - __GLM__ for mathematics
 - __Zlib__ for network message compression
 - __zlibcomplete__ for C++ interface to Zlib
+- __OpenSSL__ for MQTT TLS security 
 - __glad__ for OpenGL loading
 - __GLFW__ for window management
 - __Dear ImGui__ for user interface
@@ -31,3 +35,5 @@ Make sure to be logged-in on GitHub, then download the simulator from this link:
 - __OpenGL 3.3__ for graphics rendering
 
 C++ 17 is required. Builds for Mac, Windows & Linux.
+
+
