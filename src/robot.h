@@ -26,6 +26,7 @@
 #include "object.h"
 #include "wheel.h"
 #include "shadow_zone.h"
+#include "Battery.h"
 
 
 #include <glm/glm.hpp>
@@ -94,6 +95,7 @@ private:
     float storageMass{0.f};
 
     ShadowZone shadow_zone{b2Vec2{250.f, 0.f}, 45.f};
+    Battery *battery;
 
     friend class Simulation;
 

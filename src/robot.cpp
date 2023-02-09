@@ -73,6 +73,8 @@ Robot::Robot(
     laser = new Laser{world, 45.f};
     laser->setPosition(position);
 
+    battery = new Battery(12, 100, 0.01, 1);
+
     name = "Robot";
 }
 
@@ -85,6 +87,17 @@ Robot::attachWheels(std::vector<Wheel *> &wheels)
 void
 Robot::update()
 {
+    //uncomment below if you want to print the battery percentage
+    std::cout << battery->getSoC() * 100 << std::endl;
+
+    //use of energy just for staying on, for sensors and all
+    battery->BatUpdate(1.5, 1);
+
+    if(!isInShadow()){
+        //constant charge with 3 amps per update if not in shadow zone
+        battery->BatUpdate(-3, 1);
+    }
+
 
     // Eliminate sideways velocity
     for (auto &&wheel : wheels) {
@@ -95,12 +108,14 @@ Robot::update()
         auto pos = this->wheels[0]->body->GetWorldCenter();
         b2Vec2 force = {0.f, this->power * leftAccelerate};
         this->wheels[0]->body->ApplyForce(wheels[0]->body->GetWorldVector(force), pos, true);
+        battery->BatUpdate(12, 1);
     }
 
     if (rightAccelerate != 0.f && getSpeedKMH() < maxSpeed) {
         auto pos = this->wheels[1]->body->GetWorldCenter();
         b2Vec2 force = {0.f, this->power * rightAccelerate};
         this->wheels[1]->body->ApplyForce(wheels[1]->body->GetWorldVector(force), pos, true);
+        battery->BatUpdate(12, 1);
     }
 
     // If going very slowly, stop the car completely.
@@ -126,6 +141,8 @@ Robot::update()
     auto laserHit = laser->castRay();
     if (laserHit && shootNextUpdate) {
         simulation->DestroyObject(laserHit);
+        //this battery usage doesn't account for missed shots so fix that
+        battery->BatUpdate(6, 1);
     }
     if (shootNextUpdate) {
         shootNextUpdate = false;

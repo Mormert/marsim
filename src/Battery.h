@@ -24,6 +24,7 @@
 #define MARSIM_BATTERY_H
 
 #include <math.h>
+#include <iostream>
 
 class Battery
 {
@@ -35,7 +36,7 @@ private:
     double Voltage_;
 
 public:
-    Battery(double voltage, double cap, double res, double CRate): Voltage_(voltage), cap_(cap), res_(res), CRate_(CRate) { }
+    Battery(double voltage, double cap, double res, double CRate);
     double Charge(double I, double T);
     double Supply(double I, double T);
     double getSoC();
