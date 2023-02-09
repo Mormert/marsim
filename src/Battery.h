@@ -23,18 +23,27 @@
 #ifndef MARSIM_BATTERY_H
 #define MARSIM_BATTERY_H
 
+#include <math.h>
+
 class Battery
 {
 private:
     double cap_;
     double res_;
     double cbs_ = 0.0;
+    double CRate_;
+    double Voltage_;
+
 public:
-    Battery(double cap, double res): cap_(cap), res_(res) { }
+    Battery(double voltage, double cap, double res, double CRate): Voltage_(voltage), cap_(cap), res_(res), CRate_(CRate) { }
     double Charge(double I, double T);
     double Supply(double I, double T);
     double getSoC();
     double getV(double I);
+
+    double getOCV(double n);
+    int BatUpdate(double I, double n);
+
 };
 
 #endif // MARSIM_BATTERY_H
