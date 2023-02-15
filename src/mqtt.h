@@ -83,6 +83,7 @@ public:
     static void receiveMsgLaserAngle(const nlohmann::json & data);
     static void receiveMsgLaserShoot(const nlohmann::json & data);
 
+    static inline std::string requestImagePath{};
     static void receiveMsgRequestImage(const nlohmann::json & data);
 
     unsigned int receivedMessages{0};

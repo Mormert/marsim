@@ -368,7 +368,12 @@ Mqtt::receiveMsgLaserShoot(const nlohmann::json &data)
 void
 Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
 {
-    std::ifstream image_file("data/lunar_image.png", std::ios::binary);
+    std::ifstream image_file(requestImagePath.c_str(), std::ios::binary);
+    if (!image_file.good()) {
+        std::cerr << "Could not open" << requestImagePath << "! The requested image will not be published to MQTT!"
+                  << std::endl;
+        return;
+    }
     std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)),
                                           std::istreambuf_iterator<char>());
     mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, false);

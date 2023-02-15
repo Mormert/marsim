@@ -400,7 +400,7 @@ static void ScrollCallback(GLFWwindow* window, double dx, double dy)
 
 static void UpdateUI()
 {
-	float menuWidth = 180.0f * s_displayScale * ImGui::GetIO().FontGlobalScale;
+	float menuWidth = 220.0f * s_displayScale * ImGui::GetIO().FontGlobalScale;
 	if (g_debugDraw.m_showUI)
 	{
 		ImGui::SetNextWindowPos({g_camera.m_width - menuWidth - 10.0f, 10.0f});
@@ -484,6 +484,36 @@ static void UpdateUI()
                                 ImGui::Separator();
                                 ImGui::Checkbox("Print sending msgs?", &Mqtt::getInstance().printSendingMsgs);
                                 ImGui::Checkbox("Print receiving msgs?", &Mqtt::getInstance().printReceivingMsgs);
+
+                                ImGui::EndTabItem();
+                        }
+                        if(ImGui::BeginTabItem("Setup"))
+                        {
+                                const auto& setup = dynamic_cast<Simulation*>(s_application)->setup;
+
+                                ImGui::TextWrapped("This initial simulator setup can be changed in the data/init.json file!");
+                                ImGui::Separator();
+
+                                ImGui::Text("RobotX: %f", setup.robotX);
+                                ImGui::Text("RobotY: %f", setup.robotY);
+                                ImGui::Text("RobotR: %f", setup.robotR);
+                                ImGui::Text("stonesAmount: %d", setup.stonesAmount);
+                                ImGui::Text("aliensAmount: %d", setup.aliensAmount);
+                                ImGui::Text("proximitySensorsAmount: %d", setup.proximitySensorsAmount);
+                                ImGui::Text("frictionZonesAmount: %d", setup.frictionZonesAmount);
+                                ImGui::Text("tornadoesAmount: %d", setup.tornadoesAmount);
+                                ImGui::Text("windSensorsAmount: %d", setup.windSensorsAmount);
+                                ImGui::Text("seismicSensorsAmount: %d", setup.seismicSensorsAmount);
+                                ImGui::Text("tempSensorsAmount: %d", setup.tempSensorsAmount);
+                                ImGui::Text("shadowFrontierX: %f", setup.shadowFrontierX);
+                                ImGui::Text("shadowFrontierY: %f", setup.shadowFrontierY);
+                                ImGui::Text("shadowFrontierR: %f", setup.shadowFrontierR);
+                                ImGui::Text("satelliteImageScaleFactor: %f", setup.satelliteImageScaleFactor);
+                                ImGui::Text("satelliteImagePath: %s", setup.satelliteImagePath.c_str());
+                                ImGui::Text("objectGenerationMinX: %f", setup.objectGenerationMinX);
+                                ImGui::Text("objectGenerationMaxX: %f", setup.objectGenerationMaxX);
+                                ImGui::Text("objectGenerationMinY: %f", setup.objectGenerationMinY);
+                                ImGui::Text("objectGenerationMaxY: %f", setup.objectGenerationMaxY);
 
                                 ImGui::EndTabItem();
                         }

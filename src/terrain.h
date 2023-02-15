@@ -46,6 +46,8 @@ public:
                                                        const std::string &gaussianImageOutputPath,
                                                        float sigma);
 
+    static inline float terrainScaling{1.f};
+
 private:
     unsigned int terrainTextureID{};
     void generateTexture(const std::string &gaussianImagePath);

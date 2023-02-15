@@ -25,8 +25,11 @@
 #include "laser.h"
 #include "mqtt.h"
 #include "pickup_sensor.h"
+#include "seismic_sensor.h"
 #include "simulation.h"
 #include "stone.h"
+#include "temperature_sensor.h"
+#include "wind_sensor.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <iostream>
@@ -143,8 +146,6 @@ Robot::update()
         Mqtt::getInstance().send("sim/out/general", "Robot", j);
     }
 
-    shadow_zone.draw();
-
     updateCounter++;
 }
 
@@ -204,6 +205,24 @@ Robot::drop(unsigned int index)
         simulation->SimulateObject(alien);
     }
 
+    if(itemName == "Temperature Sensor")
+    {
+        auto tempSensor = new TemperatureSensor{simulation, {pos.x, pos.y}};
+        simulation->SimulateObject(tempSensor);
+    }
+
+    if(itemName == "Wind Sensor")
+    {
+        auto windSensor = new WindSensor{simulation, {pos.x, pos.y}};
+        simulation->SimulateObject(windSensor);
+    }
+
+    if(itemName == "Seismic Sensor")
+    {
+        auto seismicSensor = new SeismicSensor{simulation, {pos.x, pos.y}};
+        simulation->SimulateObject(seismicSensor);
+    }
+
     storage.erase(storage.begin() + index);
 
     recalculateMass();
@@ -242,7 +261,7 @@ Robot::LaserAngleDegreesPtr()
 bool
 Robot::isInShadow()
 {
-    return shadow_zone.inShadowTest(getPosition());
+    return simulation->shadow_zone->inShadowTest(getPosition());
 }
 
 void

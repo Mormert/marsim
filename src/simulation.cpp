@@ -24,6 +24,7 @@
 #include "alien.h"
 #include "framework/application.h"
 #include "friction_zone.h"
+#include "mqtt.h"
 #include "proximity_sensor.h"
 #include "robot.h"
 #include "seismic_sensor.h"
@@ -34,18 +35,24 @@
 #include "wind_sensor.h"
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <random>
 #include <vector>
 
-Simulation::Simulation() : earthquake{m_world, this}
+Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 {
+
+    Terrain::terrainScaling = setup.satelliteImageScaleFactor;
+    Mqtt::requestImagePath = setup.satelliteImagePath;
 
     GenerateBlurredTerrain();
 
     m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
-    robot = new Robot{this, 2.f, 3.f, b2Vec2{10.f, 10.f}, 0.f, 480.f, 150.f};
+    shadow_zone = new ShadowZone({setup.shadowFrontierX, setup.shadowFrontierY}, setup.shadowFrontierR);
+
+    robot = new Robot{this, 2.f, 3.f, b2Vec2{setup.robotX, setup.robotY}, setup.robotR, 480.f, 150.f};
     auto wheels = std::vector<Wheel *>{new Wheel{this, robot, -1.5f, 0.0f, 0.5f, 0.5f},
                                        new Wheel{this, robot, 1.5f, 0.0f, 0.5f, 0.5f}};
 
@@ -55,49 +62,49 @@ Simulation::Simulation() : earthquake{m_world, this}
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> distrX(-369.f, 369.f);
-    std::uniform_real_distribution<> distrY(-205.f, 205.f);
+    std::uniform_real_distribution<> distrX(setup.objectGenerationMinX, setup.objectGenerationMaxX);
+    std::uniform_real_distribution<> distrY(setup.objectGenerationMinY, setup.objectGenerationMaxY);
     std::uniform_real_distribution<> distrR(1.f, 3.f);
-    for (int i = 0; i < 2000; i++) {
+    for (int i = 0; i < setup.stonesAmount; i++) {
         auto *stone = new Stone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distrR(gen)};
         SimulateObject(stone);
     }
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < setup.aliensAmount; i++) {
         auto alien = new Alien{this, terrain, {(float)distrX(gen), (float)distrY(gen)}, (float)distrY(gen)};
         SimulateObject(alien);
     }
 
     std::uniform_int_distribution<> distSensorRadius(12, 24);
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < setup.proximitySensorsAmount; i++) {
         auto proximity_sensor =
             new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen)};
         SimulateObject(proximity_sensor);
     }
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < setup.frictionZonesAmount; i++) {
         auto frictionZone =
             new FrictionZone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen), 22.5f, 40.f};
         SimulateObject(frictionZone);
     }
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < setup.tornadoesAmount; i++) {
         auto tornado =
             new Tornado{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen), 1000.f};
         SimulateObject(tornado);
     }
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < setup.windSensorsAmount; i++) {
         auto windSensor = new WindSensor{this, {(float)distrX(gen), (float)distrY(gen)}};
         SimulateObject(windSensor);
     }
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < setup.seismicSensorsAmount; i++) {
         auto seismicSensor = new SeismicSensor{this, {(float)distrX(gen), (float)distrY(gen)}};
         SimulateObject(seismicSensor);
     }
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < setup.tempSensorsAmount; i++) {
         auto tempSensor = new TemperatureSensor{this, {(float)distrX(gen), (float)distrY(gen)}};
         SimulateObject(tempSensor);
     }
@@ -109,7 +116,42 @@ Simulation::Simulation() : earthquake{m_world, this}
 Simulation *
 Simulation::Create()
 {
-    return new Simulation;
+    SimulationSetup setup;
+
+    std::ifstream file{"data/init.json"};
+    if (file.good()) {
+        nlohmann::json j = nlohmann::json::parse(file);
+
+        try {
+            setup.robotX = j["robotX"];
+            setup.robotY = j["robotY"];
+            setup.robotR = j["robotR"];
+            setup.stonesAmount = j["stonesAmount"];
+            setup.aliensAmount = j["aliensAmount"];
+            setup.proximitySensorsAmount = j["proximitySensorsAmount"];
+            setup.frictionZonesAmount = j["frictionZonesAmount"];
+            setup.tornadoesAmount = j["tornadoesAmount"];
+            setup.windSensorsAmount = j["windSensorsAmount"];
+            setup.seismicSensorsAmount = j["seismicSensorsAmount"];
+            setup.tempSensorsAmount = j["tempSensorsAmount"];
+            setup.shadowFrontierX = j["shadowFrontierX"];
+            setup.shadowFrontierY = j["shadowFrontierY"];
+            setup.shadowFrontierR = j["shadowFrontierR"];
+            setup.satelliteImageScaleFactor = j["satelliteImageScale"];
+            setup.satelliteImagePath = j["satelliteImagePath"];
+            setup.objectGenerationMinX = j["objectGenerationMinX"];
+            setup.objectGenerationMaxX = j["objectGenerationMaxX"];
+            setup.objectGenerationMinY = j["objectGenerationMinY"];
+            setup.objectGenerationMaxY = j["objectGenerationMaxY"];
+        } catch (std::exception &e) {
+            std::cerr << "Failed to parse init.json file: " << e.what() << "\nUsing default simulator settings!"
+                      << std::endl;
+        }
+    } else {
+        std::cerr << "Failed to open and read data/init.json! Using default settings!" << std::endl;
+    }
+
+    return new Simulation(setup);
 }
 
 Simulation::~Simulation()
@@ -121,6 +163,7 @@ Simulation::~Simulation()
     objects = {};
 
     delete terrain;
+    delete shadow_zone;
 };
 
 void
@@ -148,14 +191,14 @@ Simulation::ApplySlopeForce()
             continue;
         }
 
+        auto width = (float)terrain->getTextureWidth();
+        auto height = (float)terrain->getTextureHeight();
+
         auto robotPos = object->getPosition();
-        b2Vec2 terrainPixelPos = {robotPos.x + terrain->getTextureWidth() / 2.f,
-                                  terrain->getTextureHeight() / 2.f - robotPos.y};
+        b2Vec2 terrainPixelPos = {robotPos.x + width / 2.f, height / 2.f - robotPos.y};
 
         float x = terrainPixelPos.x;
         float y = terrainPixelPos.y;
-        auto width = (float)terrain->getTextureWidth();
-        auto height = (float)terrain->getTextureHeight();
 
         float slopeX =
             terrain->getHeight(x < width - 1.f ? x + 1.f : x, y) - terrain->getHeight(x > 0.f ? x - 1.f : x, y);
@@ -184,6 +227,8 @@ Simulation::Step(Settings &settings)
 {
     g_debugDraw.DrawImageTexture(
         terrain->getTextureID(), {0.f, 0.f}, {(float)terrain->getTextureWidth(), (float)terrain->getTextureHeight()});
+
+    shadow_zone->draw();
 
     earthquake.update(m_stepCount);
 
