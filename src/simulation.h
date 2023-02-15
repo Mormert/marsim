@@ -44,6 +44,8 @@ struct SimulationSetup {
     unsigned int tempSensorsAmount{15};
     float shadowFrontierX{250.f}, shadowFrontierY{0.f}, shadowFrontierR{45.f};
     float satelliteImageScaleFactor{1.f};
+    float satelliteImageScaleFactorMultiplierMin{0.7f};
+    float satelliteImageScaleFactorMultiplierMax{2.0f};
     std::string satelliteImagePath{"data/lunar_image.png"};
     float objectGenerationMinX{-369.f};
     float objectGenerationMaxX{369.f};
@@ -88,6 +90,8 @@ public:
 
     void GenerateBlurredTerrain();
 
+    void BroadcastGeneralInfo();
+
     std::vector<TornadoData> &GetTornados();
 
     [[nodiscard]] std::vector<VolcanoData> GetVolcanoes() const;
@@ -121,6 +125,8 @@ private:
     Robot *robot;
     Terrain *terrain{nullptr};
     std::vector<Object *> objects;
+
+    float imageScaleFactorMultiplier;
 };
 
 #endif

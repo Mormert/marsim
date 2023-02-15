@@ -43,7 +43,14 @@
 Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 {
 
-    Terrain::terrainScaling = setup.satelliteImageScaleFactor;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_real_distribution<> imageScaleFactorMultiplierDistr(setup.satelliteImageScaleFactorMultiplierMin, setup.satelliteImageScaleFactorMultiplierMax);
+
+    imageScaleFactorMultiplier = (float)imageScaleFactorMultiplierDistr(gen);
+
+    Terrain::terrainScaling = setup.satelliteImageScaleFactor * imageScaleFactorMultiplier;
     Mqtt::requestImagePath = setup.satelliteImagePath;
 
     GenerateBlurredTerrain();
@@ -60,10 +67,9 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     robot->attachWheels(wheels);
     SimulateObject(robot);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> distrX(setup.objectGenerationMinX, setup.objectGenerationMaxX);
-    std::uniform_real_distribution<> distrY(setup.objectGenerationMinY, setup.objectGenerationMaxY);
+
+    std::uniform_real_distribution<> distrX(setup.objectGenerationMinX * imageScaleFactorMultiplier, setup.objectGenerationMaxX * imageScaleFactorMultiplier);
+    std::uniform_real_distribution<> distrY(setup.objectGenerationMinY * imageScaleFactorMultiplier, setup.objectGenerationMaxY * imageScaleFactorMultiplier);
     std::uniform_real_distribution<> distrR(1.f, 3.f);
     for (int i = 0; i < setup.stonesAmount; i++) {
         auto *stone = new Stone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distrR(gen)};
@@ -235,6 +241,8 @@ Simulation::Step(Settings &settings)
     UpdateObjects();
 
     ApplySlopeForce();
+
+    BroadcastGeneralInfo();
 
     Application::Step(settings);
 }
@@ -408,4 +416,24 @@ Simulation::GetVolcanoes() const
     vd.pos = volcano->getPosition();
     vds.push_back(vd);
     return vds;
+}
+
+void
+Simulation::BroadcastGeneralInfo()
+{
+    static unsigned int i = 0;
+    i++;
+
+    // Broadcast general info every 5 seconds
+    if(i % 300 == 0)
+    {
+        nlohmann::json j;
+        j["shadowFrontierX"] = shadow_zone->pos.x;
+        j["shadowFrontierY"] = shadow_zone->pos.y;
+        j["shadowFrontierR"] = shadow_zone->rot;
+        j["satelliteImageScaleFactor"] = imageScaleFactorMultiplier;
+
+        Mqtt::getInstance().send("sim/out/general", "info", j);
+    }
+
 }

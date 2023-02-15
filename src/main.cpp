@@ -509,6 +509,8 @@ static void UpdateUI()
                                 ImGui::Text("shadowFrontierY: %f", setup.shadowFrontierY);
                                 ImGui::Text("shadowFrontierR: %f", setup.shadowFrontierR);
                                 ImGui::Text("satelliteImageScaleFactor: %f", setup.satelliteImageScaleFactor);
+                                ImGui::Text("satelliteImageScaleFactorMultiplierMin: %f", setup.satelliteImageScaleFactorMultiplierMin);
+                                ImGui::Text("satelliteImageScaleFactorMultiplierMax: %f", setup.satelliteImageScaleFactorMultiplierMax);
                                 ImGui::Text("satelliteImagePath: %s", setup.satelliteImagePath.c_str());
                                 ImGui::Text("objectGenerationMinX: %f", setup.objectGenerationMinX);
                                 ImGui::Text("objectGenerationMaxX: %f", setup.objectGenerationMaxX);

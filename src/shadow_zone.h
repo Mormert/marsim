@@ -34,7 +34,6 @@ public:
     // Checks if a position is in the shadow or not
     bool inShadowTest(b2Vec2 testPos);
 
-private:
     b2Vec2 pos;
     float rot;
 };
