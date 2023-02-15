@@ -64,6 +64,7 @@ Object::Object(Simulation *simulation)
 {
     this->simulation = simulation;
     this->world = simulation->GetWorld();
+    object_id = id_incrementor++;
 }
 
 std::vector<Object *>

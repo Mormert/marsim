@@ -70,6 +70,7 @@ TemperatureSensor::update()
         j["pos"] = {{"x", pos.x}, {"y", pos.y}};
 
         j["temp"] = temperature;
+        j["id"] = object_id;
 
         Mqtt::getInstance().send("sim/out/sensors", name, j);
     }

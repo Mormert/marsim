@@ -68,6 +68,9 @@ public:
 
 protected:
 
+    static inline unsigned int id_incrementor{0};
+    unsigned int object_id;
+
     float angularDamping{25.f}, linearDamping{12.5f};
 
     b2World *world;

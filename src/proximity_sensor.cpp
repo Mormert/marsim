@@ -70,6 +70,8 @@ ProximitySensor::update()
         j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
         j["radius"] = radius;
 
+        j["id"] = object_id;
+
         nlohmann::json objects;
         for (auto &&object : objects_inside) {
             nlohmann::json objectJson;

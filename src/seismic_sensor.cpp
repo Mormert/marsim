@@ -67,6 +67,7 @@ SeismicSensor::update()
         j["pos"] = {{"x", pos.x}, {"y", pos.y}};
 
         j["shake_val"] = shakeValue;
+        j["id"] = object_id;
 
         Mqtt::getInstance().send("sim/out/sensors", name, j);
     }
