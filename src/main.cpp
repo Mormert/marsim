@@ -24,6 +24,7 @@
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS 1
 
 #include "imgui/imgui.h"
+#include "implot/implot.h"
 #include "framework/imgui_impl_glfw.h"
 #include "framework/imgui_impl_opengl3.h"
 #include "framework/draw.h"
@@ -146,6 +147,7 @@ static void CreateUI(GLFWwindow* window, const char* glslVersion = NULL)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+        ImPlot::CreateContext();
 
 	bool success;
 	success = ImGui_ImplGlfw_InitForOpenGL(window, false);
@@ -408,6 +410,27 @@ static void UpdateUI()
 
 		ImGui::Begin("Tools", &g_debugDraw.m_showUI, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
+                static bool showBatteryGraph = false;
+                if (showBatteryGraph) {
+                        ImGui::SetNextWindowSize({640.f * s_displayScale, 660.f * s_displayScale}, ImGuiCond_Always);
+                        ImGui::Begin("Graph Debugging", NULL, ImGuiWindowFlags_NoResize);
+                        ImGui::Text("Not implemented yet, but here is a sample sqrt(x):");
+                        float x_data[1000];
+                        float y_data[1000];
+                        for(int i = 0; i < 1000; i ++)
+                        {
+                                x_data[i] = i * 3;
+                                y_data[i] = sqrt(i*3);
+                        }
+                        if(ImPlot::BeginPlot("Battery", ImVec2{600.f * s_displayScale, 600.f * s_displayScale}))
+                        {
+                                ImPlot::PlotLine("Battery Drain", x_data, y_data, 1000);
+
+                                ImPlot::EndPlot();
+                        }
+                        ImGui::End();
+                }
+
 		if (ImGui::BeginTabBar("ControlTabs", ImGuiTabBarFlags_None))
 		{
 
@@ -596,6 +619,8 @@ static void UpdateUI()
                                 {
                                     robot->shootLaser();
                                 }
+
+                                ImGui::Checkbox("Show Battery Graph", &showBatteryGraph);
 
                                 ImGui::EndTabItem();
                         }
