@@ -30,6 +30,7 @@
 #include "stone.h"
 #include "temperature_sensor.h"
 #include "wind_sensor.h"
+#include "lidar_sensor.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <iostream>
@@ -72,6 +73,8 @@ Robot::Robot(
     pickup_sensor = new PickupSensor{simulation, this, {0.f, 5.f}, 0.5};
 
     proximity_sensor = new ProximitySensor{simulation, position, 30.f, true};
+
+    lidarSensor = new LidarSensor{simulation, 30, position};
 
     laser = new Laser{world, 45.f};
     laser->setPosition(position);
@@ -146,6 +149,9 @@ Robot::update()
         Mqtt::getInstance().send("sim/out/general", "Robot", j);
     }
 
+    lidarSensor->setPosition(getPosition());
+    lidarSensor->update();
+
     updateCounter++;
 }
 
@@ -158,6 +164,7 @@ Robot::~Robot()
     delete pickup_sensor;
     delete proximity_sensor;
     delete laser;
+    delete lidarSensor;
 }
 
 void

@@ -55,7 +55,7 @@ set (MARSIM_SOURCE_FILES
 		src/temperature_sensor.cpp
 		src/seismic_sensor.cpp
 		src/wind_sensor.cpp
-		)
+		src/lidar_sensor.cpp src/lidar_sensor.h)
 
 add_executable(marsim ${MARSIM_SOURCE_FILES})
 target_include_directories(marsim PRIVATE src 3rdparty 3rdparty/mosquitto/include 3rdparty/zlibcomplete/zlib)

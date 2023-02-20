@@ -36,6 +36,7 @@
 class PickupSensor;
 class ProximitySensor;
 class Simulation;
+class LidarSensor;
 class Laser;
 
 class Robot : public Object
@@ -89,6 +90,8 @@ private:
     bool shootNextUpdate{false};
 
     Simulation* simulation;
+
+    LidarSensor* lidarSensor;
 
     std::vector<nlohmann::json> storage;
     float storageMass{0.f};
