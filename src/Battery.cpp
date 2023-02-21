@@ -56,32 +56,32 @@ Battery::getV(double I){
 double
 Battery::getOCV(double n)
 {
-    double v_min = 3 * Voltage_;
-    double v_max = 5 * Voltage_;
+    double v_min = 2.75 * Voltage_/4;
+    double v_max = 4.5 * Voltage_/4;
     return v_max * pow(getSoC(), 1/n) + v_min * (1 - pow(getSoC(), 1/n));
 }
 int
-Battery::BatUpdate(double I, double n = 1)
+Battery::BatUpdate(double I)
 {
     //I is positive when supplying energy to robot, negative when charging
     double SOC_0, SOC;
-    //n is the number of electrons in the battery reaction, usually == 1 so don't touch unless necessary
     SOC_0 = getSoC();
-    //std::cout << SOC_0 << std::endl; //+ std::to_string(SOC_0) << std::endl;
 
     //this section is still being fixed, but it is 40-60% accurate atm
     /////////////////////////////////////////////////////////////////////////
+    //[1 min, 1 hr, 60 hrs] in sim per second is [3600, 60, 1] value to be multiplied by cap_
+    //NOTE: THIS FUNCTION IS ONLY INTENDED TO WORK AT 60 Hz, TIME FACTOR WILL CHANGE IF NOT UPDATED AT 60Hz
     if (SOC_0 >= 0.8 && SOC_0 <= 100){
-        SOC = SOC_0 - (I*(0.2*CRate_)/ (cap_ * 3600 * n));
+        SOC = SOC_0 - (I*(0.2*CRate_)/ (cap_ * 60));
 
 
     }else{
     if (SOC_0 <= 0.2){
-        SOC = SOC_0 - (I*(2*CRate_)/ (cap_ * 3600 * n));
+        SOC = SOC_0 - (I*(2*CRate_)/ (cap_ * 60));
 
     }
     else{
-        SOC = SOC_0 - (I*CRate_ /(cap_ * 3600 * n));
+        SOC = SOC_0 - (I*CRate_ /(cap_ * 60 ));
 
     }}
     /////////////////////////////////////////////////////////////////////////

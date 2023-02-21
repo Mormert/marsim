@@ -43,7 +43,7 @@ public:
     double getV(double I);
 
     double getOCV(double n);
-    int BatUpdate(double I, double n);
+    int BatUpdate(double I);
 
 };
 
