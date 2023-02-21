@@ -26,6 +26,7 @@
 
 #include <stb_image.h>
 #include <stb_image_write.h>
+#include <stb_image_resize.h>
 
 #include <iostream>
 
@@ -98,7 +99,7 @@ Terrain::generateTexture(const std::string &gaussianImagePath)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     } else {
-        std::cout << "Texture failed to load at path: " << gaussianImagePath << std::endl;
+        std::cerr << "Texture failed to load at path: " << gaussianImagePath << std::endl;
     }
 
     stbi_image_free(data);
@@ -148,8 +149,16 @@ Terrain::GenerateGaussianImageFromHardEdgeImage(const std::string &hardImagePath
         std::cerr << "Input images must be RGB images." << std::endl;
     }
 
+    int resizeWidth = float(width) * terrainScaling;
+    int resizedHeight = float(height) * terrainScaling;
+    unsigned char* resized_image = (unsigned char*)malloc(resizeWidth * resizedHeight * channels);
+    stbir_resize_uint8(image_data, width, height, 0, resized_image, resizeWidth, resizedHeight, 0, channels);
+
+    // Free original image, continue work on resized_image
+    stbi_image_free(image_data);
+
     // copy data
-    int size = width * height;
+    int size = resizeWidth * resizedHeight;
 
     // output channels r,g,b
     float *newb = new float[size];
@@ -163,9 +172,9 @@ Terrain::GenerateGaussianImageFromHardEdgeImage(const std::string &hardImagePath
 
     // channels copy r,g,b
     for (int i = 0; i < size; ++i) {
-        oldb[i] = image_data[channels * i + 0] / 255.f;
-        oldg[i] = image_data[channels * i + 1] / 255.f;
-        oldr[i] = image_data[channels * i + 2] / 255.f;
+        oldb[i] = resized_image[channels * i + 0] / 255.f;
+        oldg[i] = resized_image[channels * i + 1] / 255.f;
+        oldr[i] = resized_image[channels * i + 2] / 255.f;
     }
 
     // input channels r,g,b
@@ -175,42 +184,45 @@ Terrain::GenerateGaussianImageFromHardEdgeImage(const std::string &hardImagePath
 
     // channels copy r,g,b
     for (int i = 0; i < size; ++i) {
-        origb[i] = image_data[channels * i + 0] / 255.f;
-        origg[i] = image_data[channels * i + 1] / 255.f;
-        origr[i] = image_data[channels * i + 2] / 255.f;
+        origb[i] = resized_image[channels * i + 0] / 255.f;
+        origg[i] = resized_image[channels * i + 1] / 255.f;
+        origr[i] = resized_image[channels * i + 2] / 255.f;
     }
 
-    Blur::fast_gaussian_blur(oldb, newb, width, height, sigma);
-    Blur::fast_gaussian_blur(oldg, newg, width, height, sigma);
-    Blur::fast_gaussian_blur(oldr, newr, width, height, sigma);
+    Blur::fast_gaussian_blur(oldb, newb, resizeWidth, resizedHeight, sigma);
+    Blur::fast_gaussian_blur(oldg, newg, resizeWidth, resizedHeight, sigma);
+    Blur::fast_gaussian_blur(oldr, newr, resizeWidth, resizedHeight, sigma);
 
     // channels copy r,g,b
     for (int i = 0; i < size; ++i) {
-        image_data[channels * i + 0] = (unsigned char)std::min(255.f, std::max(0.f, 255.f * newb[i]));
-        image_data[channels * i + 1] = (unsigned char)std::min(255.f, std::max(0.f, 255.f * newg[i]));
-        image_data[channels * i + 2] = (unsigned char)std::min(255.f, std::max(0.f, 255.f * newr[i]));
+        resized_image[channels * i + 0] = (unsigned char)std::min(255.f, std::max(0.f, 255.f * newb[i]));
+        resized_image[channels * i + 1] = (unsigned char)std::min(255.f, std::max(0.f, 255.f * newg[i]));
+        resized_image[channels * i + 2] = (unsigned char)std::min(255.f, std::max(0.f, 255.f * newr[i]));
 
         // Add original occlusion map on top of blurred map
-        image_data[channels * i + 0] = (unsigned char)std::min(255.f, std::max(0.f, image_data[channels * i + 0] + 255.f * origb[i]));
-        image_data[channels * i + 1] = (unsigned char)std::min(255.f, std::max(0.f, image_data[channels * i + 1] + 255.f * origg[i]));
-        image_data[channels * i + 2] = (unsigned char)std::min(255.f, std::max(0.f, image_data[channels * i + 2] + 255.f * origr[i]));
+        resized_image[channels * i + 0] =
+            (unsigned char)std::min(255.f, std::max(0.f, resized_image[channels * i + 0] + 255.f * origb[i]));
+        resized_image[channels * i + 1] =
+            (unsigned char)std::min(255.f, std::max(0.f, resized_image[channels * i + 1] + 255.f * origg[i]));
+        resized_image[channels * i + 2] =
+            (unsigned char)std::min(255.f, std::max(0.f, resized_image[channels * i + 2] + 255.f * origr[i]));
     }
 
     // save
     std::string file(gaussianImageOutputPath);
     std::string ext = file.substr(file.size() - 3);
     if (ext == "bmp")
-        stbi_write_bmp(gaussianImageOutputPath.c_str(), width, height, channels, image_data);
+        stbi_write_bmp(gaussianImageOutputPath.c_str(), resizeWidth, resizedHeight, channels, resized_image);
     else if (ext == "jpg")
-        stbi_write_jpg(gaussianImageOutputPath.c_str(), width, height, channels, image_data, 90);
+        stbi_write_jpg(gaussianImageOutputPath.c_str(), resizeWidth, resizedHeight, channels, resized_image, 90);
     else {
         if (ext != "png") {
             std::cerr << "format '" << ext << "' not supported writing default .png" << std::endl;
             file = file.substr(0, file.size() - 4) + std::string(".png");
         }
-        stbi_write_png(file.c_str(), width, height, channels, image_data, channels * width);
+        stbi_write_png(file.c_str(), resizeWidth, resizedHeight, channels, resized_image, channels * resizeWidth);
     }
-    stbi_image_free(image_data);
+    stbi_image_free(resized_image);
 
     // clean memory
     delete[] newr;

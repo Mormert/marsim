@@ -20,61 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MARSIM_OBJECT_H
-#define MARSIM_OBJECT_H
+#ifndef MARSIM_LIDAR_SENSOR_H
+#define MARSIM_LIDAR_SENSOR_H
 
-#include "box2d/box2d.h"
+#include "simulation.h"
 
-#include <string>
-#include <vector>
-
-class Simulation;
-
-class Object
+class LidarSensor
 {
-
 public:
-    Object(Simulation *simulation);
-    virtual ~Object() = default;
 
-    virtual b2Vec2 getLocalVelocity();
+    LidarSensor(Simulation* simulation, float radius, b2Vec2 position);
 
-    float getSpeedKMH();
+    void setPosition(b2Vec2 position);
 
-    b2Vec2 getPosition();
+    void update();
 
-    void completeStopVelocity();
-
-    void addForce(b2Vec2 force);
-
-    void setPosition(b2Vec2 pos, float angle);
-
-    float GetAngularDamping();
-
-    float GetLinearDamping();
-
-    float GetMass();
-
-    virtual std::vector<Object *> getAttachedObjects();
-
-    virtual void update() = 0;
-
-    b2Body *body{};
-
-    bool updateable = true;
-    bool terrain_movable = true;
-
-    std::string name{"Unknown Object"};
+    void castRays();
 
 protected:
 
-    static inline unsigned int id_incrementor{0};
-    unsigned int object_id;
+    std::vector<float> lidarValues;
 
-    float angularDamping{25.f}, linearDamping{12.5f};
+    float radius{15.f};
+    b2Vec2 position;
 
-    b2World *world;
-    Simulation *simulation;
+    unsigned int broadcastCounter{0};
+    int broadcastFrequency = 30;
+
+    Simulation* simulation;
 };
 
-#endif // MARSIM_OBJECT_H
+#endif // MARSIM_LIDAR_SENSOR_H

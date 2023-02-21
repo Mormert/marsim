@@ -37,6 +37,7 @@
 class PickupSensor;
 class ProximitySensor;
 class Simulation;
+class LidarSensor;
 class Laser;
 
 class Robot : public Object
@@ -91,8 +92,11 @@ private:
 
     Simulation* simulation;
 
+    LidarSensor* lidarSensor;
+
     std::vector<nlohmann::json> storage;
     float storageMass{0.f};
+
 
     ShadowZone shadow_zone{b2Vec2{250.f, 0.f}, 45.f};
     Battery *battery;

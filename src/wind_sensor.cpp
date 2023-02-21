@@ -70,6 +70,9 @@ WindSensor::update()
 
         j["wind_vec"] = {{"x", strength.x}, {"y", strength.y}};
 
+        j["id"] = object_id;
+
+
         Mqtt::getInstance().send("sim/out/sensors", name, j);
     }
 

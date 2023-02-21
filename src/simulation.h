@@ -30,6 +30,28 @@
 class Object;
 class Robot;
 class Volcano;
+class ShadowZone;
+
+struct SimulationSetup {
+    float robotX{0.f}, robotY{0.f}, robotR{0.f};
+    unsigned int stonesAmount{2000};
+    unsigned int aliensAmount{20};
+    unsigned int proximitySensorsAmount{20};
+    unsigned int frictionZonesAmount{20};
+    unsigned int tornadoesAmount{20};
+    unsigned int windSensorsAmount{15};
+    unsigned int seismicSensorsAmount{15};
+    unsigned int tempSensorsAmount{15};
+    float shadowFrontierX{250.f}, shadowFrontierY{0.f}, shadowFrontierR{45.f};
+    float satelliteImageScaleFactor{1.f};
+    float satelliteImageScaleFactorMultiplierMin{0.7f};
+    float satelliteImageScaleFactorMultiplierMax{2.0f};
+    std::string satelliteImagePath{"data/lunar_image.png"};
+    float objectGenerationMinX{-369.f};
+    float objectGenerationMaxX{369.f};
+    float objectGenerationMinY{-205.f};
+    float objectGenerationMaxY{205.f};
+};
 
 struct TornadoData {
     b2Vec2 pos;
@@ -46,7 +68,7 @@ struct VolcanoData {
 class Simulation : public Application
 {
 public:
-    Simulation();
+    Simulation(const SimulationSetup &setup);
 
     ~Simulation() override;
 
@@ -67,6 +89,8 @@ public:
     void DestroyObject(Object *object);
 
     void GenerateBlurredTerrain();
+
+    void BroadcastGeneralInfo();
 
     std::vector<TornadoData> &GetTornados();
 
@@ -90,14 +114,19 @@ public:
 
     Volcano *volcano;
 
-private:
+    ShadowZone *shadow_zone;
 
+    SimulationSetup setup;
+
+private:
     std::vector<TornadoData> tornadoDatas;
     std::vector<VolcanoData> volcanoDatas;
 
     Robot *robot;
     Terrain *terrain{nullptr};
     std::vector<Object *> objects;
+
+    float imageScaleFactorMultiplier;
 };
 
 #endif

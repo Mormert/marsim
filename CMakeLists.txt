@@ -22,6 +22,9 @@ option(BOX2D_BUILD_UNIT_TESTS OFF)
 option(BOX2D_BUILD_TESTBED OFF)
 
 set (MARSIM_SOURCE_FILES
+		3rdparty/stb_image.cpp
+		3rdparty/implot/implot.cpp
+		3rdparty/implot/implot_items.cpp
         src/framework/draw.cpp
         src/framework/draw.h
         src/framework/imgui_impl_glfw.cpp
@@ -35,7 +38,6 @@ set (MARSIM_SOURCE_FILES
 		src/simulation.cpp
 		src/wheel.cpp
 		src/robot.cpp
-		3rdparty/stb_image.cpp
 		src/terrain.cpp
 		src/object.cpp
 		src/stone.cpp
@@ -55,6 +57,7 @@ set (MARSIM_SOURCE_FILES
 		src/temperature_sensor.cpp
 		src/seismic_sensor.cpp
 		src/wind_sensor.cpp
+		src/lidar_sensor.cpp
 		)
 
 add_executable(marsim ${MARSIM_SOURCE_FILES})

@@ -24,6 +24,7 @@
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS 1
 
 #include "imgui/imgui.h"
+#include "implot/implot.h"
 #include "framework/imgui_impl_glfw.h"
 #include "framework/imgui_impl_opengl3.h"
 #include "framework/draw.h"
@@ -146,6 +147,7 @@ static void CreateUI(GLFWwindow* window, const char* glslVersion = NULL)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+        ImPlot::CreateContext();
 
 	bool success;
 	success = ImGui_ImplGlfw_InitForOpenGL(window, false);
@@ -400,13 +402,34 @@ static void ScrollCallback(GLFWwindow* window, double dx, double dy)
 
 static void UpdateUI()
 {
-	float menuWidth = 180.0f * s_displayScale * ImGui::GetIO().FontGlobalScale;
+	float menuWidth = 220.0f * s_displayScale * ImGui::GetIO().FontGlobalScale;
 	if (g_debugDraw.m_showUI)
 	{
 		ImGui::SetNextWindowPos({g_camera.m_width - menuWidth - 10.0f, 10.0f});
 		ImGui::SetNextWindowSize({menuWidth, g_camera.m_height - 20.0f});
 
 		ImGui::Begin("Tools", &g_debugDraw.m_showUI, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+                static bool showBatteryGraph = false;
+                if (showBatteryGraph) {
+                        ImGui::SetNextWindowSize({640.f * s_displayScale, 660.f * s_displayScale}, ImGuiCond_Always);
+                        ImGui::Begin("Graph Debugging", NULL, ImGuiWindowFlags_NoResize);
+                        ImGui::Text("Not implemented yet, but here is a sample sqrt(x):");
+                        float x_data[1000];
+                        float y_data[1000];
+                        for(int i = 0; i < 1000; i ++)
+                        {
+                                x_data[i] = i * 3;
+                                y_data[i] = sqrt(i*3);
+                        }
+                        if(ImPlot::BeginPlot("Battery", ImVec2{600.f * s_displayScale, 600.f * s_displayScale}))
+                        {
+                                ImPlot::PlotLine("Battery Drain", x_data, y_data, 1000);
+
+                                ImPlot::EndPlot();
+                        }
+                        ImGui::End();
+                }
 
 		if (ImGui::BeginTabBar("ControlTabs", ImGuiTabBarFlags_None))
 		{
@@ -487,6 +510,38 @@ static void UpdateUI()
 
                                 ImGui::EndTabItem();
                         }
+                        if(ImGui::BeginTabItem("Setup"))
+                        {
+                                const auto& setup = dynamic_cast<Simulation*>(s_application)->setup;
+
+                                ImGui::TextWrapped("This initial simulator setup can be changed in the data/init.json file!");
+                                ImGui::Separator();
+
+                                ImGui::Text("RobotX: %f", setup.robotX);
+                                ImGui::Text("RobotY: %f", setup.robotY);
+                                ImGui::Text("RobotR: %f", setup.robotR);
+                                ImGui::Text("stonesAmount: %d", setup.stonesAmount);
+                                ImGui::Text("aliensAmount: %d", setup.aliensAmount);
+                                ImGui::Text("proximitySensorsAmount: %d", setup.proximitySensorsAmount);
+                                ImGui::Text("frictionZonesAmount: %d", setup.frictionZonesAmount);
+                                ImGui::Text("tornadoesAmount: %d", setup.tornadoesAmount);
+                                ImGui::Text("windSensorsAmount: %d", setup.windSensorsAmount);
+                                ImGui::Text("seismicSensorsAmount: %d", setup.seismicSensorsAmount);
+                                ImGui::Text("tempSensorsAmount: %d", setup.tempSensorsAmount);
+                                ImGui::Text("shadowFrontierX: %f", setup.shadowFrontierX);
+                                ImGui::Text("shadowFrontierY: %f", setup.shadowFrontierY);
+                                ImGui::Text("shadowFrontierR: %f", setup.shadowFrontierR);
+                                ImGui::Text("satelliteImageScaleFactor: %f", setup.satelliteImageScaleFactor);
+                                ImGui::Text("satelliteImageScaleFactorMultiplierMin: %f", setup.satelliteImageScaleFactorMultiplierMin);
+                                ImGui::Text("satelliteImageScaleFactorMultiplierMax: %f", setup.satelliteImageScaleFactorMultiplierMax);
+                                ImGui::Text("satelliteImagePath: %s", setup.satelliteImagePath.c_str());
+                                ImGui::Text("objectGenerationMinX: %f", setup.objectGenerationMinX);
+                                ImGui::Text("objectGenerationMaxX: %f", setup.objectGenerationMaxX);
+                                ImGui::Text("objectGenerationMinY: %f", setup.objectGenerationMinY);
+                                ImGui::Text("objectGenerationMaxY: %f", setup.objectGenerationMaxY);
+
+                                ImGui::EndTabItem();
+                        }
                         if (ImGui::BeginTabItem("Robot"))
                         {
 
@@ -564,6 +619,8 @@ static void UpdateUI()
                                 {
                                     robot->shootLaser();
                                 }
+
+                                ImGui::Checkbox("Show Battery Graph", &showBatteryGraph);
 
                                 ImGui::EndTabItem();
                         }
