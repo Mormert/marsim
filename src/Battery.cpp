@@ -48,8 +48,16 @@ Battery::getSoC(){
 }
 
 double
-Battery::getV(double I){
-    return getSoC() * cap_ / cbs_ + res_ * I;
+Battery::getOCVTable(double soc){
+    //leave table below for future reference, can be deleted after testing
+    //float soc2[11] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
+    float ocv[11] = {3.05, 3.66, 3.72, 3.76, 3.79, 3.83, 3.88, 3.94, 4.01, 4.09, 4.18};
+    for (int i= 0; i < std::size(ocv); i++){
+        ocv[i] = ocv[i] * (Voltage_/4);
+    }
+    int x = std::round((soc*10));
+    return ocv[x];
+
 }
 
 //this function returns the open circuit voltage of the battery at a certain state of charge

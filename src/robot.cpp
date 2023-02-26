@@ -159,7 +159,7 @@ Robot::update()
 
         auto pos = getPosition();
         j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
-        j["battery"] = 100; // Placeholder
+        j["battery"] = (battery->getSoC() * 100); // Yet to be tested
         j["storage"] = storage;
         j["in_shadow"] = isInShadow();
 
