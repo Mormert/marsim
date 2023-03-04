@@ -36,6 +36,7 @@
 #include <json.hpp>
 
 class Simulation;
+class Settings;
 
 class Mqtt
 {
@@ -111,20 +112,10 @@ private:
 
     bool is_connected = false;
 
-
-
     unsigned int sentMessages{0};
     unsigned int sentBytesTotal{0};
     unsigned int sentBytesSecond{0};
     unsigned int sentBytesLastSecond{0};
-
-
-
-    int sendCompression{0}; // 0 = no, 1 = gzip, 2 = zlib
-    bool sendWithMessagePack{false};
-
-    int receiveCompression{0}; // 0 = no, 1 = gzip, 2 = zlib
-    bool receiveWithMessagePack{false};
 
     mosquitto *mqtt;
 };

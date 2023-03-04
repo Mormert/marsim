@@ -22,6 +22,7 @@
 
 #include "mqtt.h"
 
+#include "framework/settings.h"
 #include "robot.h"
 #include "simulation.h"
 #include <chrono>
@@ -216,18 +217,18 @@ Mqtt::sendQueuedMessages()
 
         std::string jsonString;
 
-        if (sendWithMessagePack) {
+        if (Settings::m_useMessagePackSend) {
             auto msgPack = nlohmann::json::to_msgpack(j);
             jsonString = std::string(msgPack.begin(), msgPack.end());
         } else {
             jsonString = j.dump();
         }
 
-        if (sendCompression == 1) {
+        if (Settings::m_compressionSend == 1) {
             zlibcomplete::GZipCompressor gZipCompressor(9, zlibcomplete::flush_parameter::auto_flush);
             jsonString = gZipCompressor.compress(jsonString);
             gZipCompressor.finish();
-        } else if (sendCompression == 2) {
+        } else if (Settings::m_compressionSend == 2) {
             zlibcomplete::ZLibCompressor zLibCompressor(9, zlibcomplete::flush_parameter::auto_flush);
             jsonString = zLibCompressor.compress(jsonString);
             zLibCompressor.finish();
@@ -287,7 +288,7 @@ Mqtt::cleanup()
 bool *
 Mqtt::useMessagePackBool()
 {
-    return &sendWithMessagePack;
+    return &Settings::m_useMessagePackSend;
 }
 unsigned int
 Mqtt::getSentBytes()
@@ -297,7 +298,7 @@ Mqtt::getSentBytes()
 int *
 Mqtt::getCompressionInt()
 {
-    return &sendCompression;
+    return &Settings::m_compressionSend;
 }
 float
 Mqtt::getEmissionSpeed()
@@ -381,10 +382,10 @@ Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
 bool *
 Mqtt::useMessagePackReceiveBool()
 {
-    return &receiveWithMessagePack;
+    return &Settings::m_useMessagePackReceive;
 }
 int *
 Mqtt::getCompressionReceiveInt()
 {
-    return &receiveCompression;
+    return &Settings::m_compressionReceive;
 }

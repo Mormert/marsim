@@ -75,7 +75,12 @@ void Settings::Save()
 	fprintf(file, "  \"enableWarmStarting\": %s,\n", m_enableWarmStarting ? "true" : "false");
 	fprintf(file, "  \"enableContinuous\": %s,\n", m_enableContinuous ? "true" : "false");
 	fprintf(file, "  \"enableSubStepping\": %s,\n", m_enableSubStepping ? "true" : "false");
-	fprintf(file, "  \"enableSleep\": %s\n", m_enableSleep ? "true" : "false");
+	fprintf(file, "  \"enableSleep\": %s,\n", m_enableSleep ? "true" : "false");
+	fprintf(file, "  \"useMessagePackSend\": %s,\n", m_useMessagePackSend ? "true" : "false");
+	fprintf(file, "  \"useMessagePackReceive\": %s,\n", m_useMessagePackReceive ? "true" : "false");
+        fprintf(file, "  \"compressionSend\": %d,\n", m_compressionSend);
+        fprintf(file, "  \"compressionReceive\": %d\n", m_compressionReceive);
+
 	fprintf(file, "}\n");
 	fclose(file);
 }
@@ -160,6 +165,53 @@ void Settings::Load()
 			}
 			continue;
 		}
+
+                if (strncmp(fieldName.data(), "useMessagePackSend", fieldName.length()) == 0)
+                {
+                        if (fieldValue.get_type() == sajson::TYPE_FALSE)
+                        {
+                                m_useMessagePackSend = false;
+                        }
+                        else if (fieldValue.get_type() == sajson::TYPE_TRUE)
+                        {
+                                m_useMessagePackSend = true;
+
+                        }
+                        continue;
+                }
+
+                if (strncmp(fieldName.data(), "useMessagePackReceive", fieldName.length()) == 0)
+                {
+                        if (fieldValue.get_type() == sajson::TYPE_FALSE)
+                        {
+                                m_useMessagePackReceive = false;
+                        }
+                        else if (fieldValue.get_type() == sajson::TYPE_TRUE)
+                        {
+                                m_useMessagePackReceive = true;
+
+                        }
+                        continue;
+                }
+
+                if (strncmp(fieldName.data(), "compressionSend", fieldName.length()) == 0)
+                {
+                        if (fieldValue.get_type() == sajson::TYPE_INTEGER)
+                        {
+                                m_compressionSend = fieldValue.get_integer_value();
+                        }
+                        continue;
+                }
+
+                if (strncmp(fieldName.data(), "compressionReceive", fieldName.length()) == 0)
+                {
+                        if (fieldValue.get_type() == sajson::TYPE_INTEGER)
+                        {
+                                m_compressionReceive = fieldValue.get_integer_value();
+                        }
+                        continue;
+                }
+
 	}
 
 	free(data);

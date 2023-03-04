@@ -52,6 +52,11 @@ struct Settings
 		m_enableSleep = true;
 		m_pause = false;
 		m_singleStep = false;
+                m_useMessagePackSend = false;
+                m_useMessagePackReceive = false;
+                m_compressionSend = 0;
+                m_compressionReceive = 0;
+
 	}
 
 	void Save();
@@ -78,4 +83,8 @@ struct Settings
 	bool m_enableSleep;
 	bool m_pause;
 	bool m_singleStep;
+        static inline bool m_useMessagePackSend;
+        static inline bool m_useMessagePackReceive;
+        static inline int m_compressionSend;  // 0 = no, 1 = gzip, 2 = zlib
+        static inline int m_compressionReceive;
 };
