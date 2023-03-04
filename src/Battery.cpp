@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 #include "Battery.h"
+#include <cmath>
+
 double
 Battery::Charge(double I, double T){
     double charge = I * T;

@@ -35,7 +35,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <iostream>
 #include <json.hpp>
-#include <cmath>
+
 
 Robot::Robot(
     Simulation *simulation, float width, float length, b2Vec2 position, float angle, float power, float maxSpeed)
