@@ -47,7 +47,7 @@ Battery::getSoC(){
     return (cbs_ / cap_);
 }
 
-double
+float
 Battery::getOCVTable(double soc){
     //leave table below for future reference, can be deleted after testing
     //float soc2[11] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
@@ -74,6 +74,7 @@ Battery::BatUpdate(double I)
     //I is positive when supplying energy to robot, negative when charging
     double SOC_0, SOC;
     SOC_0 = getSoC();
+    current_tick_drain += I;
 
     //this section is still being fixed, but it is 40-60% accurate atm
     /////////////////////////////////////////////////////////////////////////
@@ -110,4 +111,14 @@ Battery::BatUpdate(double I)
 Battery::Battery(double voltage, double cap, double res, double CRate)
     : Voltage_(voltage), cap_(cap), res_(res), CRate_(CRate) {
     cbs_ = cap_;
+}
+void
+Battery::reset_current_tick_drain()
+{
+    current_tick_drain = 0;
+}
+float
+Battery::GetCurrentTick()
+{
+    return current_tick_drain;
 }

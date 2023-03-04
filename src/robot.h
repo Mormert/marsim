@@ -80,6 +80,9 @@ public:
 
     std::vector<Object*> getClosebyObjects();
 
+
+    Battery *GetBattery();
+
 private:
     unsigned int updateCounter{0};
 

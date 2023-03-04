@@ -34,16 +34,19 @@ private:
     double cbs_ = 0.0;
     double CRate_;
     double Voltage_;
+    float current_tick_drain;
 
 public:
     Battery(double voltage, double cap, double res, double CRate);
     double Charge(double I, double T);
     double Supply(double I, double T);
     double getSoC();
-    double getOCVTable(double soc);
+    float getOCVTable(double soc);
 
     double getOCV(double n);
     int BatUpdate(double I);
+    void reset_current_tick_drain();
+    float GetCurrentTick();
 
 };
 

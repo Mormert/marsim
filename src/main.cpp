@@ -411,20 +411,37 @@ static void UpdateUI()
 		ImGui::Begin("Tools", &g_debugDraw.m_showUI, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
                 static bool showBatteryGraph = false;
+
                 if (showBatteryGraph) {
+
+                        auto sim = dynamic_cast<Simulation*>(s_application);
+                        auto robot = sim->GetRobot();
+
+
                         ImGui::SetNextWindowSize({640.f * s_displayScale, 660.f * s_displayScale}, ImGuiCond_Always);
                         ImGui::Begin("Graph Debugging", NULL, ImGuiWindowFlags_NoResize);
                         ImGui::Text("Not implemented yet, but here is a sample sqrt(x):");
-                        float x_data[1000];
-                        float y_data[1000];
-                        for(int i = 0; i < 1000; i ++)
-                        {
-                                x_data[i] = i * 3;
-                                y_data[i] = sqrt(i*3);
+                        //float x_data[1000];
+                        //float y_data[1000];
+                        static std::vector<float> x_data;
+                        static std::vector<float> y_data;
+                        static std::vector<float> z_data;
+
+
+                        auto start = std::chrono::steady_clock::now();
+                        if(sim->GetStepCount()%60 == 0){
+                                x_data.push_back(x_data.size());
+                                y_data.push_back(robot->GetBattery()->getSoC() * 100);
+                                z_data.push_back(robot->GetBattery()->GetCurrentTick());
                         }
+
+
+
+
                         if(ImPlot::BeginPlot("Battery", ImVec2{600.f * s_displayScale, 600.f * s_displayScale}))
                         {
-                                ImPlot::PlotLine("Battery Drain", x_data, y_data, 1000);
+                                ImPlot::PlotStairs("Battery Percentage", x_data.data(), y_data.data(), x_data.size());
+                                ImPlot::PlotStairs("Battery Drain", x_data.data(), z_data.data(), x_data.size());
 
                                 ImPlot::EndPlot();
                         }

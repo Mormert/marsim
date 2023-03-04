@@ -95,7 +95,7 @@ Robot::update()
 {
     //uncomment below if you want to print the battery percentage
     //std::cout << battery->getSoC() * 100 << std::endl;
-
+    battery->reset_current_tick_drain();
     //use of energy just for staying on, for sensors and all
     battery->BatUpdate(1.5);
 
@@ -109,19 +109,22 @@ Robot::update()
     for (auto &&wheel : wheels) {
         wheel->killSidewaysVelocity();
     }
+    //auto frs = (battery->getOCVTable(battery->getSoC())/12.f);
+    float frs = battery->getSoC();
 
     if (leftAccelerate != 0.f && getSpeedKMH() < maxSpeed) {
         auto pos = this->wheels[0]->body->GetWorldCenter();
-        b2Vec2 force = {0.f, this->power * leftAccelerate};
+        b2Vec2 force = {0.f, this->power * frs * leftAccelerate};
         this->wheels[0]->body->ApplyForce(wheels[0]->body->GetWorldVector(force), pos, true);
-        battery->BatUpdate(12);
+
+        battery->BatUpdate((1.f-(getSpeedKMH()/maxSpeed)) * frs * abs(leftAccelerate) * 12);
     }
 
     if (rightAccelerate != 0.f && getSpeedKMH() < maxSpeed) {
         auto pos = this->wheels[1]->body->GetWorldCenter();
-        b2Vec2 force = {0.f, this->power * rightAccelerate};
+        b2Vec2 force = {0.f, this->power * frs * rightAccelerate};
         this->wheels[1]->body->ApplyForce(wheels[1]->body->GetWorldVector(force), pos, true);
-        battery->BatUpdate(12);
+        battery->BatUpdate((1.f-(getSpeedKMH()/maxSpeed)) * frs * abs(rightAccelerate) * 12);
     }
 
     // If going very slowly, stop the car completely.
@@ -148,9 +151,10 @@ Robot::update()
     if (laserHit && shootNextUpdate) {
         simulation->DestroyObject(laserHit);
         //this battery usage doesn't account for missed shots so fix that
-        battery->BatUpdate(6);
+
     }
     if (shootNextUpdate) {
+        battery->BatUpdate(260);
         shootNextUpdate = false;
     }
 
@@ -308,4 +312,9 @@ float
 Robot::getStorageMass()
 {
     return storageMass;
+}
+Battery *
+Robot::GetBattery()
+{
+    return battery;
 }
