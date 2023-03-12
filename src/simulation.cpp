@@ -43,10 +43,13 @@
 Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 {
 
+    this->setup = setup;
+
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    std::uniform_real_distribution<> imageScaleFactorMultiplierDistr(setup.satelliteImageScaleFactorMultiplierMin, setup.satelliteImageScaleFactorMultiplierMax);
+    std::uniform_real_distribution<> imageScaleFactorMultiplierDistr(setup.satelliteImageScaleFactorMultiplierMin,
+                                                                     setup.satelliteImageScaleFactorMultiplierMax);
 
     imageScaleFactorMultiplier = (float)imageScaleFactorMultiplierDistr(gen);
 
@@ -67,9 +70,10 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     robot->attachWheels(wheels);
     SimulateObject(robot);
 
-
-    std::uniform_real_distribution<> distrX(setup.objectGenerationMinX * imageScaleFactorMultiplier, setup.objectGenerationMaxX * imageScaleFactorMultiplier);
-    std::uniform_real_distribution<> distrY(setup.objectGenerationMinY * imageScaleFactorMultiplier, setup.objectGenerationMaxY * imageScaleFactorMultiplier);
+    std::uniform_real_distribution<> distrX(setup.objectGenerationMinX * imageScaleFactorMultiplier,
+                                            setup.objectGenerationMaxX * imageScaleFactorMultiplier);
+    std::uniform_real_distribution<> distrY(setup.objectGenerationMinY * imageScaleFactorMultiplier,
+                                            setup.objectGenerationMaxY * imageScaleFactorMultiplier);
     std::uniform_real_distribution<> distrR(1.f, 3.f);
     for (int i = 0; i < setup.stonesAmount; i++) {
         auto *stone = new Stone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distrR(gen)};
@@ -144,6 +148,8 @@ Simulation::Create()
             setup.shadowFrontierY = j["shadowFrontierY"];
             setup.shadowFrontierR = j["shadowFrontierR"];
             setup.satelliteImageScaleFactor = j["satelliteImageScale"];
+            setup.satelliteImageScaleFactorMultiplierMin = j["satelliteImageScaleFactorMultiplierMin"];
+            setup.satelliteImageScaleFactorMultiplierMax = j["satelliteImageScaleFactorMultiplierMax"];
             setup.satelliteImagePath = j["satelliteImagePath"];
             setup.objectGenerationMinX = j["objectGenerationMinX"];
             setup.objectGenerationMaxX = j["objectGenerationMaxX"];
@@ -153,6 +159,8 @@ Simulation::Create()
             std::cerr << "Failed to parse init.json file: " << e.what() << "\nUsing default simulator settings!"
                       << std::endl;
         }
+
+        std::cout << "Parsed custom init.json file successfully!" << std::endl;
     } else {
         std::cerr << "Failed to open and read data/init.json! Using default settings!" << std::endl;
     }
@@ -425,8 +433,7 @@ Simulation::BroadcastGeneralInfo()
     i++;
 
     // Broadcast general info every 5 seconds
-    if(i % 300 == 0)
-    {
+    if (i % 300 == 0) {
         nlohmann::json j;
         j["shadowFrontierX"] = shadow_zone->pos.x;
         j["shadowFrontierY"] = shadow_zone->pos.y;
@@ -435,5 +442,4 @@ Simulation::BroadcastGeneralInfo()
 
         Mqtt::getInstance().send("sim/out/general", "info", j);
     }
-
 }
