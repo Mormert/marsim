@@ -66,6 +66,8 @@ public:
 
     std::string name{"Unknown Object"};
 
+    unsigned int GetObjectId();
+
 protected:
 
     static inline unsigned int id_incrementor{0};

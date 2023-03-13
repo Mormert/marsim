@@ -88,3 +88,8 @@ Object::GetMass()
 {
     return body->GetMass();
 }
+unsigned int
+Object::GetObjectId()
+{
+    return object_id;
+}

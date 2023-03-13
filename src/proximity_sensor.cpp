@@ -79,6 +79,8 @@ ProximitySensor::update()
             auto pos = object->getPosition();
             objectJson["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", object->body->GetAngle()}};
             objectJson["name"] = object->name;
+            objectJson["id"] = object->GetObjectId();
+            objectJson["mass"] = object->GetMass();
 
             objects.push_back(objectJson);
         }
