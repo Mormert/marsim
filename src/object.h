@@ -68,6 +68,8 @@ public:
 
     unsigned int GetObjectId();
 
+    void SetObjectId(unsigned int id);
+
 protected:
 
     static inline unsigned int id_incrementor{0};

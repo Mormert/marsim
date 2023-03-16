@@ -203,6 +203,7 @@ Robot::pickup()
     j["type"] = item->name;
     j["radius"] = item->body->GetFixtureList()[0].GetShape()->m_radius;
     j["mass"] = item->GetMass();
+    j["id"] = item->GetObjectId();
 
     storage.push_back(j);
 
@@ -216,39 +217,46 @@ Robot::drop(unsigned int index)
 {
 
     if (index >= storage.size()) {
+        std::cerr << "Trying to drop item with index outside storage bounds!" << std::endl;
         return false;
     }
 
     auto item = storage[index];
     std::string itemName = item["type"];
     float itemRadius = item["radius"];
+    unsigned int id = item["id"];
 
     auto pos = pickup_sensor->getPosition();
     if (itemName == "Stone") {
         auto *stone = new Stone{simulation, {pos.x, pos.y}, itemRadius};
+        stone->SetObjectId(id);
         simulation->SimulateObject(stone);
     }
 
     if (itemName == "Alien") {
         auto *alien = new Alien{simulation, simulation->GetTerrain(), pos, body->GetAngle()};
+        alien->SetObjectId(id);
         simulation->SimulateObject(alien);
     }
 
     if(itemName == "Temperature Sensor")
     {
         auto tempSensor = new TemperatureSensor{simulation, {pos.x, pos.y}};
+        tempSensor->SetObjectId(id);
         simulation->SimulateObject(tempSensor);
     }
 
     if(itemName == "Wind Sensor")
     {
         auto windSensor = new WindSensor{simulation, {pos.x, pos.y}};
+        windSensor->SetObjectId(id);
         simulation->SimulateObject(windSensor);
     }
 
     if(itemName == "Seismic Sensor")
     {
         auto seismicSensor = new SeismicSensor{simulation, {pos.x, pos.y}};
+        seismicSensor->SetObjectId(id);
         simulation->SimulateObject(seismicSensor);
     }
 

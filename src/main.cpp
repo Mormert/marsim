@@ -574,7 +574,7 @@ static void UpdateUI()
                                     ImGui::Separator();
 
                                     auto pos = item->getPosition();
-                                    std::string objectText = item->name + "[" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + "]";
+                                    std::string objectText = item->name + + "(id=" + std::to_string(item->GetObjectId()) + ")" + "[" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + "]";
 
                                     ImGui::BulletText("%s", objectText.c_str());
 
@@ -595,7 +595,8 @@ static void UpdateUI()
                                     //auto textWidth   = ImGui::CalcTextSize(std::string{item["type"]}.c_str()).x;
 
                                     //ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-                                    ImGui::Text("%s. Mass: %f.", std::string{item["type"]}.c_str(), (float)item["mass"]);
+                                    unsigned int id = item["id"];
+                                    ImGui::Text("%s (id=%d), mass: %f.", std::string{item["type"]}.c_str(), id, (float)item["mass"]);
                                     if(ImGui::Button("Drop", button_sz))
                                     {
                                         robot->drop(i);
@@ -618,7 +619,7 @@ static void UpdateUI()
 
                                 for(auto&& item : robot->getItemsForPickup())
                                 {
-                                    ImGui::BulletText("%s", item->name.c_str());
+                                    ImGui::BulletText("%s (id=%d)", item->name.c_str(), item->GetObjectId());
                                 }
 
 

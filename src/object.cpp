@@ -93,3 +93,8 @@ Object::GetObjectId()
 {
     return object_id;
 }
+void
+Object::SetObjectId(unsigned int id)
+{
+    object_id = id;
+}
