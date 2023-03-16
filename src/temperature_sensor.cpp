@@ -26,6 +26,7 @@
 #include "json.hpp"
 #include "mqtt.h"
 #include "simulation.h"
+#include "volcano.h"
 
 TemperatureSensor::TemperatureSensor(Simulation *simulation, b2Vec2 pos) : PhysicalWeatherSensor(simulation, pos)
 {
@@ -42,7 +43,11 @@ TemperatureSensor::update()
 
     float temperature = 25.f;
     constexpr float tornadoTemperature = 5.f;
-    constexpr float volcanoTemperature = 100.f;
+    float volcanoTemperature = 100.f;
+
+    if (simulation->volcano->isActive()) {
+        volcanoTemperature = 850.f;
+    }
 
     for (auto &&tornado : tornadoes) {
         b2Vec2 strength{tornado.pos - getPosition()};
