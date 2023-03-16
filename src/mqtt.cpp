@@ -158,11 +158,13 @@ Mqtt::connectMqtt(const std::string &address, int port)
 void
 Mqtt::disconnectMqtt()
 {
-    if (mosquitto_disconnect(mqtt) == MOSQ_ERR_SUCCESS) {
+    int err = mosquitto_disconnect(mqtt);
+    if (err == MOSQ_ERR_SUCCESS) {
         is_connected = false;
 
     } else {
-        std::cout << "Failed to disconnect! try again..." << std::endl;
+        std::cout << "Failed to disconnect! error code: ";
+        std::cout << err << std::endl;
     }
 }
 
