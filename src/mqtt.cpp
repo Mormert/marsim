@@ -197,10 +197,10 @@ Mqtt::processMqtt(int32_t step)
         receivedBytesSecond = 0;
     }
 
-    if (step % 3 == 0) {
-        // We send the actual messages at a frequency of 20 Hz
+    // Note: removed "global send frequency"
+    //if (step % 3 == 0) {
         sendQueuedMessages();
-    }
+    //}
 
     mosquitto_loop(mqtt, 0, 1);
 }
