@@ -179,7 +179,7 @@ Robot::update()
         auto pos = getPosition();
         j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
 
-        if(body->GetAngularVelocity() > 0.01f && body->GetLinearVelocity().Length() > 0.01f)
+        if(body->GetAngularVelocity() > 0.01f || body->GetLinearVelocity().Length() > 0.01f)
         {
             Mqtt::getInstance().send("sim/out/robotpos", "RobotPos", j);
         }
