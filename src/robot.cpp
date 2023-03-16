@@ -171,6 +171,20 @@ Robot::update()
         Mqtt::getInstance().send("sim/out/general", "Robot", j);
     }
 
+    // 60 Hz robot position sync
+    if(updateCounter % 1 == 0)
+    {
+        nlohmann::json j;
+
+        auto pos = getPosition();
+        j["pos"] = {{"x", pos.x}, {"y", pos.y}, {"r", body->GetAngle()}};
+
+        if(body->GetAngularVelocity() > 0.01f && body->GetLinearVelocity().Length() > 0.01f)
+        {
+            Mqtt::getInstance().send("sim/out/robotpos", "RobotPos", j);
+        }
+    }
+
     lidarSensor->setPosition(getPosition());
     lidarSensor->update();
 
