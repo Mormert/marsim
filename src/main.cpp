@@ -51,15 +51,17 @@ static b2Vec2 s_clickPointWS = b2Vec2_zero;
 static float s_displayScale = 1.0f;
 static const float s_imguiPadding = 8.f;
 
+static char initJsonFilePath[1024] = "data/mission1.json";
+
 void glfwErrorCallback(int error, const char* description)
 {
 	fprintf(stderr, "GLFW error occured. Code: %d. Description: %s\n", error, description);
 }
 
-static void RestartSimulation()
+static void RestartSimulation(const std::string& initJson = "")
 {
-	delete s_application;
-    s_application = Simulation::Create();
+    delete s_application;
+    s_application = Simulation::Create(initJson);
     Mqtt::getInstance().setSimulationPtr(dynamic_cast<Simulation *>(s_application));
 }
 
@@ -287,7 +289,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 			break;
 
 		case GLFW_KEY_R:
-			RestartSimulation();
+			RestartSimulation(initJsonFilePath);
 			break;
 
 		case GLFW_KEY_O:
@@ -646,9 +648,12 @@ static void UpdateUI()
                         {
                                 ImVec2 button_sz = ImVec2(-1, 0);
 
+
+                                ImGui::InputText("Init JSON file", initJsonFilePath, 1024);
+
                                 if (ImGui::Button("Restart Simulation (R)", button_sz))
                                 {
-                                    RestartSimulation();
+                                    RestartSimulation(initJsonFilePath);
                                 }
 
                                 if (ImGui::Button("Trigger Immediate Earthquake (F)", button_sz))

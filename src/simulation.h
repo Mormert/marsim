@@ -84,9 +84,9 @@ public:
 
     void KeyboardUp(int key) override;
 
-    void SimulateObject(Object *object);
+    void SimulateObjectNextFrame(Object* object);
 
-    void DestroyObject(Object *object);
+    void DestroyObjectNextFrame(Object* object);
 
     void GenerateBlurredTerrain();
 
@@ -100,7 +100,7 @@ public:
 
     Terrain *GetTerrain();
 
-    static Simulation *Create();
+    static Simulation *Create(const std::string& initJson = "");
 
     void BeginContact(b2Contact *contact) override;
 
@@ -119,12 +119,21 @@ public:
     SimulationSetup setup;
 
 private:
+
+    void SimulateObject(Object *object);
+
+    void DestroyObject(Object *object);
+
     std::vector<TornadoData> tornadoDatas;
     std::vector<VolcanoData> volcanoDatas;
 
     Robot *robot;
     Terrain *terrain{nullptr};
     std::vector<Object *> objects;
+
+    // Cleared every frame
+    std::vector<Object*> objectsSpawned;
+    std::vector<Object*> objectsDestroyed;
 
     float imageScaleFactorMultiplier;
 };

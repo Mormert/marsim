@@ -150,7 +150,7 @@ Robot::update()
     laser->setAngle(glm::degrees(body->GetAngle()) + laserAngleDegrees);
     auto laserHit = laser->castRay();
     if (laserHit && shootNextUpdate) {
-        simulation->DestroyObject(laserHit);
+        simulation->DestroyObjectNextFrame(laserHit);
         //this battery usage doesn't account for missed shots so fix that
 
     }
@@ -221,7 +221,7 @@ Robot::pickup()
 
     storage.push_back(j);
 
-    simulation->DestroyObject(item);
+    simulation->DestroyObjectNextFrame(item);
 
     recalculateMass();
 }
@@ -244,34 +244,34 @@ Robot::drop(unsigned int index)
     if (itemName == "Stone") {
         auto *stone = new Stone{simulation, {pos.x, pos.y}, itemRadius};
         stone->SetObjectId(id);
-        simulation->SimulateObject(stone);
+        simulation->SimulateObjectNextFrame(stone);
     }
 
     if (itemName == "Alien") {
         auto *alien = new Alien{simulation, simulation->GetTerrain(), pos, body->GetAngle()};
         alien->SetObjectId(id);
-        simulation->SimulateObject(alien);
+        simulation->SimulateObjectNextFrame(alien);
     }
 
     if(itemName == "Temperature Sensor")
     {
         auto tempSensor = new TemperatureSensor{simulation, {pos.x, pos.y}};
         tempSensor->SetObjectId(id);
-        simulation->SimulateObject(tempSensor);
+        simulation->SimulateObjectNextFrame(tempSensor);
     }
 
     if(itemName == "Wind Sensor")
     {
         auto windSensor = new WindSensor{simulation, {pos.x, pos.y}};
         windSensor->SetObjectId(id);
-        simulation->SimulateObject(windSensor);
+        simulation->SimulateObjectNextFrame(windSensor);
     }
 
     if(itemName == "Seismic Sensor")
     {
         auto seismicSensor = new SeismicSensor{simulation, {pos.x, pos.y}};
         seismicSensor->SetObjectId(id);
-        simulation->SimulateObject(seismicSensor);
+        simulation->SimulateObjectNextFrame(seismicSensor);
     }
 
     storage.erase(storage.begin() + index);

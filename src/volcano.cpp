@@ -67,7 +67,7 @@ Volcano::update()
         auto *stone = new Stone{simulation,
                                 {getPosition().x + (float)distrXY(gen), getPosition().y + (float)distrXY(gen)},
                                 (float)distrR(gen)};
-        simulation->SimulateObject(stone);
+        simulation->SimulateObjectNextFrame(stone);
     }
 
     stepCounter++;

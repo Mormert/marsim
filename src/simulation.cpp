@@ -124,11 +124,12 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 }
 
 Simulation *
-Simulation::Create()
+Simulation::Create(const std::string& initJson)
 {
     SimulationSetup setup;
 
-    std::ifstream file{"data/init.json"};
+    std::ifstream file{initJson};
+
     if (file.good()) {
         nlohmann::json j = nlohmann::json::parse(file);
 
@@ -160,9 +161,9 @@ Simulation::Create()
                       << std::endl;
         }
 
-        std::cout << "Parsed custom init.json file successfully!" << std::endl;
+        std::cout << "Parsed custom init json file successfully!" << std::endl;
     } else {
-        std::cerr << "Failed to open and read data/init.json! Using default settings!" << std::endl;
+        std::cerr << "Failed to open and read " << initJson <<"! Using default settings!" << std::endl;
     }
 
     return new Simulation(setup);
@@ -187,7 +188,8 @@ Simulation::UpdateObjects()
     volcanoDatas.clear();
     tornadoDatas.clear();
 
-    for (auto &&object : objects) {
+    for(auto && object : objects)
+    {
         if (object->updateable) {
             object->update();
         }
@@ -195,6 +197,7 @@ Simulation::UpdateObjects()
             tornadoDatas.push_back({tornado->getPosition(), tornado->magnitude, tornado->radius});
         }
     }
+
 }
 
 void
@@ -247,6 +250,18 @@ Simulation::Step(Settings &settings)
     earthquake.update(m_stepCount);
 
     UpdateObjects();
+
+    for(auto && object : objectsSpawned)
+    {
+        SimulateObject(object);
+    }
+    objectsSpawned.clear();
+
+    for(auto && object : objectsDestroyed)
+    {
+        DestroyObject(object);
+    }
+    objectsDestroyed.clear();
 
     ApplySlopeForce();
 
@@ -442,4 +457,15 @@ Simulation::BroadcastGeneralInfo()
 
         Mqtt::getInstance().send("sim/out/general", "info", j);
     }
+}
+void
+Simulation::SimulateObjectNextFrame(Object *object)
+{
+    objectsSpawned.push_back(object);
+}
+
+void
+Simulation::DestroyObjectNextFrame(Object *object)
+{
+    objectsDestroyed.push_back(object);
 }

@@ -56,7 +56,7 @@ Alien::Alien(Simulation *simulation, Terrain *terrain, b2Vec2 pos, float rotatio
     body->CreateFixture(&fixdef);
 
     sights_sensor = new ProximitySensor{simulation, pos, sight_distance, true, false};
-    simulation->SimulateObject(sights_sensor);
+    simulation->SimulateObjectNextFrame(sights_sensor);
 
     name = "Alien";
 }
