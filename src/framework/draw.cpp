@@ -949,7 +949,7 @@ void DebugDraw::DrawString(int x, int y, const char* string, ...)
 	va_start(arg, string);
 	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
 	ImGui::SetCursorPos(ImVec2(float(x), float(y)));
-	ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
+	ImGui::TextColoredV(ImColor(56, 123, 204, 255), string, arg);
 	ImGui::End();
 	va_end(arg);
 }
@@ -963,7 +963,7 @@ void DebugDraw::DrawString(const b2Vec2& pw, const char* string, ...)
 	va_start(arg, string);
 	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
 	ImGui::SetCursorPos(ImVec2(ps.x, ps.y));
-	ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
+	ImGui::TextColoredV(ImColor(56, 123, 204, 255), string, arg);
 	ImGui::End();
 	va_end(arg);
 }
