@@ -88,7 +88,7 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     std::uniform_int_distribution<> distSensorRadius(12, 24);
     for (int i = 0; i < setup.proximitySensorsAmount; i++) {
         auto proximity_sensor =
-            new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen)};
+            new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, 500.f};
         SimulateObject(proximity_sensor);
     }
 
@@ -298,7 +298,7 @@ Simulation::KeyboardUp(int key)
     }
 
     if (key == GLFW_KEY_F) {
-        earthquake.trigger(350.f, 500);
+        earthquake.trigger(50.f, 500);
     }
 
     if (key == GLFW_KEY_V) {
