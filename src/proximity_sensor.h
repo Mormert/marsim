@@ -42,6 +42,8 @@ public:
 
     std::vector<Object*> getObjectsInside();
 
+    bool shouldTransmitMqtt = true;
+
 protected:
     explicit ProximitySensor(Simulation* simulation);
 

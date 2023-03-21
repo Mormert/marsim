@@ -254,7 +254,7 @@ Mqtt::sendMqtt(const std::string &topic, const std::string &data)
     if (printSendingMsgs) {
         std::cout << "Sending topic(" << topic << "): " << data << std::endl;
     }
-    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, true);
+    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, false);
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
     sentMessages++;

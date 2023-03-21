@@ -62,6 +62,12 @@ ProximitySensor::ProximitySensor(Simulation* simulation, b2Vec2 pos, float radiu
 void
 ProximitySensor::update()
 {
+
+    if(!shouldTransmitMqtt)
+    {
+        return;
+    }
+
     if (updateCounter % updateFrequency == 0) {
 
         nlohmann::json j;

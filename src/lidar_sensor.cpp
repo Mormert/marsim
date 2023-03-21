@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "lidar_sensor.h"
+#include "object.h"
 #include "mqtt.h"
 #include "raycast.h"
 
@@ -38,9 +39,17 @@ LidarSensor::update()
 
     if (broadcastCounter % broadcastFrequency == 0) {
         nlohmann::json j;
-        j["lidarValues"] = lidarValues;
+        std::vector<float> distances;
+        std::vector<int> ids;
+        for(auto && i : lidarValues)
+        {
+            distances.push_back(i.distance);
+            ids.push_back(i.id);
+        }
+        j["lidarDistance"] = distances;
+        j["lidarIds"] = ids;
 
-        Mqtt::getInstance().send("sim/out/sensors", "lidar", j);
+        Mqtt::getInstance().send("sim/out/sensors/lidar", "lidar", j);
     }
 
     broadcastCounter++;
@@ -66,10 +75,10 @@ LidarSensor::castRays()
             g_debugDraw.DrawSegment(callback.m_point, head, b2Color(0.9f, 0.9f, 0.4f));
 
             b2Vec2 diff = callback.m_point - point1;
-            lidarValues.push_back(diff.Length());
+            lidarValues.push_back({diff.Length(), (int)callback.m_hit->GetObjectId()});
         } else {
             g_debugDraw.DrawSegment(point1, point2, b2Color(0.8f, 0.8f, 0.8f));
-            lidarValues.push_back(radius);
+            lidarValues.push_back({radius, -1});
         }
     }
 }

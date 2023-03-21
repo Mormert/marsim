@@ -36,7 +36,7 @@ struct SimulationSetup {
     float robotX{0.f}, robotY{0.f}, robotR{0.f};
     unsigned int stonesAmount{2000};
     unsigned int aliensAmount{20};
-    unsigned int proximitySensorsAmount{20};
+   // unsigned int proximitySensorsAmount{20};
     unsigned int frictionZonesAmount{20};
     unsigned int tornadoesAmount{20};
     unsigned int windSensorsAmount{15};

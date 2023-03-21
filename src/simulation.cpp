@@ -86,11 +86,14 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     }
 
     std::uniform_int_distribution<> distSensorRadius(12, 24);
+
+    /* // Removed proximity sensors, replaced with "global sensor-sensor-thingey"
     for (int i = 0; i < setup.proximitySensorsAmount; i++) {
         auto proximity_sensor =
             new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, 500.f};
         SimulateObject(proximity_sensor);
     }
+    */
 
     for (int i = 0; i < setup.frictionZonesAmount; i++) {
         auto frictionZone =
@@ -124,7 +127,7 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 }
 
 Simulation *
-Simulation::Create(const std::string& initJson)
+Simulation::Create(const std::string &initJson)
 {
     SimulationSetup setup;
 
@@ -139,7 +142,7 @@ Simulation::Create(const std::string& initJson)
             setup.robotR = j["robotR"];
             setup.stonesAmount = j["stonesAmount"];
             setup.aliensAmount = j["aliensAmount"];
-            setup.proximitySensorsAmount = j["proximitySensorsAmount"];
+           // setup.proximitySensorsAmount = j["proximitySensorsAmount"];
             setup.frictionZonesAmount = j["frictionZonesAmount"];
             setup.tornadoesAmount = j["tornadoesAmount"];
             setup.windSensorsAmount = j["windSensorsAmount"];
@@ -163,7 +166,7 @@ Simulation::Create(const std::string& initJson)
 
         std::cout << "Parsed custom init json file successfully!" << std::endl;
     } else {
-        std::cerr << "Failed to open and read " << initJson <<"! Using default settings!" << std::endl;
+        std::cerr << "Failed to open and read " << initJson << "! Using default settings!" << std::endl;
     }
 
     return new Simulation(setup);
@@ -188,8 +191,7 @@ Simulation::UpdateObjects()
     volcanoDatas.clear();
     tornadoDatas.clear();
 
-    for(auto && object : objects)
-    {
+    for (auto &&object : objects) {
         if (object->updateable) {
             object->update();
         }
@@ -197,7 +199,6 @@ Simulation::UpdateObjects()
             tornadoDatas.push_back({tornado->getPosition(), tornado->magnitude, tornado->radius});
         }
     }
-
 }
 
 void
@@ -251,16 +252,15 @@ Simulation::Step(Settings &settings)
 
     UpdateObjects();
 
-    for(auto && object : objectsSpawned)
-    {
+    for (auto &&object : objectsSpawned) {
         SimulateObject(object);
     }
     objectsSpawned.clear();
 
-    for(auto && object : objectsDestroyed)
-    {
+    for (auto &&object : objectsDestroyed) {
         DestroyObject(object);
     }
+
     objectsDestroyed.clear();
 
     ApplySlopeForce();

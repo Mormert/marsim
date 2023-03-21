@@ -602,7 +602,7 @@ static void UpdateUI()
                                 ImGui::Text("RobotR: %f", setup.robotR);
                                 ImGui::Text("stonesAmount: %d", setup.stonesAmount);
                                 ImGui::Text("aliensAmount: %d", setup.aliensAmount);
-                                ImGui::Text("proximitySensorsAmount: %d", setup.proximitySensorsAmount);
+                               // ImGui::Text("proximitySensorsAmount: %d", setup.proximitySensorsAmount);
                                 ImGui::Text("frictionZonesAmount: %d", setup.frictionZonesAmount);
                                 ImGui::Text("tornadoesAmount: %d", setup.tornadoesAmount);
                                 ImGui::Text("windSensorsAmount: %d", setup.windSensorsAmount);
