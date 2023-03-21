@@ -83,16 +83,16 @@ Battery::BatUpdate(double I)
     //[1 min, 1 hr, 60 hrs] in sim per second is [3600, 60, 1] value to be multiplied by cap_
     //NOTE: THIS FUNCTION IS ONLY INTENDED TO WORK AT 60 Hz, TIME FACTOR WILL CHANGE IF NOT UPDATED AT 60Hz
     if (SOC_0 >= 0.8 && SOC_0 <= 100){
-        SOC = SOC_0 - (I*(0.2*CRate_)/ (cap_ * 60));
+        SOC = SOC_0 - (I*(0.2*CRate_)/ (cap_ * 3600));
 
 
     }else{
     if (SOC_0 <= 0.2){
-        SOC = SOC_0 - (I*(2*CRate_)/ (cap_ * 60));
+        SOC = SOC_0 - (I*(2*CRate_)/ (cap_ * 3600));
 
     }
     else{
-        SOC = SOC_0 - (I*CRate_ /(cap_ * 60 ));
+        SOC = SOC_0 - (I*CRate_ /(cap_ * 3600 ));
 
     }}
     /////////////////////////////////////////////////////////////////////////

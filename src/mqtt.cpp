@@ -254,7 +254,7 @@ Mqtt::sendMqtt(const std::string &topic, const std::string &data)
     if (printSendingMsgs) {
         std::cout << "Sending topic(" << topic << "): " << data << std::endl;
     }
-    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, false);
+    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, true);
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
     sentMessages++;
@@ -379,7 +379,7 @@ Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
     }
     std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)),
                                           std::istreambuf_iterator<char>());
-    mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, false);
+    mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, true);
 }
 bool *
 Mqtt::useMessagePackReceiveBool()
