@@ -68,7 +68,7 @@ TemperatureSensor::update()
     std::string str = std::to_string(temperature) + "'C";
     g_debugDraw.DrawString(getPosition(), str.c_str());
 
-    if (updateCounter % updateFrequency == 0) {
+    if (simulation->GetStepCount() % updateFrequency == 0) {
         nlohmann::json j;
 
         auto pos = getPosition();
@@ -79,6 +79,4 @@ TemperatureSensor::update()
 
         Mqtt::getInstance().send("sim/out/sensors", name, j);
     }
-
-    updateCounter++;
 }

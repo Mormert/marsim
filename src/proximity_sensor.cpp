@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "proximity_sensor.h"
+#include "simulation.h"
 #include <iostream>
 
 #include "json.hpp"
@@ -68,7 +69,7 @@ ProximitySensor::update()
         return;
     }
 
-    if (updateCounter % updateFrequency == 0) {
+    if (simulation->GetStepCount() % updateFrequency == 0) {
 
         nlohmann::json j;
 
@@ -95,8 +96,6 @@ ProximitySensor::update()
 
         Mqtt::getInstance().send("sim/out/general", name, j);
     }
-
-    updateCounter++;
 }
 
 void
