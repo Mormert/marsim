@@ -128,6 +128,7 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     TopicSetting ts;
     ts.waitForMQTTConnection = true;
     ts.retained = true;
+    ts.maxMessages = 1;
     Mqtt::getInstance().overrideTopicSettings("sim/out/restart", ts);
 
     nlohmann::json j = GetGeneralInfo();
@@ -191,8 +192,6 @@ Simulation::~Simulation()
 
     delete terrain;
     delete shadow_zone;
-
-    Mqtt::getInstance().send("sim/out/shutdown", "shutdown", {});
 };
 
 void

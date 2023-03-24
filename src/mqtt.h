@@ -42,6 +42,7 @@ class Settings;
 struct TopicSetting{
     bool retained = false;
     bool waitForMQTTConnection = false;
+    int maxMessages = -1;
 };
 class Mqtt
 {
@@ -103,6 +104,8 @@ public:
 
     bool printSendingMsgs{true};
     bool printReceivingMsgs{true};
+
+    void INTERNAL_SetConnected();
 
 private:
     // Publishes the payload for the given topic
