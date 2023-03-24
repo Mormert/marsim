@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "tornado.h"
+#include "simulation.h"
 #include "framework/draw.h"
 
 Tornado::Tornado(Simulation *simulation, b2Vec2 pos, float radius, float magnitude)
@@ -32,6 +33,8 @@ Tornado::Tornado(Simulation *simulation, b2Vec2 pos, float radius, float magnitu
 void
 Tornado::update()
 {
+    MoveToMiddleMouseButtonPressPosition();
+
     g_debugDraw.DrawSolidCircle(getPosition(), radius, {}, b2Color{1.f, 0.0f, 0.f, 1.f});
     g_debugDraw.DrawCircle(getPosition(), radius + 0.2f, b2Color{1.f, 0.0f, 0.f, 1.f});
     g_debugDraw.DrawCircle(getPosition(), radius + 0.4f, b2Color{1.f, 1.0f, 0.f, 1.f});

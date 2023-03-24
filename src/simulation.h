@@ -28,6 +28,8 @@
 #include "json.hpp"
 #include "terrain.h"
 
+#include <GLFW/glfw3.h>
+
 class Object;
 class Robot;
 class Volcano;
@@ -118,6 +120,10 @@ public:
     ShadowZone *shadow_zone;
 
     SimulationSetup setup;
+
+    static inline GLFWwindow* window;
+
+    static inline Camera* camera;
 
 private:
 

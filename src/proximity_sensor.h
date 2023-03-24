@@ -55,6 +55,9 @@ protected:
     float radius{15.f};
 
     int updateFrequency = 20;
+
+    void MoveToMiddleMouseButtonPressPosition();
+
 };
 
 #endif // MARSIM_PROXIMITY_SENSOR_H
