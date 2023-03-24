@@ -51,9 +51,9 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     std::uniform_real_distribution<> imageScaleFactorMultiplierDistr(setup.satelliteImageScaleFactorMultiplierMin,
                                                                      setup.satelliteImageScaleFactorMultiplierMax);
 
-    imageScaleFactorMultiplier = (float)imageScaleFactorMultiplierDistr(gen);
+    imageScaleFactorMultiplier = setup.satelliteImageScaleFactor * (float)imageScaleFactorMultiplierDistr(gen);
 
-    Terrain::terrainScaling = setup.satelliteImageScaleFactor * imageScaleFactorMultiplier;
+    Terrain::terrainScaling = imageScaleFactorMultiplier;
     Mqtt::requestImagePath = setup.satelliteImagePath;
 
     GenerateBlurredTerrain();
