@@ -38,6 +38,11 @@
 class Simulation;
 class Settings;
 
+
+struct TopicSetting{
+    bool retained = false;
+    bool waitForMQTTConnection = false;
+};
 class Mqtt
 {
 public:
@@ -50,6 +55,8 @@ public:
     void disconnectMqtt();
 
     void send(const std::string &topic, const std::string &message_type, const nlohmann::json &payload);
+
+    void overrideTopicSettings(const std::string& topic, const TopicSetting& setting);
 
     void processMqtt(int32_t step);
 
@@ -99,12 +106,15 @@ public:
 
 private:
     // Publishes the payload for the given topic
-    void sendMqtt(const std::string &topic, const std::string &data);
+    void sendMqtt(const std::string &topic, const std::string &data, bool retained = false);
 
     void sendQueuedMessages();
 
     // Topic, Message
     std::unordered_map<std::string, std::vector<nlohmann::json>> queuedMessages;
+
+    // Topic, TopicSetting
+    std::unordered_map<std::string, TopicSetting> topicSettings;
 
     void init();
 

@@ -171,10 +171,6 @@ Mqtt::disconnectMqtt()
 void
 Mqtt::send(const std::string &topic, const std::string &message_type, const nlohmann::json &payload)
 {
-    if (!is_connected) {
-        return;
-    }
-
     nlohmann::json j;
     j["type"] = message_type;
     j["data"] = payload;
@@ -198,8 +194,8 @@ Mqtt::processMqtt(int32_t step)
     }
 
     // Note: removed "global send frequency"
-    //if (step % 3 == 0) {
-        sendQueuedMessages();
+    // if (step % 3 == 0) {
+    sendQueuedMessages();
     //}
 
     mosquitto_loop(mqtt, 0, 1);
@@ -212,6 +208,18 @@ Mqtt::sendQueuedMessages()
 
     // Send all messages as a batch for each topic
     for (auto &&[topic, msgs] : queuedMessages) {
+
+        if(msgs.empty())
+        {
+            continue;
+        }
+
+        TopicSetting topicSetting;
+        auto it = topicSettings.find(topic);
+        if(it != topicSettings.end())
+        {
+            topicSetting = it->second;
+        }
 
         nlohmann::json j;
         j["time"] = tp.time_since_epoch().count();
@@ -236,10 +244,16 @@ Mqtt::sendQueuedMessages()
             zLibCompressor.finish();
         }
 
-        sendMqtt(topic, jsonString);
-    }
+        if(is_connected)
+        {
+            sendMqtt(topic, jsonString, topicSetting.retained);
+        }
 
-    queuedMessages = {};
+        if(is_connected && !topicSetting.waitForMQTTConnection)
+        {
+            msgs.clear();
+        }
+    }
 }
 
 bool
@@ -249,12 +263,12 @@ Mqtt::isConnected()
 }
 
 void
-Mqtt::sendMqtt(const std::string &topic, const std::string &data)
+Mqtt::sendMqtt(const std::string &topic, const std::string &data, bool retained)
 {
     if (printSendingMsgs) {
         std::cout << "Sending topic(" << topic << "): " << data << std::endl;
     }
-    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, false);
+    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, retained);
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
     sentMessages++;
@@ -390,4 +404,10 @@ int *
 Mqtt::getCompressionReceiveInt()
 {
     return &Settings::m_compressionReceive;
+}
+
+void
+Mqtt::overrideTopicSettings(const std::string &topic, const TopicSetting &setting)
+{
+    topicSettings.insert(std::make_pair(topic, setting));
 }

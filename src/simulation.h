@@ -25,6 +25,7 @@
 
 #include "earthquake.h"
 #include "framework/application.h"
+#include "json.hpp"
 #include "terrain.h"
 
 class Object;
@@ -123,6 +124,8 @@ private:
     void SimulateObject(Object *object);
 
     void DestroyObject(Object *object);
+
+    nlohmann::json GetGeneralInfo();
 
     std::vector<TornadoData> tornadoDatas;
     std::vector<VolcanoData> volcanoDatas;

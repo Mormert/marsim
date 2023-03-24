@@ -124,6 +124,15 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 
     volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
     SimulateObject(volcano);
+
+    TopicSetting ts;
+    ts.waitForMQTTConnection = true;
+    ts.retained = true;
+    Mqtt::getInstance().overrideTopicSettings("sim/out/restart", ts);
+
+    nlohmann::json j = GetGeneralInfo();
+
+    Mqtt::getInstance().send("sim/out/restart", "restart", j);
 }
 
 Simulation *
@@ -182,6 +191,8 @@ Simulation::~Simulation()
 
     delete terrain;
     delete shadow_zone;
+
+    Mqtt::getInstance().send("sim/out/shutdown", "shutdown", {});
 };
 
 void
@@ -449,12 +460,7 @@ Simulation::BroadcastGeneralInfo()
 
     // Broadcast general info every 5 seconds
     if (i % 300 == 0) {
-        nlohmann::json j;
-        j["shadowFrontierX"] = shadow_zone->pos.x;
-        j["shadowFrontierY"] = shadow_zone->pos.y;
-        j["shadowFrontierR"] = shadow_zone->rot;
-        j["satelliteImageScaleFactor"] = imageScaleFactorMultiplier;
-
+        nlohmann::json j = GetGeneralInfo();
         Mqtt::getInstance().send("sim/out/general", "info", j);
     }
 }
@@ -468,4 +474,16 @@ void
 Simulation::DestroyObjectNextFrame(Object *object)
 {
     objectsDestroyed.push_back(object);
+}
+
+nlohmann::json
+Simulation::GetGeneralInfo()
+{
+    nlohmann::json j;
+    j["shadowFrontierX"] = shadow_zone->pos.x;
+    j["shadowFrontierY"] = shadow_zone->pos.y;
+    j["shadowFrontierR"] = shadow_zone->rot;
+    j["satelliteImageScaleFactor"] = imageScaleFactorMultiplier;
+
+    return j;
 }
