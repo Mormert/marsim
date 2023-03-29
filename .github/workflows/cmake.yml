@@ -46,6 +46,7 @@ jobs:
     - if: runner.os == 'Windows'
       run: |
         move ${{github.workspace}}\build\Release\marsim.exe ${{github.workspace}}\build
+        move ${{github.workspace}}\build\Release\listener.exe ${{github.workspace}}\build
 
     - uses: actions/upload-artifact@v2
       with:
@@ -53,6 +54,8 @@ jobs:
         path: |
           build/**/marsim
           build/**/marsim.exe
+          build/**/listener
+          build/**/listener.exe
           build/**/data
           !build/**/3rdparty
           
