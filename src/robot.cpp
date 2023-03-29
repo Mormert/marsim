@@ -209,6 +209,7 @@ Robot::pickup()
 {
     auto items = getItemsForPickup();
     if (items.empty()) {
+        Mqtt::getInstance().send("sim/out/pickup", "pickup", "FAIL");
         return;
     }
 
@@ -225,6 +226,8 @@ Robot::pickup()
     simulation->DestroyObjectNextFrame(item);
 
     recalculateMass();
+
+    Mqtt::getInstance().send("sim/out/pickup", "pickup", j);
 }
 
 bool
