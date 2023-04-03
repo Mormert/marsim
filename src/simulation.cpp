@@ -47,10 +47,6 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 
     srand(setup.simulationSeed);
 
-    for (auto object : setup.objectSetups) {
-        AddObjectFromJson(object);
-    }
-
     std::random_device rd;
     std::mt19937 gen(rd());
     gen.seed(setup.simulationSeed);
@@ -124,6 +120,10 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     if (!volcano) {
         volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
         SimulateObject(volcano);
+    }
+
+    for (auto object : setup.objectSetups) {
+        AddObjectFromJson(object);
     }
 
     TopicSetting ts;

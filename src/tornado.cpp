@@ -21,18 +21,22 @@
 // SOFTWARE.
 
 #include "tornado.h"
-#include "simulation.h"
 #include "framework/draw.h"
+#include "simulation.h"
 
 Tornado::Tornado(Simulation *simulation, b2Vec2 pos, float radius, float magnitude)
     : ProximitySensor(simulation, pos, radius, false, true)
 {
     this->radius = radius;
     this->magnitude = magnitude;
+
+    FindNewMoveToTarget();
 }
 void
 Tornado::update()
 {
+    TornadoMovement();
+
     MoveToMiddleMouseButtonPressPosition();
 
     g_debugDraw.DrawSolidCircle(getPosition(), radius, {}, b2Color{1.f, 0.0f, 0.f, 1.f});
@@ -43,4 +47,35 @@ Tornado::update()
         b2Vec2 force = getPosition() - object->getPosition();
         object->addForce(b2Vec2{force.x * magnitude, force.y * magnitude});
     }
+}
+
+void
+Tornado::TornadoMovement()
+{
+
+    b2Vec2 d = target - getPosition();
+    b2Vec2 dir = d;
+    dir.Normalize();
+    dir.x *= 0.1f;
+    dir.y *= 0.1f;
+
+    setPosition(getPosition() + dir, 0.f);
+
+    if (d.LengthSquared() < 2.f) {
+        FindNewMoveToTarget();
+    }
+}
+
+void
+Tornado::FindNewMoveToTarget()
+{
+    int rangeY =
+        simulation->GetTerrain()->getTextureHeight() / 2 - (-simulation->GetTerrain()->getTextureHeight() / 2) + 1;
+    int y = std::rand() % rangeY + (-simulation->GetTerrain()->getTextureHeight() / 2);
+
+    int rangeX =
+        simulation->GetTerrain()->getTextureWidth() / 2 - (-simulation->GetTerrain()->getTextureWidth() / 2) + 1;
+    int x = std::rand() % rangeX + (-simulation->GetTerrain()->getTextureWidth() / 2);
+
+    target = b2Vec2{(float)x, (float)y};
 }
