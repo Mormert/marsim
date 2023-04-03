@@ -35,8 +35,17 @@ class Robot;
 class Volcano;
 class ShadowZone;
 
+struct ObjectSetup
+{
+    b2Vec2 position;
+    std::string object;
+    float radius = -1.f;
+};
+
 struct SimulationSetup {
+    int simulationSeed{1337};
     float robotX{0.f}, robotY{0.f}, robotR{0.f};
+    std::vector<ObjectSetup> objectSetups;
     unsigned int stonesAmount{2000};
     unsigned int aliensAmount{20};
    // unsigned int proximitySensorsAmount{20};
@@ -115,9 +124,9 @@ public:
 
     Earthquake earthquake;
 
-    Volcano *volcano;
+    Volcano *volcano{};
 
-    ShadowZone *shadow_zone;
+    ShadowZone *shadow_zone{};
 
     SimulationSetup setup;
 
@@ -126,6 +135,8 @@ public:
     static inline Camera* camera;
 
 private:
+
+    void AddObjectFromJson(ObjectSetup& os);
 
     void SimulateObject(Object *object);
 

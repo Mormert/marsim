@@ -45,8 +45,15 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 
     this->setup = setup;
 
+    srand(setup.simulationSeed);
+
+    for (auto object : setup.objectSetups) {
+        AddObjectFromJson(object);
+    }
+
     std::random_device rd;
     std::mt19937 gen(rd());
+    gen.seed(setup.simulationSeed);
 
     std::uniform_real_distribution<> imageScaleFactorMultiplierDistr(setup.satelliteImageScaleFactorMultiplierMin,
                                                                      setup.satelliteImageScaleFactorMultiplierMax);
@@ -87,14 +94,6 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 
     std::uniform_int_distribution<> distSensorRadius(12, 24);
 
-    /* // Removed proximity sensors, replaced with "global sensor-sensor-thingey"
-    for (int i = 0; i < setup.proximitySensorsAmount; i++) {
-        auto proximity_sensor =
-            new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, 500.f};
-        SimulateObject(proximity_sensor);
-    }
-    */
-
     for (int i = 0; i < setup.frictionZonesAmount; i++) {
         auto frictionZone =
             new FrictionZone{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen), 22.5f, 40.f};
@@ -122,8 +121,10 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
         SimulateObject(tempSensor);
     }
 
-    volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
-    SimulateObject(volcano);
+    if (!volcano) {
+        volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
+        SimulateObject(volcano);
+    }
 
     TopicSetting ts;
     ts.waitForMQTTConnection = true;
@@ -147,12 +148,26 @@ Simulation::Create(const std::string &initJson)
         nlohmann::json j = nlohmann::json::parse(file);
 
         try {
+            setup.simulationSeed = j["simulationSeed"];
             setup.robotX = j["robotX"];
             setup.robotY = j["robotY"];
             setup.robotR = j["robotR"];
+
+            auto objects = j["objectSetups"];
+            for (auto &&objectJson : objects) {
+                ObjectSetup os;
+                os.object = objectJson["object"];
+                os.position.x = objectJson["posX"];
+                os.position.y = objectJson["posY"];
+                if(objectJson.contains("radius"))
+                {
+                    os.radius = objectJson["radius"];
+                }
+                setup.objectSetups.push_back(os);
+            }
+
             setup.stonesAmount = j["stonesAmount"];
             setup.aliensAmount = j["aliensAmount"];
-           // setup.proximitySensorsAmount = j["proximitySensorsAmount"];
             setup.frictionZonesAmount = j["frictionZonesAmount"];
             setup.tornadoesAmount = j["tornadoesAmount"];
             setup.windSensorsAmount = j["windSensorsAmount"];
@@ -485,4 +500,57 @@ Simulation::GetGeneralInfo()
     j["satelliteImageScaleFactor"] = imageScaleFactorMultiplier;
 
     return j;
+}
+
+void
+Simulation::AddObjectFromJson(ObjectSetup &os)
+{
+    if (os.object == "Stone") {
+        auto *stone = new Stone{this, os.position, os.radius};
+        SimulateObject(stone);
+        return;
+    }
+
+    if (os.object == "Alien") {
+        auto alien = new Alien{this, terrain, os.position, 0.f};
+        SimulateObject(alien);
+        return;
+    }
+
+    if (os.object == "Friction Zone") {
+
+        auto frictionZone = new FrictionZone{this, os.position, os.radius, 22.5f, 40.f};
+        SimulateObject(frictionZone);
+        return;
+    }
+
+    if (os.object == "Tornado") {
+        auto tornado = new Tornado{this, os.position, os.radius, 1000.f};
+        SimulateObject(tornado);
+        return;
+    }
+
+    if (os.object == "Wind Sensor") {
+        auto windSensor = new WindSensor{this, os.position};
+        SimulateObject(windSensor);
+        return;
+    }
+
+    if (os.object == "Seismic Sensor") {
+        auto seismicSensor = new SeismicSensor{this, os.position};
+        SimulateObject(seismicSensor);
+        return;
+    }
+
+    if (os.object == "Temperature Sensor") {
+        auto tempSensor = new TemperatureSensor{this, os.position};
+        SimulateObject(tempSensor);
+        return;
+    }
+
+    if (os.object == "Volcano") {
+        volcano = new Volcano{this, os.position, os.radius};
+        SimulateObject(volcano);
+        return;
+    }
 }
