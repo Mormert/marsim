@@ -159,8 +159,7 @@ Simulation::Create(const std::string &initJson)
                 os.object = objectJson["object"];
                 os.position.x = objectJson["posX"];
                 os.position.y = objectJson["posY"];
-                if(objectJson.contains("radius"))
-                {
+                if (objectJson.contains("radius")) {
                     os.radius = objectJson["radius"];
                 }
                 setup.objectSetups.push_back(os);
@@ -215,6 +214,7 @@ Simulation::UpdateObjects()
 
     volcanoDatas.clear();
     tornadoDatas.clear();
+    alienDatas.clear();
 
     for (auto &&object : objects) {
         if (object->updateable) {
@@ -222,6 +222,10 @@ Simulation::UpdateObjects()
         }
         if (auto tornado = dynamic_cast<Tornado *>(object)) {
             tornadoDatas.push_back({tornado->getPosition(), tornado->magnitude, tornado->radius});
+        }
+
+        if (auto alien = dynamic_cast<Alien *>(object)) {
+            alienDatas.push_back({alien->getPosition()});
         }
     }
 }
@@ -454,6 +458,12 @@ Simulation::GetTornados()
     return tornadoDatas;
 }
 
+std::vector<AlienData> &
+Simulation::GetAliens()
+{
+    return alienDatas;
+}
+
 std::vector<VolcanoData>
 Simulation::GetVolcanoes() const
 {
@@ -554,3 +564,4 @@ Simulation::AddObjectFromJson(ObjectSetup &os)
         return;
     }
 }
+

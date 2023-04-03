@@ -77,6 +77,10 @@ struct VolcanoData {
     float radius;
 };
 
+struct AlienData {
+    b2Vec2 pos;
+};
+
 class Simulation : public Application
 {
 public:
@@ -105,6 +109,8 @@ public:
     void BroadcastGeneralInfo();
 
     std::vector<TornadoData> &GetTornados();
+
+    std::vector<AlienData> &GetAliens();
 
     [[nodiscard]] std::vector<VolcanoData> GetVolcanoes() const;
 
@@ -146,6 +152,7 @@ private:
 
     std::vector<TornadoData> tornadoDatas;
     std::vector<VolcanoData> volcanoDatas;
+    std::vector<AlienData> alienDatas;
 
     Robot *robot;
     Terrain *terrain{nullptr};

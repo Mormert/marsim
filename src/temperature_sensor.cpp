@@ -40,6 +40,7 @@ TemperatureSensor::update()
 
     auto &&tornadoes = simulation->GetTornados();
     auto &&volcanoes = simulation->GetVolcanoes();
+    auto &&aliens = simulation->GetAliens();
 
     float temperature = 25.f;
     constexpr float tornadoTemperature = 5.f;
@@ -52,6 +53,14 @@ TemperatureSensor::update()
     for (auto &&tornado : tornadoes) {
         b2Vec2 strength{tornado.pos - getPosition()};
         float attenuation = strength.LengthSquared();
+        attenuation /= 1.f;
+        attenuation = glm::clamp(attenuation, 0.f, 100000.f);
+        temperature = glm::mix(tornadoTemperature, temperature, attenuation / 100000.f);
+    }
+
+    for (auto &&alien : aliens) {
+        b2Vec2 strength{alien.pos - getPosition()};
+        float attenuation = 100.f * strength.LengthSquared();
         attenuation /= 1.f;
         attenuation = glm::clamp(attenuation, 0.f, 100000.f);
         temperature = glm::mix(tornadoTemperature, temperature, attenuation / 100000.f);
