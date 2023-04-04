@@ -32,6 +32,8 @@ FrictionZone::FrictionZone(Simulation *simulation, b2Vec2 pos, float radius, flo
 void
 FrictionZone::update()
 {
+    MoveToMiddleMouseButtonPressPosition();
+
     g_debugDraw.DrawSolidCircle(getPosition(), radius, {}, b2Color{1.f, 0.0f, 1.f, 1.f});
 }
 

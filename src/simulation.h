@@ -25,18 +25,30 @@
 
 #include "earthquake.h"
 #include "framework/application.h"
+#include "json.hpp"
 #include "terrain.h"
+
+#include <GLFW/glfw3.h>
 
 class Object;
 class Robot;
 class Volcano;
 class ShadowZone;
 
+struct ObjectSetup
+{
+    b2Vec2 position;
+    std::string object;
+    float radius = -1.f;
+};
+
 struct SimulationSetup {
+    int simulationSeed{1337};
     float robotX{0.f}, robotY{0.f}, robotR{0.f};
+    std::vector<ObjectSetup> objectSetups;
     unsigned int stonesAmount{2000};
     unsigned int aliensAmount{20};
-    unsigned int proximitySensorsAmount{20};
+   // unsigned int proximitySensorsAmount{20};
     unsigned int frictionZonesAmount{20};
     unsigned int tornadoesAmount{20};
     unsigned int windSensorsAmount{15};
@@ -63,6 +75,10 @@ struct VolcanoData {
     b2Vec2 pos;
     float magnitude;
     float radius;
+};
+
+struct AlienData {
+    b2Vec2 pos;
 };
 
 class Simulation : public Application
@@ -94,6 +110,8 @@ public:
 
     std::vector<TornadoData> &GetTornados();
 
+    std::vector<AlienData> &GetAliens();
+
     [[nodiscard]] std::vector<VolcanoData> GetVolcanoes() const;
 
     b2World *GetWorld();
@@ -112,20 +130,29 @@ public:
 
     Earthquake earthquake;
 
-    Volcano *volcano;
+    Volcano *volcano{};
 
-    ShadowZone *shadow_zone;
+    ShadowZone *shadow_zone{};
 
     SimulationSetup setup;
 
+    static inline GLFWwindow* window;
+
+    static inline Camera* camera;
+
 private:
+
+    void AddObjectFromJson(ObjectSetup& os);
 
     void SimulateObject(Object *object);
 
     void DestroyObject(Object *object);
 
+    nlohmann::json GetGeneralInfo();
+
     std::vector<TornadoData> tornadoDatas;
     std::vector<VolcanoData> volcanoDatas;
+    std::vector<AlienData> alienDatas;
 
     Robot *robot;
     Terrain *terrain{nullptr};

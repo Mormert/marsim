@@ -40,6 +40,7 @@ TemperatureSensor::update()
 
     auto &&tornadoes = simulation->GetTornados();
     auto &&volcanoes = simulation->GetVolcanoes();
+    auto &&aliens = simulation->GetAliens();
 
     float temperature = 25.f;
     constexpr float tornadoTemperature = 5.f;
@@ -57,6 +58,14 @@ TemperatureSensor::update()
         temperature = glm::mix(tornadoTemperature, temperature, attenuation / 100000.f);
     }
 
+    for (auto &&alien : aliens) {
+        b2Vec2 strength{alien.pos - getPosition()};
+        float attenuation = 100.f * strength.LengthSquared();
+        attenuation /= 1.f;
+        attenuation = glm::clamp(attenuation, 0.f, 100000.f);
+        temperature = glm::mix(tornadoTemperature, temperature, attenuation / 100000.f);
+    }
+
     for (auto &&volcano : volcanoes) {
         b2Vec2 strength{volcano.pos - getPosition()};
         float attenuation = strength.LengthSquared();
@@ -68,7 +77,7 @@ TemperatureSensor::update()
     std::string str = std::to_string(temperature) + "'C";
     g_debugDraw.DrawString(getPosition(), str.c_str());
 
-    if (updateCounter % updateFrequency == 0) {
+    if (simulation->GetStepCount() % updateFrequency == 0) {
         nlohmann::json j;
 
         auto pos = getPosition();
@@ -79,6 +88,4 @@ TemperatureSensor::update()
 
         Mqtt::getInstance().send("sim/out/sensors", name, j);
     }
-
-    updateCounter++;
 }

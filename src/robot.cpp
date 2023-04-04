@@ -74,6 +74,7 @@ Robot::Robot(
     pickup_sensor = new PickupSensor{simulation, this, {0.f, 5.f}, 0.5};
 
     proximity_sensor = new ProximitySensor{simulation, position, 30.f, true};
+    proximity_sensor->shouldTransmitMqtt = false;
 
     lidarSensor = new LidarSensor{simulation, 30, position};
 
@@ -208,6 +209,7 @@ Robot::pickup()
 {
     auto items = getItemsForPickup();
     if (items.empty()) {
+        Mqtt::getInstance().send("sim/out/pickup", "pickup", "FAIL");
         return;
     }
 
@@ -224,6 +226,8 @@ Robot::pickup()
     simulation->DestroyObjectNextFrame(item);
 
     recalculateMass();
+
+    Mqtt::getInstance().send("sim/out/pickup", "pickup", j);
 }
 
 bool

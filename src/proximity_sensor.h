@@ -42,6 +42,8 @@ public:
 
     std::vector<Object*> getObjectsInside();
 
+    bool shouldTransmitMqtt = true;
+
 protected:
     explicit ProximitySensor(Simulation* simulation);
 
@@ -52,8 +54,10 @@ protected:
 
     float radius{15.f};
 
-    unsigned int updateCounter{0};
     int updateFrequency = 20;
+
+    void MoveToMiddleMouseButtonPressPosition();
+
 };
 
 #endif // MARSIM_PROXIMITY_SENSOR_H

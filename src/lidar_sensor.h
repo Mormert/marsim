@@ -24,6 +24,7 @@
 #define MARSIM_LIDAR_SENSOR_H
 
 #include "simulation.h"
+#include "json.hpp"
 
 class LidarSensor
 {
@@ -39,7 +40,11 @@ public:
 
 protected:
 
-    std::vector<float> lidarValues;
+    struct LidarValue{
+        float distance;
+        int id;
+    };
+    std::vector<LidarValue> lidarValues;
 
     float radius{15.f};
     b2Vec2 position;

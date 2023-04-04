@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "proximity_sensor.h"
+#include "simulation.h"
 #include <iostream>
 
 #include "json.hpp"
@@ -62,7 +63,13 @@ ProximitySensor::ProximitySensor(Simulation* simulation, b2Vec2 pos, float radiu
 void
 ProximitySensor::update()
 {
-    if (updateCounter % updateFrequency == 0) {
+
+    if(!shouldTransmitMqtt)
+    {
+        return;
+    }
+
+    if (simulation->GetStepCount() % updateFrequency == 0) {
 
         nlohmann::json j;
 
@@ -89,8 +96,6 @@ ProximitySensor::update()
 
         Mqtt::getInstance().send("sim/out/general", name, j);
     }
-
-    updateCounter++;
 }
 
 void
@@ -131,4 +136,22 @@ ProximitySensor::getObjectsInside()
 {
     return objects_inside;
 }
+
 ProximitySensor::ProximitySensor(Simulation *simulation) : Object(simulation) {}
+void
+ProximitySensor::MoveToMiddleMouseButtonPressPosition()
+{
+    if(glfwGetMouseButton(simulation->window, GLFW_MOUSE_BUTTON_MIDDLE))
+    {
+        double xd, yd;
+        glfwGetCursorPos(g_mainWindow, &xd, &yd);
+        b2Vec2 ps((float)xd, (float)yd);
+        b2Vec2 pw = g_camera.ConvertScreenToWorld(ps);
+
+        auto diff = pw - getPosition();
+        if(diff.Length() < radius)
+        {
+            setPosition(pw, 0.f);
+        }
+    }
+}

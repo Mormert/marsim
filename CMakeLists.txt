@@ -65,3 +65,11 @@ target_include_directories(marsim PRIVATE src 3rdparty 3rdparty/mosquitto/includ
 target_link_libraries(marsim PUBLIC box2d glfw imgui sajson glad libmosquitto_static zlibcomplete zlibstatic)
 
 FILE(COPY src/data DESTINATION ${PROJECT_BINARY_DIR})
+
+set (LISTENER_SOURCE_FILES
+		src/listener.cpp
+		)
+
+add_executable(listener ${LISTENER_SOURCE_FILES})
+target_include_directories(listener PRIVATE src 3rdparty 3rdparty/mosquitto/include 3rdparty/zlibcomplete/zlib)
+target_link_libraries(listener PUBLIC libmosquitto_static zlibcomplete zlibstatic)

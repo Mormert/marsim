@@ -602,7 +602,7 @@ static void UpdateUI()
                                 ImGui::Text("RobotR: %f", setup.robotR);
                                 ImGui::Text("stonesAmount: %d", setup.stonesAmount);
                                 ImGui::Text("aliensAmount: %d", setup.aliensAmount);
-                                ImGui::Text("proximitySensorsAmount: %d", setup.proximitySensorsAmount);
+                               // ImGui::Text("proximitySensorsAmount: %d", setup.proximitySensorsAmount);
                                 ImGui::Text("frictionZonesAmount: %d", setup.frictionZonesAmount);
                                 ImGui::Text("tornadoesAmount: %d", setup.tornadoesAmount);
                                 ImGui::Text("windSensorsAmount: %d", setup.windSensorsAmount);
@@ -872,8 +872,11 @@ int main(int, char**)
         glfwSetWindowIcon(g_mainWindow, 1, images);
         stbi_image_free(images[0].pixels);
 
-    s_application = Simulation::Create();
-    Mqtt::getInstance().setSimulationPtr(dynamic_cast<Simulation *>(s_application));
+        Simulation::window = g_mainWindow;
+        Simulation::camera = &g_camera;
+
+        s_application = Simulation::Create();
+        Mqtt::getInstance().setSimulationPtr(dynamic_cast<Simulation *>(s_application));
 
 
 	// Control the frame rate. One draw per monitor refresh.

@@ -33,6 +33,13 @@ public:
     void update() override;
 
     float radius{}, magnitude{};
+
+    b2Vec2 target{};
+
+private:
+    void TornadoMovement();
+
+    void FindNewMoveToTarget();
 };
 
 #endif // MARSIM_TORNADO_H

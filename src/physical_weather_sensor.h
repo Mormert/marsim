@@ -34,7 +34,6 @@ public:
     void update() override;
 
 protected:
-    uint32_t updateCounter{0};
     uint32_t updateFrequency{30};
 };
 

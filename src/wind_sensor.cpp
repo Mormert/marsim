@@ -26,7 +26,8 @@
 #include "mqtt.h"
 #include "simulation.h"
 
-WindSensor::WindSensor(Simulation *simulation, b2Vec2 pos) : PhysicalWeatherSensor(simulation, pos) {
+WindSensor::WindSensor(Simulation *simulation, b2Vec2 pos) : PhysicalWeatherSensor(simulation, pos)
+{
     name = "Wind Sensor";
 }
 
@@ -35,13 +36,14 @@ WindSensor::update()
 {
     g_debugDraw.DrawCircle(getPosition(), 1.f, b2Color{1.f, 1.f, 1.f, 1.f});
 
-    auto&& tornadoes = simulation->GetTornados();
+    auto &&tornadoes = simulation->GetTornados();
+    auto &&aliens = simulation->GetAliens();
+    auto &&volcanoes = simulation->GetVolcanoes();
 
     std::vector<b2Vec2> tornadoStrengths;
-    for(auto&& tornado : tornadoes)
-    {
-        b2Vec2 strength {tornado.pos - getPosition()};
-        float attenuation = 1.f/strength.LengthSquared();
+    for (auto &&tornado : tornadoes) {
+        b2Vec2 strength{tornado.pos - getPosition()};
+        float attenuation = 1.f / strength.LengthSquared();
         strength.x *= tornado.magnitude;
         strength.y *= tornado.magnitude;
         strength.x *= attenuation;
@@ -49,9 +51,24 @@ WindSensor::update()
         tornadoStrengths.push_back(strength);
     }
 
+    for (auto &&alien : aliens) {
+        b2Vec2 strength{alien.pos - getPosition()};
+        float attenuation = 10.f / strength.LengthSquared();
+        strength.x *= attenuation;
+        strength.y *= attenuation;
+        tornadoStrengths.push_back(strength);
+    }
+
+    for (auto &&volcano : volcanoes) {
+        b2Vec2 strength{volcano.pos - getPosition()};
+        float attenuation = 1000.f / strength.LengthSquared();
+        strength.x *= attenuation;
+        strength.y *= attenuation;
+        tornadoStrengths.push_back(-strength);
+    }
+
     b2Vec2 strength{0.f, 0.f};
-    for(auto && tornadoStrength : tornadoStrengths)
-    {
+    for (auto &&tornadoStrength : tornadoStrengths) {
         strength.x += tornadoStrength.x;
         strength.y += tornadoStrength.y;
     }
@@ -61,8 +78,7 @@ WindSensor::update()
     std::string str = "{" + std::to_string(strength.x) + ", " + std::to_string(strength.y) + "}";
     g_debugDraw.DrawString(getPosition(), str.c_str());
 
-    if(updateCounter % updateFrequency == 0)
-    {
+    if (simulation->GetStepCount() % updateFrequency == 0) {
         nlohmann::json j;
 
         auto pos = getPosition();
@@ -72,10 +88,6 @@ WindSensor::update()
 
         j["id"] = object_id;
 
-
         Mqtt::getInstance().send("sim/out/sensors", name, j);
     }
-
-    updateCounter++;
-
 }

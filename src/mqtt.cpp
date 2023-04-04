@@ -120,8 +120,7 @@ on_connect(struct mosquitto *mosq, void *userdata, int result)
     printf("Connecting...\n");
     if (!result) {
         std::cout << "Connection succeeded!" << std::endl;
-        /* Connected successfully. */
-
+        Mqtt::getInstance().INTERNAL_SetConnected();
     } else {
         std::cerr << "CONNECTION FAILED!" << std::endl;
     }
@@ -145,7 +144,6 @@ Mqtt::connectMqtt(const std::string &address, int port)
         is_connected = false;
         std::cout << "could not connect!" << std::endl;
     } else {
-        is_connected = true;
         if (mosquitto_subscribe(mqtt, NULL, "sim/in/control", 1) != MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
@@ -171,7 +169,13 @@ Mqtt::disconnectMqtt()
 void
 Mqtt::send(const std::string &topic, const std::string &message_type, const nlohmann::json &payload)
 {
-    if (!is_connected) {
+    TopicSetting topicSetting;
+    auto it = topicSettings.find(topic);
+    if (it != topicSettings.end()) {
+        topicSetting = it->second;
+    }
+
+    if (!is_connected && !topicSetting.waitForMQTTConnection) {
         return;
     }
 
@@ -180,12 +184,20 @@ Mqtt::send(const std::string &topic, const std::string &message_type, const nloh
     j["data"] = payload;
 
     auto &&vec = queuedMessages[topic];
-    vec.push_back(j);
+    if (topicSetting.maxMessages != -1) {
+        if (vec.size() < topicSetting.maxMessages) {
+            vec.push_back(j);
+        }
+    } else {
+        vec.push_back(j);
+    }
 }
 
 void
 Mqtt::processMqtt(int32_t step)
 {
+    mosquitto_loop(mqtt, 0, 1);
+
     if (!is_connected) {
         return;
     }
@@ -198,11 +210,9 @@ Mqtt::processMqtt(int32_t step)
     }
 
     // Note: removed "global send frequency"
-    //if (step % 3 == 0) {
-        sendQueuedMessages();
+    // if (step % 3 == 0) {
+    sendQueuedMessages();
     //}
-
-    mosquitto_loop(mqtt, 0, 1);
 }
 
 void
@@ -212,6 +222,16 @@ Mqtt::sendQueuedMessages()
 
     // Send all messages as a batch for each topic
     for (auto &&[topic, msgs] : queuedMessages) {
+
+        if (msgs.empty()) {
+            continue;
+        }
+
+        TopicSetting topicSetting;
+        auto it = topicSettings.find(topic);
+        if (it != topicSettings.end()) {
+            topicSetting = it->second;
+        }
 
         nlohmann::json j;
         j["time"] = tp.time_since_epoch().count();
@@ -236,10 +256,15 @@ Mqtt::sendQueuedMessages()
             zLibCompressor.finish();
         }
 
-        sendMqtt(topic, jsonString);
-    }
+        if (is_connected) {
+            sendMqtt(topic, jsonString, topicSetting.retained);
+            msgs.clear();
+        }
 
-    queuedMessages = {};
+        if (!topicSetting.waitForMQTTConnection) {
+            msgs.clear();
+        }
+    }
 }
 
 bool
@@ -249,12 +274,12 @@ Mqtt::isConnected()
 }
 
 void
-Mqtt::sendMqtt(const std::string &topic, const std::string &data)
+Mqtt::sendMqtt(const std::string &topic, const std::string &data, bool retained)
 {
     if (printSendingMsgs) {
-        std::cout << "Sending topic(" << topic << "): " << data << std::endl;
+        std::cout << "Sending topic(" << topic << ", retained: " << retained << "): " << data << std::endl;
     }
-    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, true);
+    mosquitto_publish(mqtt, NULL, topic.c_str(), data.length(), data.c_str(), 0, retained);
     sentBytesTotal += data.length();
     sentBytesSecond += data.length();
     sentMessages++;
@@ -390,4 +415,15 @@ int *
 Mqtt::getCompressionReceiveInt()
 {
     return &Settings::m_compressionReceive;
+}
+
+void
+Mqtt::overrideTopicSettings(const std::string &topic, const TopicSetting &setting)
+{
+    topicSettings.insert(std::make_pair(topic, setting));
+}
+void
+Mqtt::INTERNAL_SetConnected()
+{
+    is_connected = true;
 }

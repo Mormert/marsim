@@ -45,15 +45,18 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
 
     this->setup = setup;
 
+    srand(setup.simulationSeed);
+
     std::random_device rd;
     std::mt19937 gen(rd());
+    gen.seed(setup.simulationSeed);
 
     std::uniform_real_distribution<> imageScaleFactorMultiplierDistr(setup.satelliteImageScaleFactorMultiplierMin,
                                                                      setup.satelliteImageScaleFactorMultiplierMax);
 
-    imageScaleFactorMultiplier = (float)imageScaleFactorMultiplierDistr(gen);
+    imageScaleFactorMultiplier = setup.satelliteImageScaleFactor * (float)imageScaleFactorMultiplierDistr(gen);
 
-    Terrain::terrainScaling = setup.satelliteImageScaleFactor * imageScaleFactorMultiplier;
+    Terrain::terrainScaling = imageScaleFactorMultiplier;
     Mqtt::requestImagePath = setup.satelliteImagePath;
 
     GenerateBlurredTerrain();
@@ -86,11 +89,6 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     }
 
     std::uniform_int_distribution<> distSensorRadius(12, 24);
-    for (int i = 0; i < setup.proximitySensorsAmount; i++) {
-        auto proximity_sensor =
-            new ProximitySensor{this, {(float)distrX(gen), (float)distrY(gen)}, 500.f};
-        SimulateObject(proximity_sensor);
-    }
 
     for (int i = 0; i < setup.frictionZonesAmount; i++) {
         auto frictionZone =
@@ -119,12 +117,28 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
         SimulateObject(tempSensor);
     }
 
-    volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
-    SimulateObject(volcano);
+    if (!volcano) {
+        volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
+        SimulateObject(volcano);
+    }
+
+    for (auto object : setup.objectSetups) {
+        AddObjectFromJson(object);
+    }
+
+    TopicSetting ts;
+    ts.waitForMQTTConnection = true;
+    ts.retained = true;
+    ts.maxMessages = 1;
+    Mqtt::getInstance().overrideTopicSettings("sim/out/restart", ts);
+
+    nlohmann::json j = GetGeneralInfo();
+
+    Mqtt::getInstance().send("sim/out/restart", "restart", j);
 }
 
 Simulation *
-Simulation::Create(const std::string& initJson)
+Simulation::Create(const std::string &initJson)
 {
     SimulationSetup setup;
 
@@ -134,12 +148,25 @@ Simulation::Create(const std::string& initJson)
         nlohmann::json j = nlohmann::json::parse(file);
 
         try {
+            setup.simulationSeed = j["simulationSeed"];
             setup.robotX = j["robotX"];
             setup.robotY = j["robotY"];
             setup.robotR = j["robotR"];
+
+            auto objects = j["objectSetups"];
+            for (auto &&objectJson : objects) {
+                ObjectSetup os;
+                os.object = objectJson["object"];
+                os.position.x = objectJson["posX"];
+                os.position.y = objectJson["posY"];
+                if (objectJson.contains("radius")) {
+                    os.radius = objectJson["radius"];
+                }
+                setup.objectSetups.push_back(os);
+            }
+
             setup.stonesAmount = j["stonesAmount"];
             setup.aliensAmount = j["aliensAmount"];
-            setup.proximitySensorsAmount = j["proximitySensorsAmount"];
             setup.frictionZonesAmount = j["frictionZonesAmount"];
             setup.tornadoesAmount = j["tornadoesAmount"];
             setup.windSensorsAmount = j["windSensorsAmount"];
@@ -163,7 +190,7 @@ Simulation::Create(const std::string& initJson)
 
         std::cout << "Parsed custom init json file successfully!" << std::endl;
     } else {
-        std::cerr << "Failed to open and read " << initJson <<"! Using default settings!" << std::endl;
+        std::cerr << "Failed to open and read " << initJson << "! Using default settings!" << std::endl;
     }
 
     return new Simulation(setup);
@@ -187,17 +214,20 @@ Simulation::UpdateObjects()
 
     volcanoDatas.clear();
     tornadoDatas.clear();
+    alienDatas.clear();
 
-    for(auto && object : objects)
-    {
+    for (auto &&object : objects) {
         if (object->updateable) {
             object->update();
         }
         if (auto tornado = dynamic_cast<Tornado *>(object)) {
             tornadoDatas.push_back({tornado->getPosition(), tornado->magnitude, tornado->radius});
         }
-    }
 
+        if (auto alien = dynamic_cast<Alien *>(object)) {
+            alienDatas.push_back({alien->getPosition()});
+        }
+    }
 }
 
 void
@@ -251,16 +281,15 @@ Simulation::Step(Settings &settings)
 
     UpdateObjects();
 
-    for(auto && object : objectsSpawned)
-    {
+    for (auto &&object : objectsSpawned) {
         SimulateObject(object);
     }
     objectsSpawned.clear();
 
-    for(auto && object : objectsDestroyed)
-    {
+    for (auto &&object : objectsDestroyed) {
         DestroyObject(object);
     }
+
     objectsDestroyed.clear();
 
     ApplySlopeForce();
@@ -429,6 +458,12 @@ Simulation::GetTornados()
     return tornadoDatas;
 }
 
+std::vector<AlienData> &
+Simulation::GetAliens()
+{
+    return alienDatas;
+}
+
 std::vector<VolcanoData>
 Simulation::GetVolcanoes() const
 {
@@ -449,12 +484,7 @@ Simulation::BroadcastGeneralInfo()
 
     // Broadcast general info every 5 seconds
     if (i % 300 == 0) {
-        nlohmann::json j;
-        j["shadowFrontierX"] = shadow_zone->pos.x;
-        j["shadowFrontierY"] = shadow_zone->pos.y;
-        j["shadowFrontierR"] = shadow_zone->rot;
-        j["satelliteImageScaleFactor"] = imageScaleFactorMultiplier;
-
+        nlohmann::json j = GetGeneralInfo();
         Mqtt::getInstance().send("sim/out/general", "info", j);
     }
 }
@@ -469,3 +499,69 @@ Simulation::DestroyObjectNextFrame(Object *object)
 {
     objectsDestroyed.push_back(object);
 }
+
+nlohmann::json
+Simulation::GetGeneralInfo()
+{
+    nlohmann::json j;
+    j["shadowFrontierX"] = shadow_zone->pos.x;
+    j["shadowFrontierY"] = shadow_zone->pos.y;
+    j["shadowFrontierR"] = shadow_zone->rot;
+    j["satelliteImageScaleFactor"] = imageScaleFactorMultiplier;
+
+    return j;
+}
+
+void
+Simulation::AddObjectFromJson(ObjectSetup &os)
+{
+    if (os.object == "Stone") {
+        auto *stone = new Stone{this, os.position, os.radius};
+        SimulateObject(stone);
+        return;
+    }
+
+    if (os.object == "Alien") {
+        auto alien = new Alien{this, terrain, os.position, 0.f};
+        SimulateObject(alien);
+        return;
+    }
+
+    if (os.object == "Friction Zone") {
+
+        auto frictionZone = new FrictionZone{this, os.position, os.radius, 22.5f, 40.f};
+        SimulateObject(frictionZone);
+        return;
+    }
+
+    if (os.object == "Tornado") {
+        auto tornado = new Tornado{this, os.position, os.radius, 1000.f};
+        SimulateObject(tornado);
+        return;
+    }
+
+    if (os.object == "Wind Sensor") {
+        auto windSensor = new WindSensor{this, os.position};
+        SimulateObject(windSensor);
+        return;
+    }
+
+    if (os.object == "Seismic Sensor") {
+        auto seismicSensor = new SeismicSensor{this, os.position};
+        SimulateObject(seismicSensor);
+        return;
+    }
+
+    if (os.object == "Temperature Sensor") {
+        auto tempSensor = new TemperatureSensor{this, os.position};
+        SimulateObject(tempSensor);
+        return;
+    }
+
+    if (os.object == "Volcano") {
+        volcano = new Volcano{this, os.position, os.radius};
+        SimulateObject(volcano);
+        return;
+    }
+}
+
