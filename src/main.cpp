@@ -516,7 +516,7 @@ static void UpdateUI()
 
                         if (ImGui::BeginTabItem("MQTT"))
                         {
-                                static char mqttConnectString[256]{"bd86ad7d91574abab844ada07ad73b31.s1.eu.hivemq.cloud"};
+                                static char mqttConnectString[256]{"tharsis.oru.se"};
                                 static int mqttConnectPort{8883};
 
                                 ImVec2 button_sz = ImVec2(-1, 0);
