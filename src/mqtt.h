@@ -91,6 +91,9 @@ public:
     static void receiveMsgDrop(const nlohmann::json & data);
     static void receiveMsgLaserAngle(const nlohmann::json & data);
     static void receiveMsgLaserShoot(const nlohmann::json & data);
+    static void receiveMsgRobotArm(const nlohmann::json & data);
+    static void receiveMsgRobotArm_Open(const nlohmann::json & data);
+    static void receiveMsgRobotArm_Close(const nlohmann::json & data);
 
     static inline std::string requestImagePath{};
     static void receiveMsgRequestImage(const nlohmann::json & data);

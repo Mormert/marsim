@@ -20,31 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "raycast.h"
-#include "proximity_sensor.h"
-#include "robot_arm.h"
-#include "wheel.h"
+#ifndef MARSIM_ROBOT_ARM_H
+#define MARSIM_ROBOT_ARM_H
 
-Raycast::Raycast() = default;
+#include "object.h"
+#include "box2d/box2d.h"
+#include "json.hpp"
 
-float
-Raycast::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, const b2Vec2 &normal, float fraction)
+class Simulation;
+
+class RobotArm : public Object
 {
-    auto ptr = reinterpret_cast<Object *>(fixture->GetUserData().pointer);
-    // Ignore wheels and proximity sensors
-    if (auto wheel = dynamic_cast<Wheel *>(ptr)) {
-        return -1.0f;
-    }
-    if (auto proxSensor = dynamic_cast<ProximitySensor *>(ptr)) {
-        return -1.0f;
-    }
-    if (auto robotArm = dynamic_cast<RobotArm *>(ptr)) {
-        return -1.0f;
-    }
+public:
+    explicit RobotArm(Simulation* simulation, b2Body* robotBody);
 
-    m_hit = ptr;
-    m_point = point;
-    m_normal = normal;
+    void update() override;
 
-    return fraction;
-}
+    void SetSpeeds(float one, float two, float three);
+
+    void CloseGripper();
+
+    void OpenGripper();
+
+    bool IsGripperOpen();
+
+    float GetSpeed1();
+    float GetSpeed2();
+    float GetSpeed3();
+
+    nlohmann::json GetJsonData();
+
+private:
+    b2RevoluteJoint* joint1;
+    b2RevoluteJoint* joint2;
+    b2RevoluteJoint* joint3;
+
+    b2Body* arm3;
+    b2Fixture* gripperFixture{};
+};
+
+#endif // MARSIM_ROBOT_ARM_H

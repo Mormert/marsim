@@ -34,6 +34,7 @@
 #include "mqtt.h"
 #include "robot.h"
 #include "volcano.h"
+#include "robot_arm.h"
 
 #include <algorithm>
 #include <stdio.h>
@@ -629,6 +630,28 @@ static void UpdateUI()
                                 auto robot = sim->GetRobot();
                                 ImVec2 button_sz = ImVec2(-1, 0);
 
+                                auto arm = robot->GetArm();
+                                float speed1 = arm->GetSpeed1();
+                                float speed2 = arm->GetSpeed2();
+                                float speed3 = arm->GetSpeed3();
+                                ImGui::InputFloat("Arm1 Speed", &speed1);
+                                ImGui::InputFloat("Arm2 Speed", &speed2);
+                                ImGui::InputFloat("Arm3 Speed", &speed3);
+                                arm->SetSpeeds(speed1, speed2, speed3);
+
+                                if(arm->IsGripperOpen())
+                                {
+                                    if(ImGui::Button("Close Gripper"))
+                                    {
+                                        arm->CloseGripper();
+                                    }
+                                }else
+                                {
+                                    if(ImGui::Button("Open Gripper"))
+                                    {
+                                        arm->OpenGripper();
+                                    }
+                                }
 
                                 ImGui::Text("Close objects");
 

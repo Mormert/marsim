@@ -39,6 +39,7 @@ class ProximitySensor;
 class Simulation;
 class LidarSensor;
 class Laser;
+class RobotArm;
 
 class Robot : public Object
 {
@@ -83,11 +84,14 @@ public:
 
     Battery *GetBattery();
 
+    RobotArm* GetArm();
+
 private:
     unsigned int updateCounter{0};
 
     PickupSensor* pickup_sensor{};
     ProximitySensor* proximity_sensor{};
+    RobotArm* robot_arm;
 
     Laser* laser{};
     float laserAngleDegrees{90.f};

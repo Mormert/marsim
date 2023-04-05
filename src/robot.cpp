@@ -25,6 +25,7 @@
 #include "laser.h"
 #include "mqtt.h"
 #include "pickup_sensor.h"
+#include "robot_arm.h"
 #include "seismic_sensor.h"
 #include "simulation.h"
 #include "stone.h"
@@ -62,6 +63,7 @@ Robot::Robot(
     body->SetAngularDamping(angularDamping);
 
     b2FixtureDef fixdef;
+    fixdef.filter.groupIndex = -1;
     fixdef.density = 1.0;
     fixdef.friction = 0.5;
     fixdef.restitution = 0.4;
@@ -82,6 +84,8 @@ Robot::Robot(
     laser->setPosition(position);
 
     battery = new Battery(12, 100, 0.01, 1);
+
+    robot_arm = new RobotArm{simulation, body};
 
     name = "Robot";
 }
@@ -202,6 +206,7 @@ Robot::~Robot()
     delete proximity_sensor;
     delete laser;
     delete lidarSensor;
+    delete robot_arm;
 }
 
 void
@@ -344,4 +349,9 @@ Battery *
 Robot::GetBattery()
 {
     return battery;
+}
+RobotArm *
+Robot::GetArm()
+{
+    return robot_arm;
 }

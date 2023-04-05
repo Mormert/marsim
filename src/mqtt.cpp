@@ -24,6 +24,7 @@
 
 #include "framework/settings.h"
 #include "robot.h"
+#include "robot_arm.h"
 #include "simulation.h"
 #include <chrono>
 #include <fstream>
@@ -91,6 +92,12 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
                     Mqtt::receiveMsgLaserAngle(jsonPayload);
                 } else if (type == "request_satellite_image") {
                     Mqtt::receiveMsgRequestImage(jsonPayload);
+                } else if (type == "arm_speeds") {
+                    Mqtt::receiveMsgRobotArm(jsonPayload);
+                } else if (type == "arm_close") {
+                    Mqtt::receiveMsgRobotArm_Close(jsonPayload);
+                } else if (type == "arm_open") {
+                    Mqtt::receiveMsgRobotArm_Open(jsonPayload);
                 }
 
             } catch (std::exception e) {
@@ -406,6 +413,34 @@ Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
                                           std::istreambuf_iterator<char>());
     mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, true);
 }
+
+void
+Mqtt::receiveMsgRobotArm(const nlohmann::json &data)
+{
+    try {
+        float speed1 = data["speed1"];
+        float speed2 = data["speed2"];
+        float speed3 = data["speed3"];
+        Mqtt::getInstance().simulation->GetRobot()->GetArm()->SetSpeeds(speed1, speed2, speed3);
+    } catch (std::exception &e) {
+        std::cerr << "Failed to set robot arm velocities: " << e.what() << std::endl;
+    }
+}
+
+void
+Mqtt::receiveMsgRobotArm_Open(const nlohmann::json &data)
+{
+    Mqtt::getInstance().simulation->GetRobot()->GetArm()->OpenGripper();
+    std::cout << "Opening gripper..." << std::endl;
+}
+
+void
+Mqtt::receiveMsgRobotArm_Close(const nlohmann::json &data)
+{
+    Mqtt::getInstance().simulation->GetRobot()->GetArm()->CloseGripper();
+    std::cout << "Closing gripper..." << std::endl;
+}
+
 bool *
 Mqtt::useMessagePackReceiveBool()
 {

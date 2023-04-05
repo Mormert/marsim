@@ -27,7 +27,8 @@
 #include "json.hpp"
 #include "mqtt.h"
 
-ProximitySensor::ProximitySensor(Simulation* simulation, b2Vec2 pos, float radius, bool isDynamic, bool updatedBySim) : Object(simulation)
+ProximitySensor::ProximitySensor(Simulation *simulation, b2Vec2 pos, float radius, bool isDynamic, bool updatedBySim)
+    : Object(simulation)
 {
     terrain_movable = false;
 
@@ -37,11 +38,9 @@ ProximitySensor::ProximitySensor(Simulation* simulation, b2Vec2 pos, float radiu
 
     b2BodyDef def;
     def.userData.pointer = reinterpret_cast<uintptr_t>(this);
-    if(isDynamic)
-    {
+    if (isDynamic) {
         def.type = b2_kinematicBody;
-    }else
-    {
+    } else {
         def.type = b2_staticBody;
     }
     def.position = pos;
@@ -64,8 +63,7 @@ void
 ProximitySensor::update()
 {
 
-    if(!shouldTransmitMqtt)
-    {
+    if (!shouldTransmitMqtt) {
         return;
     }
 
@@ -141,16 +139,14 @@ ProximitySensor::ProximitySensor(Simulation *simulation) : Object(simulation) {}
 void
 ProximitySensor::MoveToMiddleMouseButtonPressPosition()
 {
-    if(glfwGetMouseButton(simulation->window, GLFW_MOUSE_BUTTON_MIDDLE))
-    {
+    if (glfwGetMouseButton(simulation->window, GLFW_MOUSE_BUTTON_MIDDLE)) {
         double xd, yd;
         glfwGetCursorPos(g_mainWindow, &xd, &yd);
         b2Vec2 ps((float)xd, (float)yd);
         b2Vec2 pw = g_camera.ConvertScreenToWorld(ps);
 
         auto diff = pw - getPosition();
-        if(diff.Length() < radius)
-        {
+        if (diff.Length() < radius) {
             setPosition(pw, 0.f);
         }
     }
