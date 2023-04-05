@@ -25,7 +25,7 @@
 #include "simulation.h"
 
 Tornado::Tornado(Simulation *simulation, b2Vec2 pos, float radius, float magnitude)
-    : ProximitySensor(simulation, pos, radius, false, true)
+    : ProximitySensor(simulation, pos, radius, true, true)
 {
     this->radius = radius;
     this->magnitude = magnitude;
@@ -60,6 +60,8 @@ Tornado::TornadoMovement()
     dir.y *= 0.1f;
 
     setPosition(getPosition() + dir, 0.f);
+
+    body->SetAwake(true);
 
     if (d.LengthSquared() < 2.f) {
         FindNewMoveToTarget();
