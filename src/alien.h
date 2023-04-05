@@ -31,7 +31,7 @@ class ProximitySensor;
 
 class Alien : public Object
 {
-    enum class AlienState { IDLE, CHASE };
+    enum class AlienState { WALK_AROUND, CHASE };
 
 public:
     Alien(Simulation *simulation, Terrain *terrain, b2Vec2 pos, float rotation);
@@ -43,9 +43,13 @@ public:
 private:
     Terrain *terrain;
 
+    void FindNewMoveToTarget();
+    void WalkAround();
+    b2Vec2 target{};
+
     ProximitySensor *sights_sensor;
     float sight_distance{15.f};
-    AlienState state{AlienState::IDLE};
+    AlienState state{AlienState::WALK_AROUND};
 };
 
 #endif // MARSIM_ALIEN_H

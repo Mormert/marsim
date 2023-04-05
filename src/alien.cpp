@@ -59,6 +59,8 @@ Alien::Alien(Simulation *simulation, Terrain *terrain, b2Vec2 pos, float rotatio
     simulation->SimulateObjectNextFrame(sights_sensor);
 
     name = "Alien";
+
+    FindNewMoveToTarget();
 }
 
 void
@@ -69,7 +71,8 @@ Alien::update()
 
     g_debugDraw.DrawSolidCircle(getPosition(), sight_distance, {}, b2Color{1.f, 0.2f, 0.2f, 1.f});
 
-    if (state == AlienState::IDLE) {
+    if (state == AlienState::WALK_AROUND) {
+        WalkAround();
         for (auto &&object : sights_sensor->getObjectsInside()) {
             if (auto robot = dynamic_cast<Robot *>(object)) {
                 state = AlienState::CHASE;
@@ -93,7 +96,7 @@ Alien::update()
             }
         }
         if (!foundRobot) {
-            state = AlienState::IDLE;
+            state = AlienState::WALK_AROUND;
             sight_distance = 15.f;
             sights_sensor->setRadius(sight_distance);
         }
@@ -104,4 +107,33 @@ std::vector<Object *>
 Alien::getAttachedObjects()
 {
     return {sights_sensor};
+}
+
+void
+Alien::WalkAround()
+{
+    b2Vec2 dir = getPosition() - target;
+    dir.Normalize();
+    dir.x *= 100.f;
+    dir.y *= 100.f;
+
+    addForce(dir);
+
+    if (simulation->GetStepCount() % 1200 == 0) {
+        FindNewMoveToTarget();
+    }
+}
+
+void
+Alien::FindNewMoveToTarget()
+{
+    int rangeY =
+        simulation->GetTerrain()->getTextureHeight() / 2 - (-simulation->GetTerrain()->getTextureHeight() / 2) + 1;
+    int y = std::rand() % rangeY + (-simulation->GetTerrain()->getTextureHeight() / 2);
+
+    int rangeX =
+        simulation->GetTerrain()->getTextureWidth() / 2 - (-simulation->GetTerrain()->getTextureWidth() / 2) + 1;
+    int x = std::rand() % rangeX + (-simulation->GetTerrain()->getTextureWidth() / 2);
+
+    target = b2Vec2{(float)x, (float)y};
 }
