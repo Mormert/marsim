@@ -130,7 +130,7 @@ RobotArm::RobotArm(Simulation *simulation, b2Body *robotBody) : Object(simulatio
     jdGripper.localAnchorB.Set(-0.7f, 2.5f);
     world->CreateJoint(&jdGripper);
 
-    updateable = false;
+    updateable = true;
     terrain_movable = false;
 }
 void
