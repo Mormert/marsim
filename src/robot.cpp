@@ -105,6 +105,8 @@ Robot::update()
     //use of energy just for staying on, for sensors and all
     battery->BatUpdate(1.5);
 
+    robot_arm->update();
+
     if(!isInShadow()){
         //constant charge with 3 amps per update if not in shadow zone
         battery->BatUpdate(-3);
