@@ -1,9 +1,11 @@
 {
+  "simulationSeed": 1337,
   "robotX" : 510.0,
   "robotY" : 184.0,
   "robotR" : 0.0,
   "stonesAmount" : 20.0,
   "aliensAmount" : 1.0,
+  "objectSetups": [],
   "proximitySensorsAmount" : 10.0,
   "frictionZonesAmount" : 5.0,
   "tornadoesAmount" : 1.0,
