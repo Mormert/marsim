@@ -327,7 +327,7 @@ Simulation::KeyboardUp(int key)
     }
 
     if (key == GLFW_KEY_F) {
-        earthquake.trigger(50.f, 500);
+        earthquake.trigger(50.f, 500, 0.f, 0.f);
     }
 
     if (key == GLFW_KEY_V) {
@@ -485,7 +485,7 @@ Simulation::BroadcastGeneralInfo()
     // Broadcast general info every 5 seconds
     if (i % 300 == 0) {
         nlohmann::json j = GetGeneralInfo();
-        Mqtt::getInstance().send("sim/out/general", "info", j);
+        Mqtt::getInstance().send("sim/out/info", "info", j);
     }
 }
 void

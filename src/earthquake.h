@@ -32,11 +32,14 @@ class Earthquake
 public:
     explicit Earthquake(b2World* world, Simulation* sim);
 
-    void trigger(float magnitude, int steps);
+    void trigger(float magnitude, int steps, float epiX, float epiY);
 
     void update(int step);
 
     [[nodiscard]] bool isActive() const;
+
+    float epiX{};
+    float epiY{};
 
 private:
     b2World* world;
@@ -44,6 +47,8 @@ private:
     float magnitude{0.f};
     int continueUntil = 0;
     int currentStep{};
+
+
 };
 
 #endif // MARSIM_EARTHQUAKE_H

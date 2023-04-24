@@ -22,6 +22,7 @@
 
 #include "seismic_sensor.h"
 #include "framework/draw.h"
+#include "glm/common.hpp"
 #include "json.hpp"
 #include "mqtt.h"
 #include "simulation.h"
@@ -55,6 +56,14 @@ SeismicSensor::update()
 
     if (simulation->earthquake.isActive()) {
         shakeValue = (float)distrQuake(gen);
+
+        b2Vec2 earthquakePos{simulation->earthquake.epiX, simulation->earthquake.epiY};
+        b2Vec2 strength{earthquakePos - getPosition()};
+        float attenuation = strength.LengthSquared();
+        attenuation /= 1.f;
+        attenuation = glm::clamp(attenuation, 0.f, 100000.f);
+        shakeValue = glm::mix(shakeValue, 0.001f, attenuation / 100000.f);
+
     }
 
     std::string str = std::to_string(shakeValue) + "'Q";

@@ -740,10 +740,16 @@ static void UpdateUI()
                                     RestartSimulation(initJsonFilePath);
                                 }
 
+                                static float epiX{};
+                                static float epiY{};
+
+                                ImGui::InputFloat("Epicenter X", &epiX);
+                                ImGui::InputFloat("Epicenter Y", &epiY);
+
                                 if (ImGui::Button("Trigger Immediate Earthquake (F)", button_sz))
                                 {
                                     auto sim = dynamic_cast<Simulation*>(s_application);
-                                    sim->earthquake.trigger(350.f, 500);
+                                    sim->earthquake.trigger(350.f, 500, epiX, epiY);
                                 }
 
                                 if (ImGui::Button("Trigger Immediate Volcano (V)", button_sz))
