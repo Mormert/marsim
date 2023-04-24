@@ -230,9 +230,9 @@ Mqtt::sendQueuedMessages()
     // Send all messages as a batch for each topic
     for (auto &&[topic, msgs] : queuedMessages) {
 
-        //if (msgs.empty()) {
-        //    continue;
-        //}
+        if (msgs.empty()) {
+            continue;
+        }
 
         TopicSetting topicSetting;
         auto it = topicSettings.find(topic);
