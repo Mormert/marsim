@@ -175,7 +175,7 @@ Robot::update()
         j["storage"] = storage;
         j["in_shadow"] = isInShadow();
 
-        Mqtt::getInstance().send("sim/out/general", "Robot", j);
+        Mqtt::getInstance().send("out/general", "Robot", j);
     }
 
     // 60 Hz robot position sync
@@ -188,7 +188,7 @@ Robot::update()
 
         //if(body->GetAngularVelocity() > 0.01f || body->GetLinearVelocity().Length() > 0.01f)
         //{
-            Mqtt::getInstance().send("sim/out/robotpos", "RobotPos", j);
+            Mqtt::getInstance().send("out/robotpos", "RobotPos", j);
         //}
     }
 
@@ -216,7 +216,7 @@ Robot::pickup()
 {
     auto items = getItemsForPickup();
     if (items.empty()) {
-        Mqtt::getInstance().send("sim/out/pickup", "pickup", "FAIL");
+        Mqtt::getInstance().send("out/pickup", "pickup", "FAIL");
         return;
     }
 
@@ -234,7 +234,7 @@ Robot::pickup()
 
     recalculateMass();
 
-    Mqtt::getInstance().send("sim/out/pickup", "pickup", j);
+    Mqtt::getInstance().send("out/pickup", "pickup", j);
 }
 
 bool

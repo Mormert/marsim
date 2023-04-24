@@ -537,6 +537,8 @@ static void UpdateUI()
 
                                     ImGui::InputInt("Port", &mqttConnectPort, 0);
 
+                                    ImGui::InputInt("Mqtt Instance ID", &Mqtt::mqttInstanceId, 0);
+
                                     if(ImGui::Button("Connect", button_sz))
                                     {
                                         std::string address{mqttConnectString};

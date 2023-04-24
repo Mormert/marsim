@@ -45,7 +45,7 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
     }
 
     if (message->payloadlen) {
-        if (strcmp(message->topic, "sim/in/image") == 0) {
+        if (strcmp(message->topic, std::string{Mqtt::getSimIdPrefix() + "in/image"}.c_str()) == 0) {
             std::ofstream image_file("data/lunar_received.png", std::ios::binary);
             image_file.write(reinterpret_cast<const char *>(message->payload), message->payloadlen);
             image_file.close();
@@ -53,7 +53,7 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
             std::cout << "Image received and saved as data/lunar_received.png\nRegenerating blurred terrain."
                       << std::endl;
             Mqtt::getInstance().simulation->GenerateBlurredTerrain();
-        } else if (strcmp(message->topic, "sim/in/control") == 0) {
+        } else if (strcmp(message->topic, std::string{Mqtt::getSimIdPrefix() + "in/control"}.c_str()) == 0) {
             std::string payloadStr((char *)message->payload, message->payloadlen);
 
             int receiveCompression = *Mqtt::getInstance().getCompressionReceiveInt();
@@ -151,10 +151,10 @@ Mqtt::connectMqtt(const std::string &address, int port)
         is_connected = false;
         std::cout << "could not connect!" << std::endl;
     } else {
-        if (mosquitto_subscribe(mqtt, NULL, "sim/in/control", 1) != MOSQ_ERR_SUCCESS) {
+        if (mosquitto_subscribe(mqtt, NULL, std::string{getSimIdPrefix() + "in/control"}.c_str(), 1) != MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
-        if (mosquitto_subscribe(mqtt, NULL, "sim/in/image", 1) != MOSQ_ERR_SUCCESS) {
+        if (mosquitto_subscribe(mqtt, NULL, std::string{getSimIdPrefix() + "in/image"}.c_str(), 1) != MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
     }
@@ -264,7 +264,7 @@ Mqtt::sendQueuedMessages()
         }
 
         if (is_connected) {
-            sendMqtt(topic, jsonString, topicSetting.retained);
+            sendMqtt(getSimIdPrefix() + topic, jsonString, topicSetting.retained);
             msgs.clear();
         }
 
@@ -411,7 +411,7 @@ Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
     }
     std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)),
                                           std::istreambuf_iterator<char>());
-    mosquitto_publish(Mqtt::getInstance().mqtt, NULL, "sim/out/image", image_data.size(), image_data.data(), 1, true);
+    mosquitto_publish(Mqtt::getInstance().mqtt, NULL, std::string{Mqtt::getSimIdPrefix() + "out/image"}.c_str(), image_data.size(), image_data.data(), 1, true);
 }
 
 void
@@ -461,4 +461,10 @@ void
 Mqtt::INTERNAL_SetConnected()
 {
     is_connected = true;
+}
+
+std::string
+Mqtt::getSimIdPrefix()
+{
+    return "sim/" + std::to_string(mqttInstanceId) + "/";
 }

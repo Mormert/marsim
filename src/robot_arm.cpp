@@ -218,6 +218,6 @@ RobotArm::update()
 {
     if(simulation->GetStepCount() % 3 == 0)
     {
-        Mqtt::getInstance().send("sim/out/arm", "arm", GetJsonData());
+        Mqtt::getInstance().send("out/arm", "arm", GetJsonData());
     }
 }

@@ -49,7 +49,7 @@ LidarSensor::update()
         j["lidarDistance"] = distances;
         j["lidarIds"] = ids;
 
-        Mqtt::getInstance().send("sim/out/sensors/lidar", "lidar", j);
+        Mqtt::getInstance().send("out/sensors/lidar", "lidar", j);
     }
 
     broadcastCounter++;

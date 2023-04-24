@@ -51,6 +51,8 @@ public:
 
     ~Mqtt();
 
+
+
     void connectMqtt(const std::string &address, int port);
 
     void disconnectMqtt();
@@ -109,6 +111,11 @@ public:
     bool printReceivingMsgs{true};
 
     void INTERNAL_SetConnected();
+
+    static inline int mqttInstanceId{};
+
+    // Returns sim/x/
+    static std::string getSimIdPrefix();
 
 private:
     // Publishes the payload for the given topic

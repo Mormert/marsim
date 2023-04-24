@@ -130,11 +130,11 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
     ts.waitForMQTTConnection = true;
     ts.retained = true;
     ts.maxMessages = 1;
-    Mqtt::getInstance().overrideTopicSettings("sim/out/restart", ts);
+    Mqtt::getInstance().overrideTopicSettings("out/restart", ts);
 
     nlohmann::json j = GetGeneralInfo();
 
-    Mqtt::getInstance().send("sim/out/restart", "restart", j);
+    Mqtt::getInstance().send("out/restart", "restart", j);
 }
 
 Simulation *
@@ -485,7 +485,7 @@ Simulation::BroadcastGeneralInfo()
     // Broadcast general info every 5 seconds
     if (i % 300 == 0) {
         nlohmann::json j = GetGeneralInfo();
-        Mqtt::getInstance().send("sim/out/info", "info", j);
+        Mqtt::getInstance().send("out/info", "info", j);
     }
 }
 void
