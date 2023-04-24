@@ -1,0 +1,97 @@
+{
+  "simulationSeed": 1337,
+  "robotX": 100,
+  "robotY": 150,
+  "robotR": 0.0,
+  "objectSetups": [
+    {
+      "object": "Stone",
+      "posX": 47,
+      "posY": -18,
+      "radius": 12
+    },
+    {
+      "object": "Stone",
+      "posX": 68,
+      "posY": -6,
+      "radius": 12
+    },
+    {
+      "object": "Stone",
+      "posX": 89,
+      "posY": -20.5,
+      "radius": 12
+    },
+    {
+      "object": "Stone",
+      "posX": 79.5,
+      "posY": -43.5,
+      "radius": 12
+    },
+    {
+      "object": "Stone",
+      "posX": 56,
+      "posY": -45,
+      "radius": 12
+    },
+    {
+      "object": "Stone",
+      "posX": 33,
+      "posY": -45,
+      "radius": 4
+    },
+    {
+      "object": "Stone",
+      "posX": 34,
+      "posY": -37,
+      "radius": 4
+    },
+    {
+      "object": "Stone",
+      "posX": 39,
+      "posY": -30,
+      "radius": 4
+    },
+    {
+      "object": "Stone",
+      "posX": 46,
+      "posY": -24,
+      "radius": 4
+    },
+    {
+      "object": "Stone",
+      "posX": 48,
+      "posY": -40,
+      "radius": 4
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 80,
+      "posY": -15
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 80,
+      "posY": -65
+    }
+  ],
+  "stonesAmount": 3.0,
+  "aliensAmount": 1.0,
+  "proximitySensorsAmount": 0.0,
+  "frictionZonesAmount": 0.0,
+  "tornadoesAmount": 0.0,
+  "windSensorsAmount": 0.0,
+  "seismicSensorsAmount": 0.0,
+  "tempSensorsAmount": 0.0,
+  "shadowFrontierX": 0.0,
+  "shadowFrontierY": 0.0,
+  "shadowFrontierR": 0.0,
+  "satelliteImageScale": 1.0,
+  "satelliteImageScaleFactorMultiplierMin": 1.0,
+  "satelliteImageScaleFactorMultiplierMax": 1.0,
+  "satelliteImagePath": "data/moon2.png",
+  "objectGenerationMinX": -430.0,
+  "objectGenerationMaxX": 430.0,
+  "objectGenerationMinY": -440.0,
+  "objectGenerationMaxY": 440.0
+}
