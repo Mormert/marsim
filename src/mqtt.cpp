@@ -146,6 +146,9 @@ Mqtt::~Mqtt() { cleanup(); }
 void
 Mqtt::connectMqtt(const std::string &address, int port)
 {
+
+    mosquitto_username_pw_set(mqtt, std::string{"simtor" + std::to_string(mqttInstanceId)}.c_str(), "simtor23");
+
     // Set isConnected bool to true IF we connected successfully
     if (mosquitto_connect(mqtt, address.c_str(), port, 60)) {
         is_connected = false;
@@ -297,7 +300,7 @@ Mqtt::init()
 {
     mosquitto_lib_init();
     mqtt = mosquitto_new("Simulator_Channel", true, NULL);
-    mosquitto_username_pw_set(mqtt, "simtor", "simtor23");
+    mosquitto_username_pw_set(mqtt, "simtor0", "simtor23");
     // set the path to the certificate and key files
     int rt = mosquitto_tls_set(mqtt, "data/cacert.pem", NULL, NULL, NULL, NULL);
     if (rt == MOSQ_ERR_SUCCESS) {

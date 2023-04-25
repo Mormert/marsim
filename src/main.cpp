@@ -537,7 +537,7 @@ static void UpdateUI()
 
                                     ImGui::InputInt("Port", &mqttConnectPort, 0);
 
-                                    ImGui::InputInt("Mqtt Instance ID", &Mqtt::mqttInstanceId, 0);
+                                    ImGui::DragInt("MqttID", &Mqtt::mqttInstanceId, 0, 0, 10, nullptr, ImGuiSliderFlags_AlwaysClamp);
 
                                     if(ImGui::Button("Connect", button_sz))
                                     {
@@ -944,7 +944,7 @@ int main(int, char**)
 			ImGui::End();
 
                         static std::string date{__DATE__};
-                        static std::string title = "Marsim by Johan Lind & Ermias Tewolde\nBuild: " + date;
+                        static std::string title = "Marsim by Johan Lind & Ermias Tewolde\nBuild: " + date + "\n  ~Amanajaptem~";
 			s_application->DrawTitle(title.c_str());
 
 		}
