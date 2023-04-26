@@ -133,6 +133,8 @@ private:
 
     void cleanup();
 
+    void setupMqtt();
+
     bool is_connected = false;
 
     unsigned int sentMessages{0};

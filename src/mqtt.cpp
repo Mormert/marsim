@@ -147,17 +147,24 @@ void
 Mqtt::connectMqtt(const std::string &address, int port)
 {
 
+    mosquitto_reinitialise(mqtt, std::string{"Simulator_Channel" + std::to_string(mqttInstanceId)}.c_str(), true, NULL);
+    setupMqtt();
+
     mosquitto_username_pw_set(mqtt, std::string{"simtor" + std::to_string(mqttInstanceId)}.c_str(), "simtor23");
 
+    auto rc = mosquitto_connect(mqtt, address.c_str(), port, 60);
+
     // Set isConnected bool to true IF we connected successfully
-    if (mosquitto_connect(mqtt, address.c_str(), port, 60)) {
+    if (rc != MOSQ_ERR_SUCCESS) {
         is_connected = false;
         std::cout << "could not connect!" << std::endl;
     } else {
-        if (mosquitto_subscribe(mqtt, NULL, std::string{getSimIdPrefix() + "in/control"}.c_str(), 1) != MOSQ_ERR_SUCCESS) {
+        if (mosquitto_subscribe(mqtt, NULL, std::string{getSimIdPrefix() + "in/control"}.c_str(), 1) !=
+            MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
-        if (mosquitto_subscribe(mqtt, NULL, std::string{getSimIdPrefix() + "in/image"}.c_str(), 1) != MOSQ_ERR_SUCCESS) {
+        if (mosquitto_subscribe(mqtt, NULL, std::string{getSimIdPrefix() + "in/image"}.c_str(), 1) !=
+            MOSQ_ERR_SUCCESS) {
             std::cerr << "Failed to subscribe!" << std::endl;
         }
     }
@@ -206,7 +213,13 @@ Mqtt::send(const std::string &topic, const std::string &message_type, const nloh
 void
 Mqtt::processMqtt(int32_t step)
 {
-    mosquitto_loop(mqtt, 0, 1);
+    auto rc = mosquitto_loop(mqtt, 0, 1);
+    if (rc == MOSQ_ERR_NO_CONN && is_connected) {
+        std::cerr << "ERROR WITH MQTT, DISCONNECTED, LIKELY BECAUSE SOMEONE ELSE CONNECTED!" << std::endl;
+        is_connected = false;
+        mosquitto_reinitialise(mqtt, std::string{"Simulator_Channel" + std::to_string(mqttInstanceId)}.c_str(), true, NULL);
+        setupMqtt();
+    }
 
     if (!is_connected) {
         return;
@@ -299,7 +312,13 @@ void
 Mqtt::init()
 {
     mosquitto_lib_init();
-    mqtt = mosquitto_new("Simulator_Channel", true, NULL);
+    mqtt = mosquitto_new("Simulator_Channel0", true, NULL);
+    setupMqtt();
+}
+
+void
+Mqtt::setupMqtt()
+{
     mosquitto_username_pw_set(mqtt, "simtor0", "simtor23");
     // set the path to the certificate and key files
     int rt = mosquitto_tls_set(mqtt, "data/cacert.pem", NULL, NULL, NULL, NULL);
@@ -414,7 +433,13 @@ Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
     }
     std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)),
                                           std::istreambuf_iterator<char>());
-    mosquitto_publish(Mqtt::getInstance().mqtt, NULL, std::string{Mqtt::getSimIdPrefix() + "out/image"}.c_str(), image_data.size(), image_data.data(), 1, true);
+    mosquitto_publish(Mqtt::getInstance().mqtt,
+                      NULL,
+                      std::string{Mqtt::getSimIdPrefix() + "out/image"}.c_str(),
+                      image_data.size(),
+                      image_data.data(),
+                      1,
+                      true);
 }
 
 void
@@ -471,3 +496,5 @@ Mqtt::getSimIdPrefix()
 {
     return "sim/" + std::to_string(mqttInstanceId) + "/";
 }
+
+
