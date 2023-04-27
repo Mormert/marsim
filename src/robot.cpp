@@ -215,6 +215,14 @@ void
 Robot::pickup()
 {
     auto items = getItemsForPickup();
+
+    for(int i = items.size() - 1; i >= 0; i--)
+    {
+        if(items[i]->name == "Robot Arm"){
+            items.erase(std::begin(items) + i);
+        }
+    }
+
     if (items.empty()) {
         Mqtt::getInstance().send("out/pickup", "pickup", "FAIL");
         return;

@@ -46,7 +46,7 @@ SeismicSensor::update()
 
     float shakeValue = 0.f;
 
-    if (simulation->volcano->isActive()) {
+    if (simulation->volcano && simulation->volcano->isActive()) {
         shakeValue = (float)distrVolcano(gen);
         auto diff = getPosition() - simulation->volcano->getPosition();
         if (diff.Length() < 200.f) {

@@ -132,6 +132,8 @@ RobotArm::RobotArm(Simulation *simulation, b2Body *robotBody) : Object(simulatio
 
     updateable = true;
     terrain_movable = false;
+
+    name = "Robot Arm";
 }
 void
 RobotArm::SetSpeeds(float one, float two, float three)

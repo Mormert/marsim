@@ -53,7 +53,7 @@ static b2Vec2 s_clickPointWS = b2Vec2_zero;
 static float s_displayScale = 1.0f;
 static const float s_imguiPadding = 8.f;
 
-static char initJsonFilePath[1024] = "data/mission1.json";
+static char initJsonFilePath[1024] = "data/init1.json";
 
 void glfwErrorCallback(int error, const char* description)
 {
@@ -757,7 +757,10 @@ static void UpdateUI()
                                 if (ImGui::Button("Trigger Immediate Volcano (V)", button_sz))
                                 {
                                     auto sim = dynamic_cast<Simulation*>(s_application);
-                                    sim->volcano->trigger(3500.f, 500);
+                                    if(sim->volcano)
+                                    {
+                                        sim->volcano->trigger(3500.f, 500);
+                                    }
                                 }
 
                                 if (ImGui::Button("Quit", button_sz))
@@ -906,7 +909,7 @@ int main(int, char**)
         Simulation::window = g_mainWindow;
         Simulation::camera = &g_camera;
 
-        s_application = Simulation::Create();
+        s_application = Simulation::Create(initJsonFilePath);
         Mqtt::getInstance().setSimulationPtr(dynamic_cast<Simulation *>(s_application));
 
 

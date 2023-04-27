@@ -53,7 +53,7 @@ Earthquake::update(int step)
 
     if (currentStep >= continueUntil) {
         magnitude = 0.f;
-        //world->SetGravity(b2Vec2{0.f, 0.f});
+        world->SetGravity(b2Vec2{0.f, 0.f});
     }
 
     if (step % 10 == 0) {
@@ -61,7 +61,7 @@ Earthquake::update(int step)
         std::mt19937 gen(rd());
         std::uniform_real_distribution<> v(-1.f, 1.f);
 
-       // world->SetGravity(b2Vec2{(float)v(gen) * magnitude, (float)v(gen) * magnitude});
+        world->SetGravity(b2Vec2{(float)v(gen) * magnitude, (float)v(gen) * magnitude});
     }
 }
 bool

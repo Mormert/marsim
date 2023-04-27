@@ -117,11 +117,6 @@ Simulation::Simulation(const SimulationSetup &setup) : earthquake{m_world, this}
         SimulateObject(tempSensor);
     }
 
-    if (!volcano) {
-        volcano = new Volcano{this, {(float)distrX(gen), (float)distrY(gen)}, (float)distSensorRadius(gen) * 3.f};
-        SimulateObject(volcano);
-    }
-
     for (auto object : setup.objectSetups) {
         AddObjectFromJson(object);
     }
@@ -217,15 +212,22 @@ Simulation::UpdateObjects()
     alienDatas.clear();
 
     for (auto &&object : objects) {
-        if (object->updateable) {
-            object->update();
-        }
         if (auto tornado = dynamic_cast<Tornado *>(object)) {
             tornadoDatas.push_back({tornado->getPosition(), tornado->magnitude, tornado->radius});
         }
 
         if (auto alien = dynamic_cast<Alien *>(object)) {
             alienDatas.push_back({alien->getPosition()});
+        }
+
+        if (auto volcano = dynamic_cast<Volcano *>(object)) {
+            volcanoDatas.push_back({volcano->getPosition()});
+        }
+    }
+
+    for (auto &&object : objects) {
+        if (object->updateable) {
+            object->update();
         }
     }
 }
@@ -467,6 +469,10 @@ Simulation::GetAliens()
 std::vector<VolcanoData>
 Simulation::GetVolcanoes() const
 {
+    if(!volcano)
+    {
+        return {};
+    }
     std::vector<VolcanoData> vds;
     VolcanoData vd{};
     vd.magnitude = volcano->magnitude;

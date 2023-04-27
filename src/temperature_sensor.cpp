@@ -44,9 +44,10 @@ TemperatureSensor::update()
 
     float temperature = 25.f;
     constexpr float tornadoTemperature = 5.f;
+    constexpr float alienTemperature = -25.f;
     float volcanoTemperature = 100.f;
 
-    if (simulation->volcano->isActive()) {
+    if (simulation->volcano && simulation->volcano->isActive()) {
         volcanoTemperature = 850.f;
     }
 
@@ -63,7 +64,7 @@ TemperatureSensor::update()
         float attenuation = 100.f * strength.LengthSquared();
         attenuation /= 1.f;
         attenuation = glm::clamp(attenuation, 0.f, 100000.f);
-        temperature = glm::mix(tornadoTemperature, temperature, attenuation / 100000.f);
+        temperature = glm::mix(alienTemperature, temperature, attenuation / 100000.f);
     }
 
     for (auto &&volcano : volcanoes) {
