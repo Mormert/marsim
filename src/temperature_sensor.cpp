@@ -44,7 +44,7 @@ TemperatureSensor::update()
 
     float temperature = 25.f;
     constexpr float tornadoTemperature = 5.f;
-    constexpr float alienTemperature = -25.f;
+    constexpr float alienTemperature = 75.f;
     float volcanoTemperature = 100.f;
 
     if (simulation->volcano && simulation->volcano->isActive()) {

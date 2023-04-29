@@ -38,7 +38,7 @@ WindSensor::update()
 
     auto &&tornadoes = simulation->GetTornados();
     auto &&aliens = simulation->GetAliens();
-    auto &&volcanoes = simulation->GetVolcanoes();
+    //auto &&volcanoes = simulation->GetVolcanoes();
 
     std::vector<b2Vec2> tornadoStrengths;
     for (auto &&tornado : tornadoes) {
@@ -59,13 +59,13 @@ WindSensor::update()
         tornadoStrengths.push_back(strength);
     }
 
-    for (auto &&volcano : volcanoes) {
+    /*for (auto &&volcano : volcanoes) {
         b2Vec2 strength{volcano.pos - getPosition()};
         float attenuation = 1000.f / strength.LengthSquared();
         strength.x *= attenuation;
         strength.y *= attenuation;
         tornadoStrengths.push_back(-strength);
-    }
+    }*/
 
     b2Vec2 strength{0.f, 0.f};
     for (auto &&tornadoStrength : tornadoStrengths) {
