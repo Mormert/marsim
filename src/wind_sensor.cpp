@@ -53,7 +53,7 @@ WindSensor::update()
 
     for (auto &&alien : aliens) {
         b2Vec2 strength{alien.pos - getPosition()};
-        float attenuation = 10.f / strength.LengthSquared();
+        float attenuation = 30.f / strength.LengthSquared();
         strength.x *= attenuation;
         strength.y *= attenuation;
         tornadoStrengths.push_back(strength);
