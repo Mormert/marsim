@@ -92,7 +92,9 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
                     Mqtt::receiveMsgLaserAngle(jsonPayload);
                 } else if (type == "request_satellite_image") {
                     Mqtt::receiveMsgRequestImage(jsonPayload);
-                } else if (type == "arm_speeds") {
+                } else if (type == "request_satellite_image_blurred") {
+                    Mqtt::receiveMsgRequestImageBlurred(jsonPayload);
+                }else if (type == "arm_speeds") {
                     Mqtt::receiveMsgRobotArm(jsonPayload);
                 } else if (type == "arm_close") {
                     Mqtt::receiveMsgRobotArm_Close(jsonPayload);
@@ -449,6 +451,27 @@ Mqtt::receiveMsgRequestImage(const nlohmann::json &data)
                       image_data.data(),
                       1,
                       true);
+
+}
+
+void
+Mqtt::receiveMsgRequestImageBlurred(const nlohmann::json &data)
+{
+    std::ifstream image_file("data/lunar_blurred.png", std::ios::binary);
+    if (!image_file.good()) {
+        std::cerr << "Could not open" << "data/lunar_blurred.png" << "! The requested image will not be published to MQTT!"
+                  << std::endl;
+        return;
+    }
+    std::vector<unsigned char> image_data((std::istreambuf_iterator<char>(image_file)),
+                                          std::istreambuf_iterator<char>());
+    mosquitto_publish(Mqtt::getInstance().mqtt,
+                      NULL,
+                      std::string{Mqtt::getSimIdPrefix() + "out/image_blurred"}.c_str(),
+                      image_data.size(),
+                      image_data.data(),
+                      1,
+                      true);
 }
 
 void
@@ -529,3 +552,4 @@ Mqtt::receiveMsgRobotUnLockBase(const nlohmann::json &data)
 {
     Mqtt::getInstance().simulation->GetRobot()->SetBaseLock(false);
 }
+

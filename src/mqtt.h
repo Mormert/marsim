@@ -103,6 +103,7 @@ public:
 
     static inline std::string requestImagePath{};
     static void receiveMsgRequestImage(const nlohmann::json & data);
+    static void receiveMsgRequestImageBlurred(const nlohmann::json & data);
 
     unsigned int receivedMessages{0};
     unsigned int receivedBytesTotal{0};
