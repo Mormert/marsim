@@ -81,6 +81,9 @@ public:
 
     std::vector<Object*> getClosebyObjects();
 
+    bool IsBaseLocked();
+
+    void SetBaseLock(bool lock);
 
     Battery *GetBattery();
 

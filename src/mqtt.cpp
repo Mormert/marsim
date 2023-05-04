@@ -98,6 +98,14 @@ on_message(struct mosquitto *mosq, void *userdata, const struct mosquitto_messag
                     Mqtt::receiveMsgRobotArm_Close(jsonPayload);
                 } else if (type == "arm_open") {
                     Mqtt::receiveMsgRobotArm_Open(jsonPayload);
+                } else if (type == "arm_fold_lock") {
+                    Mqtt::receiveMsgRobotArm_Lock(jsonPayload);
+                } else if (type == "arm_fold_unlock") {
+                    Mqtt::receiveMsgRobotArm_UnLock(jsonPayload);
+                } else if (type == "robot_lock_base") {
+                    Mqtt::receiveMsgRobotLockBase(jsonPayload);
+                } else if (type == "robot_unlock_base") {
+                    Mqtt::receiveMsgRobotUnLockBase(jsonPayload);
                 }
 
             } catch (std::exception e) {
@@ -217,7 +225,8 @@ Mqtt::processMqtt(int32_t step)
     if (rc == MOSQ_ERR_NO_CONN && is_connected) {
         std::cerr << "ERROR WITH MQTT, DISCONNECTED, LIKELY BECAUSE SOMEONE ELSE CONNECTED!" << std::endl;
         is_connected = false;
-        mosquitto_reinitialise(mqtt, std::string{"Simulator_Channel" + std::to_string(mqttInstanceId)}.c_str(), true, NULL);
+        mosquitto_reinitialise(
+            mqtt, std::string{"Simulator_Channel" + std::to_string(mqttInstanceId)}.c_str(), true, NULL);
         setupMqtt();
     }
 
@@ -497,4 +506,26 @@ Mqtt::getSimIdPrefix()
     return "sim/" + std::to_string(mqttInstanceId) + "/";
 }
 
+void
+Mqtt::receiveMsgRobotArm_Lock(const nlohmann::json &data)
+{
+    Mqtt::getInstance().simulation->GetRobot()->GetArm()->SetLockFolded(true);
+}
 
+void
+Mqtt::receiveMsgRobotArm_UnLock(const nlohmann::json &data)
+{
+    Mqtt::getInstance().simulation->GetRobot()->GetArm()->SetLockFolded(false);
+}
+
+void
+Mqtt::receiveMsgRobotLockBase(const nlohmann::json &data)
+{
+    Mqtt::getInstance().simulation->GetRobot()->SetBaseLock(true);
+}
+
+void
+Mqtt::receiveMsgRobotUnLockBase(const nlohmann::json &data)
+{
+    Mqtt::getInstance().simulation->GetRobot()->SetBaseLock(false);
+}

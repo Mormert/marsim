@@ -44,6 +44,10 @@ public:
 
     bool IsGripperOpen();
 
+    bool IsLockFolded();
+
+    void SetLockFolded(bool lock);
+
     float GetSpeed1();
     float GetSpeed2();
     float GetSpeed3();

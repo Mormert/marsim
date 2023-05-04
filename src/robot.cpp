@@ -174,6 +174,7 @@ Robot::update()
         j["battery"] = (battery->getSoC() * 100); // Yet to be tested
         j["storage"] = storage;
         j["in_shadow"] = isInShadow();
+        j["base_locked"] = IsBaseLocked();
 
         Mqtt::getInstance().send("out/general", "Robot", j);
     }
@@ -364,4 +365,23 @@ RobotArm *
 Robot::GetArm()
 {
     return robot_arm;
+}
+
+bool
+Robot::IsBaseLocked()
+{
+    return body->GetFixtureList()[0].GetDensity() > 2.f;
+}
+
+void
+Robot::SetBaseLock(bool lock)
+{
+    if(lock)
+    {
+        body->GetFixtureList()[0].SetDensity(1000.f);
+    }else
+    {
+        body->GetFixtureList()[0].SetDensity(1.f);
+    }
+    body->ResetMassData();
 }

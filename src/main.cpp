@@ -655,6 +655,33 @@ static void UpdateUI()
                                     }
                                 }
 
+                                if(!arm->IsLockFolded())
+                                {
+                                    if(ImGui::Button("Lock Fold Gripper"))
+                                    {
+                                        arm->SetLockFolded(true);
+                                    }
+                                }else
+                                {
+                                    if(ImGui::Button("Unlock Fold Gripper"))
+                                    {
+                                        arm->SetLockFolded(false);
+                                    }
+                                }
+
+                                if(!robot->IsBaseLocked())
+                                {
+                                    if(ImGui::Button("Lock Robot Base"))
+                                    {
+                                        robot->SetBaseLock(true);
+                                    }
+                                }else{
+                                    if(ImGui::Button("Unlock Robot Base"))
+                                    {
+                                        robot->SetBaseLock(false);
+                                    }
+                                }
+
                                 ImGui::Text("Close objects");
 
                                 for(auto&& item : robot->getClosebyObjects())
@@ -947,7 +974,7 @@ int main(int, char**)
 			ImGui::End();
 
                         static std::string date{__DATE__};
-                        static std::string title = "Marsim by Johan Lind & Ermias Tewolde\nBuild: " + date + "\n  ~Amanajaptem~";
+                        static std::string title = "Marsim by Johan Lind & Ermias Tewolde\nBuild: " + date;
 			s_application->DrawTitle(title.c_str());
 
 		}

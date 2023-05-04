@@ -96,6 +96,10 @@ public:
     static void receiveMsgRobotArm(const nlohmann::json & data);
     static void receiveMsgRobotArm_Open(const nlohmann::json & data);
     static void receiveMsgRobotArm_Close(const nlohmann::json & data);
+    static void receiveMsgRobotArm_Lock(const nlohmann::json & data);
+    static void receiveMsgRobotArm_UnLock(const nlohmann::json & data);
+    static void receiveMsgRobotLockBase(const nlohmann::json & data);
+    static void receiveMsgRobotUnLockBase(const nlohmann::json & data);
 
     static inline std::string requestImagePath{};
     static void receiveMsgRequestImage(const nlohmann::json & data);

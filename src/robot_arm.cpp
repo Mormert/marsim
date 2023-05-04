@@ -22,8 +22,8 @@
 
 #include "robot_arm.h"
 #include "glm/trigonometric.hpp"
-#include "simulation.h"
 #include "mqtt.h"
+#include "simulation.h"
 
 RobotArm::RobotArm(Simulation *simulation, b2Body *robotBody) : Object(simulation)
 {
@@ -61,12 +61,15 @@ RobotArm::RobotArm(Simulation *simulation, b2Body *robotBody) : Object(simulatio
     jd1.localAnchorB.Set(0.f, -1.5f);
     jd1.enableMotor = true;
     jd1.maxMotorTorque = 1000.0f;
-    jd1.enableLimit = true;
+
+    constexpr float pi = 3.14159265358979;
 
     jd1.motorSpeed = 0.0f;
     jd1.localAnchorA.SetZero();
     jd1.bodyB = body1;
     jd1.enableLimit = false;
+    jd1.lowerAngle = pi - 0.02f;
+    jd1.upperAngle = pi + 0.02f;
     joint1 = (b2RevoluteJoint *)world->CreateJoint(&jd1);
 
     b2RevoluteJointDef jd2;
@@ -74,12 +77,14 @@ RobotArm::RobotArm(Simulation *simulation, b2Body *robotBody) : Object(simulatio
     jd2.localAnchorB.Set(0.f, -1.5f);
     jd2.enableMotor = true;
     jd2.maxMotorTorque = 1000.0f;
-    jd2.enableLimit = false;
+
 
     jd2.motorSpeed = 0.0f;
     jd2.localAnchorA.Set(0.f, 1.5f);
     jd2.bodyB = body2;
     jd2.enableLimit = false;
+    jd2.lowerAngle = -0.02f;
+    jd2.upperAngle = 0.02f;
     joint2 = (b2RevoluteJoint *)world->CreateJoint(&jd2);
 
     b2RevoluteJointDef jd3;
@@ -87,12 +92,13 @@ RobotArm::RobotArm(Simulation *simulation, b2Body *robotBody) : Object(simulatio
     jd3.localAnchorB.Set(0.f, -1.5f);
     jd3.enableMotor = true;
     jd3.maxMotorTorque = 1000.0f;
-    jd3.enableLimit = false;
 
     jd3.motorSpeed = 0.0f;
     jd3.localAnchorA.Set(0.f, 1.5f);
     jd3.bodyB = body3;
     jd3.enableLimit = false;
+    jd3.lowerAngle = pi - 0.02f;
+    jd3.upperAngle = pi + 0.02f;
     joint3 = (b2RevoluteJoint *)world->CreateJoint(&jd3);
 
     b2BodyDef defGripper;
@@ -211,6 +217,7 @@ RobotArm::GetJsonData()
     j["arm3_jointAngle"] = joint3->GetJointAngle();
     j["arm3_jointSpeed"] = joint3->GetJointSpeed();
     j["arm_opened"] = IsGripperOpen();
+    j["arm_fold_locked"] = IsLockFolded();
 
     return j;
 }
@@ -222,4 +229,18 @@ RobotArm::update()
     {
         Mqtt::getInstance().send("out/arm", "arm", GetJsonData());
     }
+}
+
+bool
+RobotArm::IsLockFolded()
+{
+    return joint1->IsLimitEnabled();
+}
+
+void
+RobotArm::SetLockFolded(bool lock)
+{
+    joint1->EnableLimit(lock);
+    joint2->EnableLimit(lock);
+    joint3->EnableLimit(lock);
 }
