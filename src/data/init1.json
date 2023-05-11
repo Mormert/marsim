@@ -1,48 +1,48 @@
 {
   "simulationSeed": 1337,
-  "robotX": 124.3,
-  "robotY": 13.2,
+  "robotX": -57.0,
+  "robotY": 132.0,
   "robotR": 0.0,
   "objectSetups": [
     {
       "object": "Stone",
-      "posX": 75,
-      "posY": -35,
-      "radius": 10
+      "posX": -74.13,
+      "posY": -87.9,
+      "radius": 0.5
     },
     {
       "object": "Stone",
-      "posX": 95,
-      "posY": -35,
-      "radius": 10
+      "posX": -71.9,
+      "posY": -87.9,
+      "radius": 0.5
     },
     {
       "object": "Stone",
-      "posX": 115,
-      "posY": -35,
-      "radius": 10
-    },
-    {
-      "object": "Stone",
-      "posX": 135,
-      "posY": -35,
-      "radius": 10
+      "posX": -65.4,
+      "posY": -85.4,
+      "radius": 0.5
     },
     {
       "object": "Volcano",
-      "posX": 45,
-      "posY": -35,
-      "radius": 45
+      "posX": 24,
+      "posY": -18,
+      "radius": 150
+    },
+    {
+      "object": "Earthquake",
+      "posX": 65,
+      "posY": 66,
+      "radius": 150
     },
     {
       "object": "Temperature Sensor",
-      "posX": -55,
-      "posY": -27
+      "posX": -9,
+      "posY": 54
     },
     {
       "object": "Seismic Sensor",
-      "posX": -43,
-      "posY": -43
+      "posX": 105,
+      "posY": -15
     }
   ],
   "stonesAmount": 0.0,
@@ -53,15 +53,15 @@
   "windSensorsAmount": 0.0,
   "seismicSensorsAmount": 0.0,
   "tempSensorsAmount": 0.0,
-  "shadowFrontierX": 0.0,
-  "shadowFrontierY": 0.0,
-  "shadowFrontierR": 45.0,
+  "shadowFrontierX": 15.0,
+  "shadowFrontierY": 50.0,
+  "shadowFrontierR": -45.0,
   "satelliteImageScale": 1.0,
   "satelliteImageScaleFactorMultiplierMin": 1.0,
   "satelliteImageScaleFactorMultiplierMax": 1.0,
-  "satelliteImagePath": "data/moon1.png",
-  "objectGenerationMinX": -430.0,
-  "objectGenerationMaxX": 430.0,
-  "objectGenerationMinY": -440.0,
-  "objectGenerationMaxY": 440.0
+  "satelliteImagePath": "data/scenario1.png",
+  "objectGenerationMinX": -150.0,
+  "objectGenerationMaxX": 150.0,
+  "objectGenerationMinY": -150.0,
+  "objectGenerationMaxY": 150.0
 }

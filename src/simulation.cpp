@@ -437,21 +437,24 @@ Simulation::GetTerrain()
 void
 Simulation::GenerateBlurredTerrain()
 {
-    if (std::filesystem::exists("data/lunar_received.png")) {
-        // If there is a received lunar image, use this instead
-        std::cout << "Using provided received lunar image." << std::endl;
-        Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_received.png", "data/lunar_blurred.png", 1.2f);
-    } else {
-        // Default to lunar_hard
-        std::cout << "No received lunar image found, using default lunar image." << std::endl;
-        Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_hard.png", "data/lunar_blurred.png", 1.2f);
-    }
 
     if (terrain) {
         delete terrain;
     }
 
-    terrain = new Terrain{"data/lunar_blurred.png"};
+    if (std::filesystem::exists("data/lunar_received.png")) {
+        // If there is a received lunar image, use this instead
+        std::cout << "Using provided received lunar image." << std::endl;
+        Terrain::GenerateGaussianImageFromHardEdgeImage("data/lunar_received.png", "data/lunar_blurred.png", 1.2f);
+
+        terrain = new Terrain{"data/lunar_blurred.png"};
+    } else {
+        // Default using raw satellite image
+        std::cout << "No received lunar image found, using raw satellite image." << std::endl;
+
+        terrain = new Terrain{Mqtt::requestImagePath};
+    }
+
 }
 
 std::vector<TornadoData> &
