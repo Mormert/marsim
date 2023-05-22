@@ -26,7 +26,7 @@
       "object": "Volcano",
       "posX": 24,
       "posY": -18,
-      "radius": 150
+      "radius": 50
     },
     {
       "object": "Earthquake",

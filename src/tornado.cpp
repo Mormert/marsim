@@ -56,8 +56,8 @@ Tornado::TornadoMovement()
     b2Vec2 d = target - getPosition();
     b2Vec2 dir = d;
     dir.Normalize();
-    dir.x *= 0.1f;
-    dir.y *= 0.1f;
+    dir.x *= 0.0f;
+    dir.y *= 0.0f;
 
     setPosition(getPosition() + dir, 0.f);
 
