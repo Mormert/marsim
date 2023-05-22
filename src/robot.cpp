@@ -144,7 +144,7 @@ Robot::update()
     auto angle = body->GetAngle();
     auto forward = glm::rotate(glm::vec2{cos(angle), sin(angle)}, glm::radians(90.f));
     forward *= 3.f;
-    pickup_sensor->setPosition(getPosition() + b2Vec2{forward.x, forward.y}, angle);
+    pickup_sensor->setPosition(robot_arm->GetGripperPosition(), 0.f);
     pickup_sensor->body->SetAwake(true); // Since we manually move the sensor, we need to wake it up all the time.
     pickup_sensor->update();
 
@@ -215,6 +215,13 @@ Robot::~Robot()
 void
 Robot::pickup()
 {
+
+    if(robot_arm->IsGripperOpen())
+    {
+        Mqtt::getInstance().send("out/pickup", "pickup", "FAIL - GRIPPER IS OPENED!");
+        return;
+    }
+
     auto items = getItemsForPickup();
 
     for(int i = items.size() - 1; i >= 0; i--)

@@ -44,8 +44,8 @@ PickupSensor::PickupSensor(Simulation* simulation, Robot *robot, b2Vec2 pos, flo
     vertices[1].Set(-1.5,1);
     vertices[2].Set(1.5,1);
 
-    b2PolygonShape shape;
-    shape.Set(vertices, 3);
+    b2CircleShape shape;
+    shape.m_radius = radius;
 
     b2FixtureDef fixdef;
     fixdef.isSensor = true;

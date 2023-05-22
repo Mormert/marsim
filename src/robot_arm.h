@@ -48,6 +48,8 @@ public:
 
     void SetLockFolded(bool lock);
 
+    b2Vec2 GetGripperPosition();
+
     float GetSpeed1();
     float GetSpeed2();
     float GetSpeed3();

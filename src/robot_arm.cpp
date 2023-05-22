@@ -244,3 +244,9 @@ RobotArm::SetLockFolded(bool lock)
     joint2->EnableLimit(lock);
     joint3->EnableLimit(lock);
 }
+b2Vec2
+RobotArm::GetGripperPosition()
+{
+    constexpr float pi = 3.14159265359879;
+    return arm3->GetPosition() + b2Vec2{cos(arm3->GetAngle() + pi/2.f)*3.f, sin(arm3->GetAngle() + pi/2.f)*3.f};
+}
