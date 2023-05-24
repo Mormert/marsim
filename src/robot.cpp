@@ -73,7 +73,7 @@ Robot::Robot(
     fixdef.shape = &shape;
     body->CreateFixture(&fixdef);
 
-    pickup_sensor = new PickupSensor{simulation, this, {0.f, 5.f}, 1.2};
+    pickup_sensor = new PickupSensor{simulation, this, {0.f, 5.f}, 0.896f};
 
     proximity_sensor = new ProximitySensor{simulation, position, 30.f, true};
     proximity_sensor->shouldTransmitMqtt = false;
@@ -226,7 +226,7 @@ Robot::pickup()
 
     for(int i = items.size() - 1; i >= 0; i--)
     {
-        if(items[i]->name == "Robot Arm"){
+        if(items[i]->name == "Robot Arm" || items[i]->name == "Robot" || items[i]->name == "Robot Wheel"){
             items.erase(std::begin(items) + i);
         }
     }
