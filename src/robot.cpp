@@ -73,7 +73,7 @@ Robot::Robot(
     fixdef.shape = &shape;
     body->CreateFixture(&fixdef);
 
-    pickup_sensor = new PickupSensor{simulation, this, {0.f, 5.f}, 0.5};
+    pickup_sensor = new PickupSensor{simulation, this, {0.f, 5.f}, 1.2};
 
     proximity_sensor = new ProximitySensor{simulation, position, 30.f, true};
     proximity_sensor->shouldTransmitMqtt = false;
