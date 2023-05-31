@@ -1,30 +1,72 @@
 {
   "simulationSeed": 1337,
-  "robotX": 119,
-  "robotY": -141,
+  "robotX": 118,
+  "robotY": -136,
   "robotR": 0.0,
   "objectSetups": [
     {
-      "object": "Stone",
-      "posX": 125,
-      "posY": -140,
-      "radius": 0.5
+      "object": "Volcano",
+      "posX": 12,
+      "posY": 16,
+      "radius": 20
     },
     {
       "object": "Stone",
-      "posX": 127,
-      "posY": -140,
-      "radius": 0.5
+      "posX": 118,
+      "posY": -133,
+      "radius": 0.3
+    },
+    {
+      "object": "Stone",
+      "posX": 122,
+      "posY": -135,
+      "radius": 0.3
+    },
+    {
+      "object": "Stone",
+      "posX": 122.6,
+      "posY": -139,
+      "radius": 0.3
+    },
+    {
+      "object": "Stone",
+      "posX": 122,
+      "posY": -143,
+      "radius": 0.3
+    },
+    {
+      "object": "Stone",
+      "posX": 118,
+      "posY": -144.4,
+      "radius": 0.3
+    },
+    {
+      "object": "Stone",
+      "posX": 114,
+      "posY": -142.5,
+      "radius": 0.3
+    },
+    {
+      "object": "Stone",
+      "posX": 112.7,
+      "posY": -138.8,
+      "radius": 0.3
+    },
+    {
+      "object": "Stone",
+      "posX": 114.2,
+      "posY": -135,
+      "radius": 0.3
     }
   ],
-  "stonesAmount": 20,
-  "aliensAmount": 1.0,
+  "stonesAmount": 100,
+  "aliensAmount": 3.0,
   "proximitySensorsAmount": 0.0,
   "frictionZonesAmount": 0.0,
-  "tornadoesAmount": 2.0,
-  "windSensorsAmount": 4.0,
-  "seismicSensorsAmount": 4.0,
-  "tempSensorsAmount": 4.0,
+  "tornadoesAmount": 3.0,
+  "windSensorsAmount": 15.0,
+  "seismicSensorsAmount": 0.0,
+  "tempSensorsAmount": 15.0,
   "shadowFrontierX": 50.0,
   "shadowFrontierY": -15.0,
   "shadowFrontierR": 0.0,

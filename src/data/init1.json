@@ -1,52 +1,178 @@
 {
   "simulationSeed": 1337,
-  "robotX": -57.0,
-  "robotY": 132.0,
+  "robotX": -67.0,
+  "robotY": -37.0,
   "robotR": 0.0,
   "objectSetups": [
     {
-      "object": "Stone",
-      "posX": -74.13,
-      "posY": -87.9,
-      "radius": 0.5
-    },
-    {
-      "object": "Stone",
-      "posX": -71.9,
-      "posY": -87.9,
-      "radius": 0.5
-    },
-    {
-      "object": "Stone",
-      "posX": -65.4,
-      "posY": -85.4,
-      "radius": 0.5
-    },
-    {
       "object": "Volcano",
-      "posX": 24,
-      "posY": -18,
-      "radius": 50
-    },
-    {
-      "object": "Earthquake",
-      "posX": 65,
-      "posY": 66,
-      "radius": 150
+      "posX": 67,
+      "posY": 70,
+      "radius": 20
     },
     {
       "object": "Temperature Sensor",
-      "posX": -9,
-      "posY": 54
+      "posX": -108,
+      "posY": 92
     },
     {
-      "object": "Seismic Sensor",
-      "posX": 105,
-      "posY": -15
+      "object": "Temperature Sensor",
+      "posX": -54,
+      "posY": 92
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 0,
+      "posY": 92
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 54,
+      "posY": 92
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": -108,
+      "posY": 44
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": -54,
+      "posY": 44
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 0,
+      "posY": 44
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 54,
+      "posY": 44
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": -108,
+      "posY": -4
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": -54,
+      "posY": -4
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 0,
+      "posY": -4
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 54,
+      "posY": -4
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": -108,
+      "posY": -52
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": -54,
+      "posY": -52
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 0,
+      "posY": -52
+    },
+    {
+      "object": "Temperature Sensor",
+      "posX": 54,
+      "posY": -52
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -107,
+      "posY": 92
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -53,
+      "posY": 92
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 1,
+      "posY": 92
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 55,
+      "posY": 92
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -107,
+      "posY": 44
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -53,
+      "posY": 44
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 1,
+      "posY": 44
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 55,
+      "posY": 44
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -107,
+      "posY": -4
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -53,
+      "posY": -4
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 1,
+      "posY": -4
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 55,
+      "posY": -4
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -107,
+      "posY": -52
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": -53,
+      "posY": -52
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 1,
+      "posY": -52
+    },
+    {
+      "object": "Wind Sensor",
+      "posX": 55,
+      "posY": -52
     }
   ],
-  "stonesAmount": 0.0,
-  "aliensAmount": 0.0,
+  "stonesAmount": 10.0,
+  "aliensAmount": 3.0,
   "proximitySensorsAmount": 0.0,
   "frictionZonesAmount": 0.0,
   "tornadoesAmount": 0.0,
@@ -55,13 +181,13 @@
   "tempSensorsAmount": 0.0,
   "shadowFrontierX": 15.0,
   "shadowFrontierY": 50.0,
-  "shadowFrontierR": -45.0,
+  "shadowFrontierR": -0.7,
   "satelliteImageScale": 1.0,
   "satelliteImageScaleFactorMultiplierMin": 1.0,
   "satelliteImageScaleFactorMultiplierMax": 1.0,
   "satelliteImagePath": "data/scenario1.png",
-  "objectGenerationMinX": -150.0,
-  "objectGenerationMaxX": 150.0,
-  "objectGenerationMinY": -150.0,
-  "objectGenerationMaxY": 150.0
+  "objectGenerationMinX": -430.0,
+  "objectGenerationMaxX": 430.0,
+  "objectGenerationMinY": -440.0,
+  "objectGenerationMaxY": 440.0
 }
