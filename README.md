@@ -15,7 +15,7 @@ Make sure to be logged-in on GitHub, then download the simulator from this link:
 # Interfacing Documentation (MQTT)
 The documentation on how to control the simulation from MQTT can be found [here](https://docs.google.com/document/d/1QhjJ_iIXsIAI4HF25bgt5XnktXVw-pdPO3wBrX61lCM/edit?usp=sharing).
 
-# Visual Debugger
+# Visual Debugger 
 ![Simulator](media/simulator_top.png)
 ![Simulator Robot](media/simulator_robot.png)
 
